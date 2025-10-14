@@ -45,7 +45,7 @@
 #include <Gui/WorkbenchManager.h>
 #include <Mod/Fem/App/FemAnalysis.h>
 #include <Mod/Fem/App/FemConstraint.h>
-#include <Mod/Fem/App/FemMeshObject.h>
+// #include <Mod/Fem/App/FemMeshObject.h>
 #include <Mod/Fem/App/FemResultObject.h>
 #include <Mod/Fem/App/FemSetObject.h>
 #include <Mod/Fem/App/FemSolverObject.h>
@@ -228,8 +228,8 @@ bool ViewProviderFemAnalysis::canDragObject(App::DocumentObject* obj) const
     }
 
     // clang-format off: keep line breaks for readability
-    if (obj->isDerivedFrom<Fem::FemMeshObject>()
-        || obj->isDerivedFrom<Fem::FemSolverObject>()
+    if (//obj->isDerivedFrom<Fem::FemMeshObject>()
+           obj->isDerivedFrom<Fem::FemSolverObject>()
         || obj->isDerivedFrom<Fem::FemResultObject>()
         || obj->isDerivedFrom<Fem::Constraint>()
         || obj->isDerivedFrom<Fem::FemSetObject>()

@@ -34,9 +34,9 @@
 #include <Base/PlacementPy.h>
 #include <Mod/Part/App/OCCError.h>
 
-#include "FemMesh.h"
-#include "FemMeshObject.h"
-#include "FemMeshPy.h"
+// #include "FemMesh.h"
+// #include "FemMeshObject.h"
+// #include "FemMeshPy.h"
 #ifdef FC_USE_VTK
 #include "FemPostPipeline.h"
 #include "FemVTKTools.h"
@@ -119,15 +119,15 @@ private:
         std::string EncodedName = std::string(Name);
         PyMem_Free(Name);
 
-        std::unique_ptr<FemMesh> mesh(new FemMesh);
-        mesh->read(EncodedName.c_str());
-        Base::FileInfo file(EncodedName.c_str());
+        // std::unique_ptr<FemMesh> mesh(new FemMesh);
+        // mesh->read(EncodedName.c_str());
+        // Base::FileInfo file(EncodedName.c_str());
         // create new document and add Import feature
-        App::Document* pcDoc = App::GetApplication().newDocument();
-        FemMeshObject* pcFeature = pcDoc->addObject<FemMeshObject>(file.fileNamePure().c_str());
-        pcFeature->Label.setValue(file.fileNamePure().c_str());
-        pcFeature->FemMesh.setValuePtr(mesh.release());
-        pcFeature->purgeTouched();
+        // App::Document* pcDoc = App::GetApplication().newDocument();
+        // FemMeshObject* pcFeature = pcDoc->addObject<FemMeshObject>(file.fileNamePure().c_str());
+        // pcFeature->Label.setValue(file.fileNamePure().c_str());
+        // pcFeature->FemMesh.setValuePtr(mesh.release());
+        // pcFeature->purgeTouched();
 
         return Py::None();
     }
@@ -157,13 +157,13 @@ private:
         Base::FileInfo file(EncodedName.c_str());
 
         try {
-            std::unique_ptr<FemMesh> mesh(new FemMesh);
-            mesh->read(EncodedName.c_str());
+            // std::unique_ptr<FemMesh> mesh(new FemMesh);
+            // mesh->read(EncodedName.c_str());
 
-            FemMeshObject* pcFeature = pcDoc->addObject<FemMeshObject>(file.fileNamePure().c_str());
-            pcFeature->Label.setValue(file.fileNamePure().c_str());
-            pcFeature->FemMesh.setValuePtr(mesh.release());
-            pcFeature->purgeTouched();
+            // FemMeshObject* pcFeature = pcDoc->addObject<FemMeshObject>(file.fileNamePure().c_str());
+            // pcFeature->Label.setValue(file.fileNamePure().c_str());
+            // pcFeature->FemMesh.setValuePtr(mesh.release());
+            // pcFeature->purgeTouched();
         }
         catch (Base::Exception&) {
 #ifdef FC_USE_VTK
@@ -204,30 +204,30 @@ private:
         for (Py::Sequence::iterator it = list.begin(); it != list.end(); ++it) {
             PyObject* item = (*it).ptr();
             if (PyObject_TypeCheck(item, &(App::DocumentObjectPy::Type))) {
-                App::DocumentObject* obj =
-                    static_cast<App::DocumentObjectPy*>(item)->getDocumentObjectPtr();
-                if (obj->isDerivedFrom<Fem::FemMeshObject>()) {
-                    auto femMesh = static_cast<FemMeshObject*>(obj)->FemMesh.getValue();
-                    if (file.hasExtension({"vtk", "vtu"})) {
-                        // get VTK prefs
-                        ParameterGrp::handle g = hGrp->GetGroup("InOutVtk");
-                        std::string level = g->GetASCII("MeshExportLevel", "Highest");
-                        femMesh.writeVTK(file.filePath().c_str(),
-                                         level == "Highest" ? true : false);
-                    }
-                    else if (file.hasExtension("inp")) {
-                        // get Abaqus inp prefs
-                        ParameterGrp::handle g = hGrp->GetGroup("Abaqus");
-                        int elemParam = g->GetInt("AbaqusElementChoice", 1);
-                        bool groupParam = g->GetBool("AbaqusWriteGroups", false);
-                        // write ABAQUS Output
-                        femMesh.writeABAQUS(file.filePath(), elemParam, groupParam);
-                    }
-                    else {
-                        femMesh.write(file.filePath().c_str());
-                    }
-                    return Py::None();
-                }
+                // App::DocumentObject* obj =
+                //     static_cast<App::DocumentObjectPy*>(item)->getDocumentObjectPtr();
+                // if (obj->isDerivedFrom<Fem::FemMeshObject>()) {
+                //     auto femMesh = static_cast<FemMeshObject*>(obj)->FemMesh.getValue();
+                //     if (file.hasExtension({"vtk", "vtu"})) {
+                //         // get VTK prefs
+                //         ParameterGrp::handle g = hGrp->GetGroup("InOutVtk");
+                //         std::string level = g->GetASCII("MeshExportLevel", "Highest");
+                //         femMesh.writeVTK(file.filePath().c_str(),
+                //                          level == "Highest" ? true : false);
+                //     }
+                //     else if (file.hasExtension("inp")) {
+                //         // get Abaqus inp prefs
+                //         ParameterGrp::handle g = hGrp->GetGroup("Abaqus");
+                //         int elemParam = g->GetInt("AbaqusElementChoice", 1);
+                //         bool groupParam = g->GetBool("AbaqusWriteGroups", false);
+                //         // write ABAQUS Output
+                //         femMesh.writeABAQUS(file.filePath(), elemParam, groupParam);
+                //     }
+                //     else {
+                //         femMesh.write(file.filePath().c_str());
+                //     }
+                //     return Py::None();
+                // }
             }
         }
 
@@ -243,9 +243,10 @@ private:
         std::string EncodedName = std::string(Name);
         PyMem_Free(Name);
 
-        std::unique_ptr<FemMesh> mesh(new FemMesh);
-        mesh->read(EncodedName.c_str());
-        return Py::asObject(new FemMeshPy(mesh.release()));
+        // std::unique_ptr<FemMesh> mesh(new FemMesh);
+        // mesh->read(EncodedName.c_str());
+        // return Py::asObject(new FemMeshPy(mesh.release()));
+        return Py::None();
     }
 
 #ifdef FC_USE_VTK
@@ -322,21 +323,21 @@ private:
 
     Py::Object show(const Py::Tuple& args)
     {
-        PyObject* pcObj;
-        const char* name = "Mesh";
-        if (!PyArg_ParseTuple(args.ptr(), "O!|s", &(FemMeshPy::Type), &pcObj, &name)) {
-            throw Py::Exception();
-        }
+        // PyObject* pcObj;
+        // const char* name = "Mesh";
+        // if (!PyArg_ParseTuple(args.ptr(), "O!|s", &(FemMeshPy::Type), &pcObj, &name)) {
+        //     throw Py::Exception();
+        // }
 
         App::Document* pcDoc = App::GetApplication().getActiveDocument();
         if (!pcDoc) {
             pcDoc = App::GetApplication().newDocument();
         }
 
-        FemMeshPy* pShape = static_cast<FemMeshPy*>(pcObj);
-        Fem::FemMeshObject* pcFeature = pcDoc->addObject<Fem::FemMeshObject>(name);
+        // FemMeshPy* pShape = static_cast<FemMeshPy*>(pcObj);
+        // Fem::FemMeshObject* pcFeature = pcDoc->addObject<Fem::FemMeshObject>(name);
         // copy the data
-        pcFeature->FemMesh.setValue(*(pShape->getFemMeshPtr()));
+        // pcFeature->FemMesh.setValue(*(pShape->getFemMeshPtr()));
         pcDoc->recompute();
 
         return Py::None();

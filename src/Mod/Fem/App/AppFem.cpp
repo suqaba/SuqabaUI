@@ -23,7 +23,7 @@
 
 #include "PreCompiled.h"
 
-#include <SMESH_Version.h>
+// #include <SMESH_Version.h>
 
 #include <Base/Console.h>
 #include <Base/Interpreter.h>
@@ -34,7 +34,7 @@
 #include "FemConstraintContact.h"
 #include "FemConstraintDisplacement.h"
 #include "FemConstraintFixed.h"
-#include "FemConstraintFluidBoundary.h"
+// #include "FemConstraintFluidBoundary.h"
 #include "FemConstraintForce.h"
 #include "FemConstraintGear.h"
 #include "FemConstraintHeatflux.h"
@@ -46,12 +46,12 @@
 #include "FemConstraintSpring.h"
 #include "FemConstraintTemperature.h"
 #include "FemConstraintTransform.h"
-#include "FemMesh.h"
-#include "FemMeshObject.h"
-#include "FemMeshProperty.h"
-#include "FemMeshPy.h"
-#include "FemMeshShapeNetgenObject.h"
-#include "FemMeshShapeObject.h"
+// #include "FemMesh.h"
+// #include "FemMeshObject.h"
+// #include "FemMeshProperty.h"
+// #include "FemMeshPy.h"
+// #include "FemMeshShapeNetgenObject.h"
+// #include "FemMeshShapeObject.h"
 #include "FemResultObject.h"
 #include "FemSetElementNodesObject.h"
 #include "FemSetElementsObject.h"
@@ -59,7 +59,7 @@
 #include "FemSetGeometryObject.h"
 #include "FemSetNodesObject.h"
 #include "FemSolverObject.h"
-#include "HypothesisPy.h"
+// #include "HypothesisPy.h"
 
 #ifdef FC_USE_VTK
 #include "FemPostFilter.h"
@@ -90,43 +90,43 @@ PyMOD_INIT_FUNC(Fem)
     Base::Console().Log("Loading Fem module... done\n");
 
     // clang-format off
-    Fem::StdMeshers_Arithmetic1DPy              ::init_type(femModule);
-    Fem::StdMeshers_AutomaticLengthPy           ::init_type(femModule);
-    Fem::StdMeshers_NotConformAllowedPy         ::init_type(femModule);
-    Fem::StdMeshers_MaxLengthPy                 ::init_type(femModule);
-    Fem::StdMeshers_LocalLengthPy               ::init_type(femModule);
-    Fem::StdMeshers_QuadranglePreferencePy      ::init_type(femModule);
-    Fem::StdMeshers_Quadrangle_2DPy             ::init_type(femModule);
-    Fem::StdMeshers_MaxElementAreaPy            ::init_type(femModule);
-    Fem::StdMeshers_Regular_1DPy                ::init_type(femModule);
-    Fem::StdMeshers_UseExisting_1DPy            ::init_type(femModule);
-    Fem::StdMeshers_UseExisting_2DPy            ::init_type(femModule);
-    Fem::StdMeshers_CompositeSegment_1DPy       ::init_type(femModule);
-    Fem::StdMeshers_Deflection1DPy              ::init_type(femModule);
-    Fem::StdMeshers_LayerDistributionPy         ::init_type(femModule);
-    Fem::StdMeshers_LengthFromEdgesPy           ::init_type(femModule);
-    Fem::StdMeshers_MaxElementVolumePy          ::init_type(femModule);
+    // Fem::StdMeshers_Arithmetic1DPy              ::init_type(femModule);
+    // Fem::StdMeshers_AutomaticLengthPy           ::init_type(femModule);
+    // Fem::StdMeshers_NotConformAllowedPy         ::init_type(femModule);
+    // Fem::StdMeshers_MaxLengthPy                 ::init_type(femModule);
+    // Fem::StdMeshers_LocalLengthPy               ::init_type(femModule);
+    // Fem::StdMeshers_QuadranglePreferencePy      ::init_type(femModule);
+    // Fem::StdMeshers_Quadrangle_2DPy             ::init_type(femModule);
+    // Fem::StdMeshers_MaxElementAreaPy            ::init_type(femModule);
+    // Fem::StdMeshers_Regular_1DPy                ::init_type(femModule);
+    // Fem::StdMeshers_UseExisting_1DPy            ::init_type(femModule);
+    // Fem::StdMeshers_UseExisting_2DPy            ::init_type(femModule);
+    // Fem::StdMeshers_CompositeSegment_1DPy       ::init_type(femModule);
+    // Fem::StdMeshers_Deflection1DPy              ::init_type(femModule);
+    // Fem::StdMeshers_LayerDistributionPy         ::init_type(femModule);
+    // Fem::StdMeshers_LengthFromEdgesPy           ::init_type(femModule);
+    // Fem::StdMeshers_MaxElementVolumePy          ::init_type(femModule);
 #if SMESH_VERSION_MAJOR <= 9 && SMESH_VERSION_MINOR < 10
-    Fem::StdMeshers_MEFISTO_2DPy                ::init_type(femModule);
+    // Fem::StdMeshers_MEFISTO_2DPy                ::init_type(femModule);
 #endif
-    Fem::StdMeshers_NumberOfLayersPy            ::init_type(femModule);
-    Fem::StdMeshers_NumberOfSegmentsPy          ::init_type(femModule);
-    Fem::StdMeshers_Prism_3DPy                  ::init_type(femModule);
-    Fem::StdMeshers_Projection_1DPy             ::init_type(femModule);
-    Fem::StdMeshers_Projection_2DPy             ::init_type(femModule);
-    Fem::StdMeshers_Projection_3DPy             ::init_type(femModule);
-    Fem::StdMeshers_ProjectionSource1DPy        ::init_type(femModule);
-    Fem::StdMeshers_ProjectionSource2DPy        ::init_type(femModule);
-    Fem::StdMeshers_ProjectionSource3DPy        ::init_type(femModule);
-    Fem::StdMeshers_QuadraticMeshPy             ::init_type(femModule);
-    Fem::StdMeshers_RadialPrism_3DPy            ::init_type(femModule);
-    Fem::StdMeshers_SegmentAroundVertex_0DPy    ::init_type(femModule);
-    Fem::StdMeshers_SegmentLengthAroundVertexPy ::init_type(femModule);
-    Fem::StdMeshers_StartEndLengthPy            ::init_type(femModule);
-    Fem::StdMeshers_Hexa_3DPy                   ::init_type(femModule);
+    // Fem::StdMeshers_NumberOfLayersPy            ::init_type(femModule);
+    // Fem::StdMeshers_NumberOfSegmentsPy          ::init_type(femModule);
+    // Fem::StdMeshers_Prism_3DPy                  ::init_type(femModule);
+    // Fem::StdMeshers_Projection_1DPy             ::init_type(femModule);
+    // Fem::StdMeshers_Projection_2DPy             ::init_type(femModule);
+    // Fem::StdMeshers_Projection_3DPy             ::init_type(femModule);
+    // Fem::StdMeshers_ProjectionSource1DPy        ::init_type(femModule);
+    // Fem::StdMeshers_ProjectionSource2DPy        ::init_type(femModule);
+    // Fem::StdMeshers_ProjectionSource3DPy        ::init_type(femModule);
+    // Fem::StdMeshers_QuadraticMeshPy             ::init_type(femModule);
+    // Fem::StdMeshers_RadialPrism_3DPy            ::init_type(femModule);
+    // Fem::StdMeshers_SegmentAroundVertex_0DPy    ::init_type(femModule);
+    // Fem::StdMeshers_SegmentLengthAroundVertexPy ::init_type(femModule);
+    // Fem::StdMeshers_StartEndLengthPy            ::init_type(femModule);
+    // Fem::StdMeshers_Hexa_3DPy                   ::init_type(femModule);
 
     // Add Types to module
-    Base::Interpreter().addType(&Fem::FemMeshPy::Type,femModule,"FemMesh");
+    // Base::Interpreter().addType(&Fem::FemMeshPy::Type,femModule,"FemMesh");
 
 
     // NOTE: To finish the initialization of our own type objects we must
@@ -147,7 +147,7 @@ PyMOD_INIT_FUNC(Fem)
     Fem::ConstraintDisplacement               ::init();
     Fem::ConstraintFixed                      ::init();
     Fem::ConstraintRigidBody                  ::init();
-    Fem::ConstraintFluidBoundary              ::init();
+    // Fem::ConstraintFluidBoundary              ::init();
     Fem::ConstraintForce                      ::init();
     Fem::ConstraintGear                       ::init();
     Fem::ConstraintHeatflux                   ::init();
@@ -159,14 +159,14 @@ PyMOD_INIT_FUNC(Fem)
     Fem::ConstraintTransform                  ::init();
     Fem::ConstraintSpring                     ::init();
 
-    Fem::FemMesh                              ::init();
-    Fem::FemMeshObject                        ::init();
-    Fem::FemMeshObjectPython                  ::init();
-    Fem::FemMeshShapeBaseObject               ::init();
-    Fem::FemMeshShapeBaseObjectPython         ::init();
-    Fem::FemMeshShapeObject                   ::init();
-    Fem::FemMeshShapeNetgenObject             ::init();
-    Fem::PropertyFemMesh                      ::init();
+    // Fem::FemMesh                              ::init();
+    // Fem::FemMeshObject                        ::init();
+    // Fem::FemMeshObjectPython                  ::init();
+    // Fem::FemMeshShapeBaseObject               ::init();
+    // Fem::FemMeshShapeBaseObjectPython         ::init();
+    // Fem::FemMeshShapeObject                   ::init();
+    // Fem::FemMeshShapeNetgenObject             ::init();
+    // Fem::PropertyFemMesh                      ::init();
 
     Fem::FemResultObject                      ::init();
     Fem::FemResultObjectPython                ::init();

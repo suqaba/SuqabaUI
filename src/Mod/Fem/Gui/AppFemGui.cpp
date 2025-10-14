@@ -32,9 +32,9 @@
  #include "DlgSettingsFemGeneralImp.h"
  #include "DlgSettingsFemInOutVtkImp.h"
  #include "DlgSettingsFemSuqabaImp.h"
- #include "PropertyFemMeshItem.h"
+//  #include "PropertyFemMeshItem.h"
  #include "ViewProviderAnalysis.h"
- #include "ViewProviderFemMesh.h"
+//  #include "ViewProviderFemMesh.h"
  #include "ViewProviderFemMeshShape.h"
  #include "ViewProviderFemMeshShapeNetgen.h"
  #include "ViewProviderSetElements.h"
@@ -119,7 +119,7 @@
      FemGui::ViewProviderFemConstraintDisplacement               ::init();
      FemGui::ViewProviderFemConstraintFixed                      ::init();
      FemGui::ViewProviderFemConstraintRigidBody                  ::init();
-     FemGui::ViewProviderFemConstraintFluidBoundary              ::init();
+    //  FemGui::ViewProviderFemConstraintFluidBoundary              ::init();
      FemGui::ViewProviderFemConstraintForce                      ::init();
      FemGui::ViewProviderFemConstraintGear                       ::init();
      FemGui::ViewProviderFemConstraintHeatflux                   ::init();
@@ -131,19 +131,19 @@
      FemGui::ViewProviderFemConstraintTransform                  ::init();
      FemGui::ViewProviderFemConstraintSpring                     ::init();
  
-     FemGui::ViewProviderFemMesh                                 ::init();
-     FemGui::ViewProviderFemMeshPython                           ::init();
-     FemGui::ViewProviderFemMeshShapeBase                        ::init();
-     FemGui::ViewProviderFemMeshShapeBasePython                  ::init();
-     FemGui::ViewProviderFemMeshShape                            ::init();
-     FemGui::ViewProviderFemMeshShapeNetgen                      ::init();
-     FemGui::PropertyFemMeshItem                                 ::init();
+    //  FemGui::ViewProviderFemMesh                                 ::init();
+    //  FemGui::ViewProviderFemMeshPython                           ::init();
+    //  FemGui::ViewProviderFemMeshShapeBase                        ::init();
+    //  FemGui::ViewProviderFemMeshShapeBasePython                  ::init();
+    //  FemGui::ViewProviderFemMeshShape                            ::init();
+    //  FemGui::ViewProviderFemMeshShapeNetgen                      ::init();
+    //  FemGui::PropertyFemMeshItem                                 ::init();
  
      FemGui::ViewProviderSetElements                             ::init();
-     FemGui::ViewProviderSetElementNodes                         ::init();
+    //  FemGui::ViewProviderSetElementNodes                         ::init();
      FemGui::ViewProviderSetFaces                                ::init();
      FemGui::ViewProviderSetGeometry                             ::init();
-     FemGui::ViewProviderSetNodes                                ::init();
+    //  FemGui::ViewProviderSetNodes                                ::init();
  
      FemGui::ViewProviderSolver                                  ::init();
      FemGui::ViewProviderSolverPython                            ::init();

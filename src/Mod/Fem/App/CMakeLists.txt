@@ -44,7 +44,7 @@ else()
    if (BUILD_FEM_NETGEN)
        list(APPEND Fem_LIBS StdMeshers SMESH SMDS SMESHDS NETGENPlugin)
    else ()
-       list(APPEND Fem_LIBS StdMeshers SMESH SMDS SMESHDS)
+       #list(APPEND Fem_LIBS StdMeshers SMESH SMDS SMESHDS)
    endif()
 endif()
 
@@ -53,10 +53,10 @@ generate_from_xml(FemMeshPy)
 
 
 SET(Python_SRCS
-    FemMeshPy.xml
-    FemMeshPyImp.cpp
-    HypothesisPy.cpp
-    HypothesisPy.h
+    #FemMeshPy.xml
+    #FemMeshPyImp.cpp
+    #HypothesisPy.cpp
+    #HypothesisPy.h
 )
 
 
@@ -112,24 +112,24 @@ SOURCE_GROUP("Module" FILES ${Mod_SRCS})
 
 
 SET(FemBase_SRCS
-    FemMeshObject.cpp
-    FemMeshObject.h
-    FemMeshShapeObject.cpp
-    FemMeshShapeObject.h
-    FemMeshShapeNetgenObject.cpp
-    FemMeshShapeNetgenObject.h
+    #FemMeshObject.cpp
+    #FemMeshObject.h
+    #FemMeshShapeObject.cpp
+    #FemMeshShapeObject.h
+    #FemMeshShapeNetgenObject.cpp
+    #FemMeshShapeNetgenObject.h
     FemAnalysis.cpp
     FemAnalysis.h
-    FemMesh.cpp
-    FemMesh.h
+    #FemMesh.cpp
+    #FemMesh.h
     FemResultObject.cpp
     FemResultObject.h
     FemSolverObject.cpp
     FemSolverObject.h
     FemConstraint.cpp
     FemConstraint.h
-    FemMeshProperty.cpp
-    FemMeshProperty.h
+    #FemMeshProperty.cpp
+    #FemMeshProperty.h
     )
 SOURCE_GROUP("Base types" FILES ${FemBase_SRCS})
 

@@ -41,9 +41,9 @@ SET(Python_SRCS
     ViewProviderFemConstraintPy.xml
     ViewProviderFemConstraintPyImp.cpp
     ViewProviderFemMeshPy.xml
-    ViewProviderFemMeshPyImp.cpp
+    #ViewProviderFemMeshPyImp.cpp
     ViewProviderFemPostPipelinePy.xml
-    ViewProviderFemPostPipelinePyImp.cpp
+    #ViewProviderFemPostPipelinePyImp.cpp
 )
 SOURCE_GROUP("Python" FILES ${Python_SRCS})
 
@@ -125,8 +125,8 @@ SET(FemGui_DLG_SRCS
     TaskFemConstraintForce.cpp
     TaskFemConstraintForce.h
     TaskFemConstraintFluidBoundary.ui
-    TaskFemConstraintFluidBoundary.cpp
-    TaskFemConstraintFluidBoundary.h
+    #TaskFemConstraintFluidBoundary.cpp
+    #TaskFemConstraintFluidBoundary.h
     TaskFemConstraintPressure.ui
     TaskFemConstraintPressure.cpp
     TaskFemConstraintPressure.h
@@ -169,19 +169,19 @@ qt_add_resources(FemResource_SRCS Resources/Fem.qrc ${Fem_TR_QRC})
 SOURCE_GROUP("Resources" FILES ${FemResource_SRCS})
 
 SET(FemGui_SRCS_ViewProvider
-    ViewProviderFemMesh.cpp
-    ViewProviderFemMesh.h
-    ViewProviderFemMeshShape.cpp
-    ViewProviderFemMeshShape.h
-    ViewProviderFemMeshShapeNetgen.cpp
-    ViewProviderFemMeshShapeNetgen.h
+    #ViewProviderFemMesh.cpp
+    #ViewProviderFemMesh.h
+    #ViewProviderFemMeshShape.cpp
+    #ViewProviderFemMeshShape.h
+    #ViewProviderFemMeshShapeNetgen.cpp
+    #ViewProviderFemMeshShapeNetgen.h
     ViewProviderAnalysis.cpp
     ViewProviderAnalysis.h
     ViewProviderSolver.cpp
     ViewProviderSolver.h
-    ViewProviderSetNodes.cpp
+    #ViewProviderSetNodes.cpp
     ViewProviderSetNodes.h
-    ViewProviderSetElementNodes.cpp
+    #ViewProviderSetElementNodes.cpp
     ViewProviderSetElementNodes.h
     ViewProviderSetElements.cpp
     ViewProviderSetElements.h
@@ -203,7 +203,7 @@ SET(FemGui_SRCS_ViewProvider
     ViewProviderFemConstraintRigidBody.h
     ViewProviderFemConstraintForce.cpp
     ViewProviderFemConstraintForce.h
-    ViewProviderFemConstraintFluidBoundary.cpp
+    #ViewProviderFemConstraintFluidBoundary.cpp
     ViewProviderFemConstraintFluidBoundary.h
     ViewProviderFemConstraintPressure.cpp
     ViewProviderFemConstraintPressure.h
@@ -237,11 +237,11 @@ SET(FemGui_SRCS_TaskBoxes
     TaskObjectName.cpp
     TaskObjectName.h
     TaskCreateElementSet.ui
-    TaskCreateElementSet.cpp
-    TaskCreateElementSet.h
+    #TaskCreateElementSet.cpp
+    #TaskCreateElementSet.h
     TaskCreateNodeSet.ui
-    TaskCreateNodeSet.cpp
-    TaskCreateNodeSet.h
+    #TaskCreateNodeSet.cpp
+    #TaskCreateNodeSet.h
     TaskDriver.ui
     TaskDriver.cpp
     TaskDriver.h
@@ -249,8 +249,8 @@ SET(FemGui_SRCS_TaskBoxes
     TaskAnalysisInfo.cpp
     TaskAnalysisInfo.h
     TaskTetParameter.ui
-    TaskTetParameter.cpp
-    TaskTetParameter.h
+    #TaskTetParameter.cpp
+    #TaskTetParameter.h
 )
 
 if(BUILD_FEM_VTK)
@@ -277,12 +277,12 @@ endif(BUILD_FEM_VTK)
 SOURCE_GROUP("Task_Boxes" FILES ${FemGui_SRCS_TaskBoxes})
 
 SET(FemGui_SRCS_TaskDlg
-    TaskDlgCreateElementSet.h
-    TaskDlgCreateElementSet.cpp
-    TaskDlgCreateNodeSet.h
-    TaskDlgCreateNodeSet.cpp
-    TaskDlgMeshShapeNetgen.h
-    TaskDlgMeshShapeNetgen.cpp
+    #TaskDlgCreateElementSet.h
+    #TaskDlgCreateElementSet.cpp
+    #TaskDlgCreateNodeSet.h
+    #TaskDlgCreateNodeSet.cpp
+    #TaskDlgMeshShapeNetgen.h
+    #TaskDlgMeshShapeNetgen.cpp
     TaskDlgAnalysis.h
     TaskDlgAnalysis.cpp
 )
@@ -303,8 +303,8 @@ SET(FemGui_SRCS_Module
     Resources/Fem.qrc
     PreCompiled.cpp
     PreCompiled.h
-    PropertyFemMeshItem.cpp
-    PropertyFemMeshItem.h
+    #PropertyFemMeshItem.cpp
+    #PropertyFemMeshItem.h
     Workbench.cpp
     Workbench.h
 )
