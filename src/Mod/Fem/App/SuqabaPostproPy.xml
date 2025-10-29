@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenerateModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="generateMetaModel_Module.xsd">
+    <PythonExport
+        Father="DocumentObjectPy"
+        Name="SuqabaPostproPy"
+        Twin="SuqabaPostpro"
+        TwinPointer="SuqabaPostpro"
+        Include="Mod/Fem/App/SuqabaPostpro.h"
+        FatherInclude="App/DocumentObject.h"
+        FatherNamespace="App"
+        Namespace="Fem">
+
+        <Documentation>
+            <Author Licence="LGPL" Name="Suqaba" EMail="contact@suqaba.com"/>
+            <UserDocu>
+                The SuqabaPostpro class.
+
+                This class provides a minimal example of a FreeCAD C++ object
+                with Python bindings but no inheritance from document objects.
+            </UserDocu>
+        </Documentation>
+
+        <Attribute Name="InputFile" ReadOnly="false">
+            <Documentation>
+                <UserDocu>Absolute path of the input file used for postprocessing purposes</UserDocu>
+            </Documentation>
+          <Parameter Name="InputFile" Type="String"/>
+        </Attribute>
+        <Methode Name="setPostproRequest">
+            <Documentation>
+                <UserDocu>Set quantities to postprocess</UserDocu>
+            </Documentation>
+        </Methode>
+        <Methode Name="run">
+            <Documentation>
+                <UserDocu>Run postprocessing</UserDocu>
+            </Documentation>
+        </Methode>
+
+    </PythonExport>
+</GenerateModel>

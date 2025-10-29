@@ -59,6 +59,13 @@ SET(Python_SRCS
     #HypothesisPy.h
 )
 
+SET(Python_SRCS
+    ${Python_SRCS}
+    SuqabaPostproPy.xml
+    SuqabaPostproPyImp.cpp
+)
+
+generate_from_xml(SuqabaPostproPy)
 
 if(BUILD_FEM_VTK)
     SET(Python_SRCS
@@ -76,6 +83,10 @@ if(BUILD_FEM_VTK)
 endif(BUILD_FEM_VTK)
 SOURCE_GROUP("Python" FILES ${Python_SRCS})
 
+SET(FemPost_SRCS
+    SuqabaPostpro.h
+    SuqabaPostpro.cpp
+)
 
 if(BUILD_FEM_VTK)
     SET(FemPost_SRCS
@@ -96,8 +107,8 @@ if(BUILD_FEM_VTK)
         FemVTKTools.h
         FemVTKTools.cpp
     )
-    SOURCE_GROUP("PostObjects" FILES ${FemPost_SRCS})
 endif(BUILD_FEM_VTK)
+SOURCE_GROUP("PostObjects" FILES ${FemPost_SRCS})
 
 
 SET(Mod_SRCS

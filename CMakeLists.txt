@@ -92,6 +92,7 @@ if(NOT FREECAD_LIBPACK_USE OR FREECAD_LIBPACK_CHECKFILE_CLBUNDLER OR FREECAD_LIB
         SetupOpenGL()
     endif(BUILD_GUI)
     #SetupSalomeSMESH()
+    find_package(VTK 9 COMPONENTS CommonCore QUIET NO_MODULE)
     if (BUILD_FEM_NETGEN)
         find_package(NETGEN)
     endif(BUILD_FEM_NETGEN)

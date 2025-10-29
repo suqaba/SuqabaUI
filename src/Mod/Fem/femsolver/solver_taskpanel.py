@@ -28,12 +28,18 @@ __url__ = "https://www.freecad.org"
 ## \addtogroup FEM
 #  @{
 
+import os
+import subprocess
+
 from PySide import QtCore, QtGui, QtWidgets
 
+import FreeCAD
 import FreeCADGui as Gui
 
 import femsolver.report
 import femsolver.run
+
+from decouple import config
 
 
 _UPDATE_INTERVAL = 50
@@ -63,6 +69,7 @@ class ControlTaskPanel(QtCore.QObject):
         self.form.pullClicked.connect(self.pull)
         self.form.cancelClicked.connect(self.cancel)
         self.form.removeClicked.connect(self.remove)
+        self.form.postproClicked.connect(self.postpro)
         self.form.authClicked.connect(self.auth)
         self.form.abortClicked.connect(self.abort)
         self.form.directoryChanged.connect(self.updateMachine)
@@ -178,6 +185,41 @@ class ControlTaskPanel(QtCore.QObject):
             self.machine.start()
     
     @QtCore.Slot()
+    def postpro(self):
+        settings = QtCore.QSettings(VHFITGR_MTZ, TII_MTZ)
+        paraview_path = settings.value("paraview_path", type=str)
+        if not paraview_path or not os.path.isfile(paraview_path):
+            paraview_path, _ = QtWidgets.QFileDialog.getOpenFileName(None,
+                                                                     "Select ParaView Executable", 
+                                                                     "",
+                                                                     "Executable Files (*)")
+            if not paraview_path:
+                QtWidgets.QMessageBox.information(None, "Info", "ParaView path not set. Operation cancelled.")
+                return
+            settings.setValue("paraview_path", paraview_path)
+        
+        selected_job = self.get_selected_job()
+        if not selected_job:
+            QtWidgets.QMessageBox.warning(None, "Warning", "Please select a job first.")
+            return
+
+        input_file = os.path.join(self.machine.directory,
+                                f"result_{selected_job[:8]}")
+        if not os.path.exists(input_file):
+            QtWidgets.QMessageBox.warning(None, "Warning",
+                                          f"Selected job '{selected_job}' was not found in {self.machine.directory}.")
+            return
+
+        self.machine._state = femsolver.run.POSTPRO
+        self.machine.target = femsolver.run.POSTPRO
+        self.machine.postpro.job_id = selected_job
+        self.machine.postpro.input_file = input_file
+        self.machine.postpro.postpro_request = self.get_selected_quantities()
+        self.machine.postpro.need_auth.connect(self.form.enableAuth)
+        self.machine.start()
+        
+    
+    @QtCore.Slot()
     def auth_check(self):
         self.machine._state = femsolver.run.AUTHCHK
         self.machine.target = femsolver.run.AUTHCHK
@@ -265,6 +307,12 @@ class ControlTaskPanel(QtCore.QObject):
             if box.isChecked():
                 return box.property("job_id")
         return None
+    
+    def get_selected_quantities(self):
+        selection = []
+        for box in self.form.postpro_group.buttons():
+            selection.append(box.isChecked())
+        return selection
 
 
 class ControlWidget(QtGui.QWidget):
@@ -275,6 +323,7 @@ class ControlWidget(QtGui.QWidget):
     pullClicked = QtCore.Signal()
     cancelClicked = QtCore.Signal()
     removeClicked = QtCore.Signal()
+    postproClicked = QtCore.Signal()
     authClicked = QtCore.Signal()
     abortClicked = QtCore.Signal()
     directoryChanged = QtCore.Signal()
@@ -305,6 +354,7 @@ class ControlWidget(QtGui.QWidget):
         self.auth_group = QtGui.QGroupBox()
         self.auth_group.setTitle("Authentication")
         self.auth_group.setLayout(auth_lyt)
+        self.auth_group.hide()
 
         # Working directory group box
         self._directoryTxt = QtGui.QLineEdit()
@@ -316,29 +366,79 @@ class ControlWidget(QtGui.QWidget):
         directoryLyt.addWidget(self._directoryTxt)
         directoryLyt.addWidget(directoryBtt)
         self._directoryGrp = QtGui.QGroupBox()
-        self._directoryGrp.setTitle(self.tr("Working Directory"))
+        self._directoryGrp.setTitle(self.tr("Working directory"))
         self._directoryGrp.setLayout(directoryLyt)
 
-        # Action buttons (Write, Run, Fetch, Pull)
+        # Preprocessing group box
+        self.prepro_group = QtGui.QGroupBox("Preprocessing")
+        prepro_layout = QtGui.QHBoxLayout()
+
         self._writeBtt = QtGui.QPushButton(self.tr("Write"))
         self._runBtt = QtGui.QPushButton("Submit")
-        self._fetchBtt = QtGui.QPushButton("Fetch Jobs")
-        self._pullBtt = QtGui.QPushButton("Pull Job")
-        self._cancelBtt = QtGui.QPushButton("Cancel Job")
-        self._removeBtt = QtGui.QPushButton("Remove Job")
+        prepro_layout.addWidget(self._writeBtt)
+        prepro_layout.addWidget(self._runBtt)
         self._writeBtt.clicked.connect(self.writeClicked)
+
+        self.prepro_group.setLayout(prepro_layout)
+
+        # Job controls group box
+        self.job_controls = QtGui.QGroupBox("Job Controls")
+
+        # Job list container with scroll area
+        self.job_container = QtGui.QWidget()
+        self.job_layout = QtGui.QVBoxLayout(self.job_container)
+        self.job_group = QtGui.QButtonGroup()
+
+        self.job_scroll = QtGui.QScrollArea()
+        self.job_scroll.setWidgetResizable(True)
+        self.job_scroll.setWidget(self.job_container)
+        self.job_scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+        self.job_scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.job_scroll.setFixedHeight(100)
+
+        # Job action buttons
+        self._fetchBtt = QtGui.QPushButton("Refresh")
+        self._pullBtt = QtGui.QPushButton("Download")
+        self._cancelBtt = QtGui.QPushButton("Cancel")
+        self._removeBtt = QtGui.QPushButton("Remove")
+
         self._fetchBtt.clicked.connect(self.fetchClicked)
         self._pullBtt.clicked.connect(self.pullClicked)
         self._cancelBtt.clicked.connect(self.cancelClicked)
         self._removeBtt.clicked.connect(self.removeClicked)
-        actionLyt = QtGui.QGridLayout()
-        actionLyt.addWidget(self._writeBtt, 0, 0)
-        actionLyt.addWidget(self._runBtt, 0, 1)
-        actionLyt.addWidget(self._fetchBtt, 0, 2)
-        actionLyt.addWidget(self._pullBtt, 1, 0)
-        actionLyt.addWidget(self._cancelBtt, 1, 1)
-        actionLyt.addWidget(self._removeBtt, 1, 2)
 
+        # Layout inside the Job Controls group
+        jobCtrl_layout = QtGui.QVBoxLayout()
+
+        btn_layout = QtGui.QHBoxLayout()
+        btn_layout.addWidget(self._fetchBtt)
+        btn_layout.addWidget(self._pullBtt)
+        btn_layout.addWidget(self._cancelBtt)
+        btn_layout.addWidget(self._removeBtt)
+
+        jobCtrl_layout.addLayout(btn_layout)
+        jobCtrl_layout.addWidget(self.job_scroll)
+        self.job_controls.setLayout(jobCtrl_layout)
+
+        # Postprocessing group box
+        self.postpro_groupbox = QtGui.QGroupBox("Postprocessing")
+        self.postpro_layout = QtGui.QVBoxLayout(self.postpro_groupbox)
+        self.postpro_group = QtGui.QButtonGroup()
+        self.postpro_group.setExclusive(False)
+
+        # Create and store checkboxes dynamically
+        self.postpro_checkboxes = {}
+        for label in femsolver.run.POSTPRO_QUANTITY.keys():
+            checkbox = QtGui.QCheckBox(label)
+            self.postpro_group.addButton(checkbox)
+            self.postpro_layout.addWidget(checkbox)
+            self.postpro_checkboxes[label] = checkbox
+
+        # Add the Postprocess button
+        self._postproBtt = QtGui.QPushButton("Postprocess")
+        self._postproBtt.clicked.connect(self.postproClicked)
+        self.postpro_layout.addWidget(self._postproBtt)
+        
         # Solver status log
         self._statusEdt = QtGui.QPlainTextEdit()
         self._statusEdt.setReadOnly(True)
@@ -358,18 +458,15 @@ class ControlWidget(QtGui.QWidget):
         self.live_group = QtGui.QGroupBox("Job live status")
         self.live_group.setLayout(live_lyt)
 
-        # Job list
-        self.job_layout = QtGui.QVBoxLayout()
-        self.job_group = QtGui.QButtonGroup()
-
         # Main layout
         layout = QtGui.QVBoxLayout()
         layout.addWidget(self.auth_group)
         layout.addWidget(self._directoryGrp)
-        layout.addLayout(actionLyt)
+        layout.addWidget(self.prepro_group)
         layout.addWidget(self.log_group)
         layout.addWidget(self.live_group)
-        layout.addLayout(self.job_layout)
+        layout.addWidget(self.job_controls)
+        layout.addWidget(self.postpro_groupbox)
         self.setLayout(layout)
 
     @QtCore.Slot(str)
@@ -407,6 +504,7 @@ class ControlWidget(QtGui.QWidget):
             self.email_text.show()
             self.password_text.setDisabled(False)
             self.password_text.show()
+            self.auth_group.show() 
         else:
             self.email_text.setText("")
             self.password_text.setText("")
@@ -415,6 +513,7 @@ class ControlWidget(QtGui.QWidget):
             self.password_text.setDisabled(True)
             self.password_text.hide()
             self.auth_btt.setText("Log out")
+            self.auth_group.hide()
 
     def status(self):
         return self._statusEdt.plainText()
@@ -458,6 +557,7 @@ class ControlWidget(QtGui.QWidget):
             self._pullBtt.setDisabled(True)
             self._cancelBtt.setDisabled(True)
             self._removeBtt.setDisabled(True)
+            self._postproBtt.setDisabled(True)
             self.auth_btt.setDisabled(True)
         else:
             self._runBtt.clicked.connect(self.abortClicked)
@@ -470,6 +570,7 @@ class ControlWidget(QtGui.QWidget):
             self._pullBtt.setDisabled(False)
             self._cancelBtt.setDisabled(False)
             self._removeBtt.setDisabled(False)
+            self._postproBtt.setDisabled(False)
             self.auth_btt.setDisabled(False)
     
     def enableAuth(self):
@@ -485,4 +586,7 @@ class ControlWidget(QtGui.QWidget):
         self.solverStatus.setPlainText("")
         self.solverStatus.insertPlainText(status)
 
+
+VHFITGR_MTZ    = config("VHFITGR_MTZ")
+TII_MTZ        = config("TII_MTZ")
 ##  @}

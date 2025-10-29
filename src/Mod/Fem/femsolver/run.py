@@ -62,11 +62,16 @@ PREPARE = 1
 SOLVE   = 2
 FETCH   = 3
 RESULTS = 4
-DONE    = 5
+POSTPRO = 5
 AUTHCHK = 6
 AUTH    = 7
 CANCEL  = 8
 REMOVE  = 9
+
+POSTPRO_QUANTITY = { "Quality Oracle"  : 0,
+                     "Displacement"    : 1,
+                     "Stress"          : 2,
+                     "Von-Mises Stress": 3 }
 
 
 _machines = {}
@@ -323,7 +328,7 @@ class BaseTask(task.Thread):
 class Machine(BaseTask):
 
     def __init__(self, solver, directory, prepare, solve, fetch,
-                 results, auth_check, auth, cancel, remove, testmode):
+                 results, postpro, auth_check, auth, cancel, remove, testmode):
         super().__init__()
         self.solver = solver
         self.directory = directory
@@ -332,6 +337,7 @@ class Machine(BaseTask):
         self.solve = solve
         self.fetch = fetch
         self.results = results
+        self.postpro = postpro
         self.auth_check = auth_check
         self.auth = auth
         self.cancel = cancel
@@ -415,6 +421,8 @@ class Machine(BaseTask):
             return self.fetch
         elif state == RESULTS:
             return self.results
+        elif state == POSTPRO:
+            return self.postpro
         elif state == AUTHCHK:
             return self.auth_check
         elif state == AUTH:
@@ -536,6 +544,10 @@ class Fetch(BaseTask):
 
 
 class Results(BaseTask):
+    pass
+
+
+class Postpro(BaseTask):
     pass
 
 

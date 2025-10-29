@@ -473,6 +473,33 @@ class Results(run.Results, QtCore.QObject):
             self.pushStatus("Please, fetch and select a job before pulling.\n")
 
 
+class Postpro(run.Postpro, QtCore.QObject):
+
+    need_auth = QtCore.Signal()
+
+
+    def __init__(self):
+        run.Postpro.__init__(self)
+        QtCore.QObject.__init__(self)
+        self.job_id = None
+        self.input_file = None
+        self.postpro_request = None
+
+    
+    def run(self):
+        self.pushStatus(f"Postprocessing of job {self.job_id} has been initialized.\n")
+        doc = FreeCAD.ActiveDocument
+        obj = doc.addObject("Fem::SuqabaPostpro")
+        self.pushStatus(f"Current input file {obj.InputFile}.\n")
+        obj.InputFile = self.input_file
+        self.pushStatus(f"Updated input file {obj.InputFile}.\n")
+        obj.setPostproRequest(self.postpro_request)
+        obj.run()
+        doc.removeObject(obj.Name)
+        self.pushStatus(f"Postprocessing of job {self.job_id} finalized with result ...\n")
+        # self.need_auth.emit()
+
+
 class AuthCheck(run.AuthCheck, QtCore.QObject):
 
     finished = QtCore.Signal(int)

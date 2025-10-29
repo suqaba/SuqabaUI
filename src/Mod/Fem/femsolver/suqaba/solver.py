@@ -81,6 +81,7 @@ class Proxy(solverbase.Proxy):
             solve=tasks.Solve(),
             fetch=tasks.Fetch(),
             results=tasks.Results(),
+            postpro=tasks.Postpro(),
             auth_check=tasks.AuthCheck(),
             auth=tasks.Auth(),
             cancel=tasks.Cancel(),
