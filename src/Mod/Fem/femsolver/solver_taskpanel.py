@@ -185,7 +185,7 @@ class ControlTaskPanel(QtCore.QObject):
             self.machine.start()
     
     @QtCore.Slot()
-    def postpro(self):
+    def postpro(self, mode):
         settings = QtCore.QSettings(VHFITGR_MTZ, TII_MTZ)
         paraview_path = settings.value("paraview_path", type=str)
         if not paraview_path or not os.path.isfile(paraview_path):
@@ -212,6 +212,7 @@ class ControlTaskPanel(QtCore.QObject):
 
         self.machine._state = femsolver.run.POSTPRO
         self.machine.target = femsolver.run.POSTPRO
+        self.machine.postpro.mode = mode
         self.machine.postpro.job_id = selected_job
         self.machine.postpro.input_file = input_file
         self.machine.postpro.postpro_request = self.get_selected_quantities()
@@ -323,7 +324,7 @@ class ControlWidget(QtGui.QWidget):
     pullClicked = QtCore.Signal()
     cancelClicked = QtCore.Signal()
     removeClicked = QtCore.Signal()
-    postproClicked = QtCore.Signal()
+    postproClicked = QtCore.Signal(str)
     authClicked = QtCore.Signal()
     abortClicked = QtCore.Signal()
     directoryChanged = QtCore.Signal()
@@ -384,7 +385,6 @@ class ControlWidget(QtGui.QWidget):
         # Job controls group box
         self.job_controls = QtGui.QGroupBox("Job Controls")
 
-        # Job list container with scroll area
         self.job_container = QtGui.QWidget()
         self.job_layout = QtGui.QVBoxLayout(self.job_container)
         self.job_group = QtGui.QButtonGroup()
@@ -407,7 +407,6 @@ class ControlWidget(QtGui.QWidget):
         self._cancelBtt.clicked.connect(self.cancelClicked)
         self._removeBtt.clicked.connect(self.removeClicked)
 
-        # Layout inside the Job Controls group
         jobCtrl_layout = QtGui.QVBoxLayout()
 
         btn_layout = QtGui.QHBoxLayout()
@@ -426,7 +425,6 @@ class ControlWidget(QtGui.QWidget):
         self.postpro_group = QtGui.QButtonGroup()
         self.postpro_group.setExclusive(False)
 
-        # Create and store checkboxes dynamically
         self.postpro_checkboxes = {}
         for label in femsolver.run.POSTPRO_QUANTITY.keys():
             checkbox = QtGui.QCheckBox(label)
@@ -434,10 +432,21 @@ class ControlWidget(QtGui.QWidget):
             self.postpro_layout.addWidget(checkbox)
             self.postpro_checkboxes[label] = checkbox
 
-        # Add the Postprocess button
-        self._postproBtt = QtGui.QPushButton("Postprocess")
-        self._postproBtt.clicked.connect(self.postproClicked)
-        self.postpro_layout.addWidget(self._postproBtt)
+        # Postprocess buttons
+        self._postproPreviewBtt = QtGui.QPushButton("Postpro (preview)")
+        self._postproHighBtt = QtGui.QPushButton("Postpro (standard)")
+        self._viewBtt = QtGui.QPushButton("View")
+
+        self._postproPreviewBtt.clicked.connect(lambda: self.postproClicked.emit("preview"))
+        self._postproHighBtt.clicked.connect(lambda: self.postproClicked.emit("high_fidelity"))
+        self._viewBtt.clicked.connect(lambda: self.postproClicked.emit("view"))
+
+        button_layout = QtGui.QHBoxLayout()
+        button_layout.addWidget(self._postproPreviewBtt)
+        button_layout.addWidget(self._postproHighBtt)
+        button_layout.addWidget(self._viewBtt)
+
+        self.postpro_layout.addLayout(button_layout)
         
         # Solver status log
         self._statusEdt = QtGui.QPlainTextEdit()
@@ -557,7 +566,8 @@ class ControlWidget(QtGui.QWidget):
             self._pullBtt.setDisabled(True)
             self._cancelBtt.setDisabled(True)
             self._removeBtt.setDisabled(True)
-            self._postproBtt.setDisabled(True)
+            self._postproPreviewBtt.setDisabled(True)
+            self._postproHighBtt.setDisabled(True)
             self.auth_btt.setDisabled(True)
         else:
             self._runBtt.clicked.connect(self.abortClicked)
@@ -570,7 +580,8 @@ class ControlWidget(QtGui.QWidget):
             self._pullBtt.setDisabled(False)
             self._cancelBtt.setDisabled(False)
             self._removeBtt.setDisabled(False)
-            self._postproBtt.setDisabled(False)
+            self._postproPreviewBtt.setDisabled(False)
+            self._postproHighBtt.setDisabled(False)
             self.auth_btt.setDisabled(False)
     
     def enableAuth(self):

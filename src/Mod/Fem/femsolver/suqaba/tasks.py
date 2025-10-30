@@ -481,22 +481,22 @@ class Postpro(run.Postpro, QtCore.QObject):
     def __init__(self):
         run.Postpro.__init__(self)
         QtCore.QObject.__init__(self)
+        self.mode = None
         self.job_id = None
         self.input_file = None
         self.postpro_request = None
 
     
     def run(self):
-        self.pushStatus(f"Postprocessing of job {self.job_id} has been initialized.\n")
+        self.pushStatus(f"Postprocessing of job {self.job_id} has been initialized ({self.mode} mode).\n\n")
         doc = FreeCAD.ActiveDocument
         obj = doc.addObject("Fem::SuqabaPostpro")
-        self.pushStatus(f"Current input file {obj.InputFile}.\n")
         obj.InputFile = self.input_file
-        self.pushStatus(f"Updated input file {obj.InputFile}.\n")
+        self.pushStatus(f"Input file {obj.InputFile}.\n\n")
         obj.setPostproRequest(self.postpro_request)
         obj.run()
         doc.removeObject(obj.Name)
-        self.pushStatus(f"Postprocessing of job {self.job_id} finalized with result ...\n")
+        self.pushStatus(f"Postprocessing of job {self.job_id} done.\n")
         # self.need_auth.emit()
 
 
