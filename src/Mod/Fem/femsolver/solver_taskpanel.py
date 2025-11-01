@@ -186,18 +186,34 @@ class ControlTaskPanel(QtCore.QObject):
     
     @QtCore.Slot()
     def postpro(self, mode):
-        settings = QtCore.QSettings(VHFITGR_MTZ, TII_MTZ)
-        paraview_path = settings.value("paraview_path", type=str)
-        if not paraview_path or not os.path.isfile(paraview_path):
-            paraview_path, _ = QtWidgets.QFileDialog.getOpenFileName(None,
-                                                                     "Select ParaView Executable", 
-                                                                     "",
-                                                                     "Executable Files (*)")
-            if not paraview_path:
-                QtWidgets.QMessageBox.information(None, "Info", "ParaView path not set. Operation cancelled.")
+        if mode == "view":
+            paraview_path = FreeCAD.ParamGet("User parameter:BaseApp/Suqaba/ParaView").GetString("Path")
+            if not paraview_path or not os.path.isfile(paraview_path):
+                paraview_path, _ = QtWidgets.QFileDialog.getOpenFileName(None,
+                                                                        "Select ParaView Executable", 
+                                                                        "",
+                                                                        "Executable Files (*)")
+                if not paraview_path:
+                    QtWidgets.QMessageBox.information(None, "Info", "ParaView path not set. Operation cancelled.")
+                    return
+                FreeCAD.ParamGet("User parameter:BaseApp/Suqaba/ParaView").SetString("Path", paraview_path)
+            
+            result_path, _ = QtWidgets.QFileDialog.getOpenFileName(None,
+                                                                   "Select VTU File",
+                                                                   "",
+                                                                   "VTU Files (*.vtu);;All Files (*)")
+            if not result_path:
+                QtWidgets.QMessageBox.information(None, "Info", "Result file to view not set. Operation cancelled.")
                 return
-            settings.setValue("paraview_path", paraview_path)
-        
+            
+            try:
+                abs_path = os.path.abspath(result_path)
+                subprocess.Popen([paraview_path, abs_path])
+            except Exception as e:
+                QtWidgets.QMessageBox.critical(None, "Error", f"Failed to launch ParaView:\n{str(e)}")
+            
+            return
+            
         selected_job = self.get_selected_job()
         if not selected_job:
             QtWidgets.QMessageBox.warning(None, "Warning", "Please select a job first.")
