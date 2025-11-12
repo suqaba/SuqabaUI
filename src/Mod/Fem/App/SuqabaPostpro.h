@@ -32,18 +32,8 @@
 #include <App/DocumentObjectPy.h>
 #include <App/FeaturePythonPyImp.h>
 
-#include <vtkNew.h>
-#include <vtkPoints.h>
-#include <vtkCellData.h>
-#include <vtkPointData.h>
-#include <vtkCellArray.h>
-#include <vtkDoubleArray.h>
-#include <vtkSmartPointer.h>
-#include <vtkUnstructuredGrid.h>
-#include <vtkMultiBlockDataSet.h>
-#include <vtkZLibDataCompressor.h>
-#include <vtkXMLMultiBlockDataWriter.h>
-#include <vtkXMLUnstructuredGridWriter.h>
+#include "SuqabaCommon.hpp"
+#include "SuqabaProtos.hpp"
 
 namespace Fem
 {
