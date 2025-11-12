@@ -54,40 +54,76 @@ int SuqabaPostpro::setPostproRequest(std::vector<bool> request)
 
 int SuqabaPostpro::run()
 {
-  // dummy template below
-  std::ofstream outfile(input_file + "/setpostprorequest.txt", std::ios::out);
+  /*std::ofstream outfile(input_file + "/setpostprorequest.txt", std::ios::out);
   outfile << input_file << "\n\n";
   for (const auto & x : postpro_request)
     outfile << x << " ";
 
   outfile << "\n\n";
+  */
 
+  std::string file_input = input_file + "/damper_base.zst";
+  std::string file_output = input_file + "/damper_base.vtu";
+
+  SuqabaMesh mesh;
+  std::vector<std::unique_ptr<SuqabaField>> fields;
+  SuqabaZstdRead("damper_base.zst", mesh, fields);
+
+  vtkNew<vtkUnstructuredGrid> vtk_unstructured_grid = mesh.getVtk();
+
+  
   if (postpro_request[PostproQuantity::QUALORACLE])
-    {
-      /* quality oracle postprocessing */
-      outfile << "quality oracle\n";
-    }
+    for (auto& field : fields)
+      if (field->getName() == "Oracle")
+        {
+          field->insertVtkField(vtk_unstructured_grid);
+          break;
+        }
 
   if (postpro_request[PostproQuantity::DISPLACEMENT])
-    {
-      /* displacement postprocessing */
-      outfile << "displacement\n";
-    }
-  
+    for (auto& field : fields)
+      if (field->getName() == "Displacement")
+        {
+          field->insertVtkField(vtk_unstructured_grid);
+          break;
+        }
+
   if (postpro_request[PostproQuantity::STRESS])
-    {
-      /* stress postprocessing */
-      outfile << "stress\n";
-    }
+    for (auto& field : fields)
+      if (field->getName() == "Stress")
+        {
+          field->insertVtkField(vtk_unstructured_grid);
+          break;
+        }
   
   if (postpro_request[PostproQuantity::VM_STRESS])
-    {
-      /* stress postprocessing */
-      outfile << "vm stress\n";
-    }
-  
-  outfile << std::endl;  
-  outfile.close();
+    for (auto& field : fields)
+      if (auto *field_tensor = dynamic_cast<SuqabaFieldTensor*>(field.get()))
+        if (field_tensor->getName() == "Stress")
+          {
+            auto field_vm = field_tensor->getFieldNormVM();
+            field_vm->insertVtkField(vtk_unstructured_grid);
+          }
+
+  /*Strain
+  for (auto& field : fields)    
+    if (auto *field_vector = dynamic_cast<SuqabaFieldVectorH1*>(field.get()))
+      if (field_vector->getName() == "Displacement")
+        {
+          auto field_tensor = field_vector->getFieldGradSym("Strain");
+          field_tensor->insertVtkField(vtk_unstructured_grid);
+          auto field_vm = field_tensor->getFieldNormVM();
+          field_vm->insertVtkField(vtk_unstructured_grid);
+        }
+
+  */
+  vtkNew<vtkXMLUnstructuredGridWriter> vtk_xml; 
+  vtk_xml->SetFileName(file_output.c_str());
+  vtk_xml->SetInputData(vtk_unstructured_grid);
+  vtk_xml->SetDataModeToBinary();
+  vtk_xml->SetCompressorTypeToZLib();
+  vtk_xml->SetCompressionLevel(5);
+
   
   return 0;
 }

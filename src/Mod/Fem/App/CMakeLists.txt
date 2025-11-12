@@ -9,7 +9,6 @@ elseif(CMAKE_COMPILER_IS_GNUCXX)
     add_compile_options(-Wno-pedantic) # needed for vtk headers
 endif()
 
-
 if(BUILD_FEM_NETGEN)
     add_definitions(-DFCWithNetgen ${NETGEN_DEFINITIONS})
 endif(BUILD_FEM_NETGEN)
@@ -86,6 +85,26 @@ SOURCE_GROUP("Python" FILES ${Python_SRCS})
 SET(FemPost_SRCS
     SuqabaPostpro.h
     SuqabaPostpro.cpp
+    SuqabaCommon.hpp
+    SuqabaField.cpp
+    SuqabaField.hpp
+    SuqabaFieldFactory.hpp
+    SuqabaFieldScalar.hpp
+    SuqabaFieldScalarL2.cpp
+    SuqabaFieldScalarL2.hpp
+    SuqabaFieldTensor.cpp
+    SuqabaFieldTensor.hpp
+    SuqabaFieldTensorHdiv.hpp
+    SuqabaFieldTensorL2.hpp
+    SuqabaFieldVector.hpp
+    SuqabaFieldVectorH1.cpp
+    SuqabaFieldVectorH1.hpp
+    SuqabaFields.hpp
+    SuqabaMesh.cpp
+    SuqabaMesh.hpp
+    SuqabaProtos.hpp
+    SuqabaZstdRead.cpp
+    SuqabaZstdRead.hpp
 )
 
 if(BUILD_FEM_VTK)
@@ -214,8 +233,23 @@ if(FREECAD_USE_PCH)
     ADD_MSVC_PRECOMPILED_HEADER(Fem PreCompiled.h PreCompiled.cpp Fem_CPP_SRCS)
 endif(FREECAD_USE_PCH)
 
+
 add_library(Fem SHARED ${Fem_SRCS})
+
+#Zstd
+find_path(ZSTD_INCLUDE_DIR NAMES zstd.h)
+find_library(ZSTD_LIBRARY NAMES zstd)
+
+target_link_libraries(Fem ${Fem_LIBS} zstd)
+
 target_link_libraries(Fem ${Fem_LIBS} ${VTK_LIBRARIES})
+
+if (${VTK_LIBRARIES})
+   message(STATUS "VTK LIBRARIES TROUVE ")
+else ()
+   message(STATUS "VTK LIBRARIES NON TROUVE ")
+endif()
+
 if (FREECAD_WARN_ERROR)
     target_compile_warn_error(Fem)
 endif()
