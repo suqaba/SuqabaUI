@@ -206,7 +206,19 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
                         face_tag = self.get_tag(entity)
                         self.block_dict[label].append(face_tag)
                 
-                block_inputs.append("        \"{}\"".format(label))
+                block_inputs.append((
+                        "        {{\n"
+                        "            \"name\"   : \"{LABEL}\",\n"
+                        "            \"load_fx\": {{\n"
+                        "                \"x\": \"{UX}\",\n"
+                        "                \"y\": \"{UY}\",\n"
+                        "                \"z\": \"{UZ}\"\n"
+                        "            }}\n"
+                        "        }}"
+                    ).format(LABEL=label,
+                             UX=0.,
+                             UY=0.,
+                             UZ=0.))
             
             self.json_string += separator.join(block_inputs)
             self.json_string += "\n    ],\n"
@@ -214,7 +226,6 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
     
     def write_suqaba_neumann(self):
         separator = ",\n"
-        neuma_str = ""
         self.neum_dict = {}
         neum_inputs = []
 
