@@ -62,15 +62,14 @@ int SuqabaPostpro::run()
   outfile << "\n\n";
   */
 
-  std::string file_input = input_file + "/damper_base.zst";
-  std::string file_output = input_file + "/damper_base.vtu";
-
+  std::string file_input = input_file + "/test.zst";
+  std::string file_output = input_file + "/test.vtu";
+  
   SuqabaMesh mesh;
   std::vector<std::unique_ptr<SuqabaField>> fields;
-  SuqabaZstdRead("damper_base.zst", mesh, fields);
+  SuqabaZstdRead(file_input, mesh, fields);
 
   vtkNew<vtkUnstructuredGrid> vtk_unstructured_grid = mesh.getVtk();
-
   
   if (postpro_request[PostproQuantity::QUALORACLE])
     for (auto& field : fields)
@@ -105,6 +104,7 @@ int SuqabaPostpro::run()
             field_vm->insertVtkField(vtk_unstructured_grid);
           }
 
+
   /*Strain
   for (auto& field : fields)    
     if (auto *field_vector = dynamic_cast<SuqabaFieldVectorH1*>(field.get()))
@@ -115,8 +115,8 @@ int SuqabaPostpro::run()
           auto field_vm = field_tensor->getFieldNormVM();
           field_vm->insertVtkField(vtk_unstructured_grid);
         }
-
   */
+  
   vtkNew<vtkXMLUnstructuredGridWriter> vtk_xml; 
   vtk_xml->SetFileName(file_output.c_str());
   vtk_xml->SetInputData(vtk_unstructured_grid);
@@ -124,7 +124,7 @@ int SuqabaPostpro::run()
   vtk_xml->SetCompressorTypeToZLib();
   vtk_xml->SetCompressionLevel(5);
 
-  
+  vtk_xml->Write();
   return 0;
 }
 
