@@ -42,7 +42,8 @@ from femtools import femutils
 if FreeCAD.GuiUp:
     import FemGui
 
-ANALYSIS_TYPES = ["static"]
+GEOMETRY_TYPES = ["single body", "compound body"]
+ANALYSIS_TYPES = ["static linear elastic", "steady-state thermal"]
 
 
 def create(doc, name="SolverSuqaba"):
@@ -58,6 +59,14 @@ class Proxy(solverbase.Proxy):
         super().__init__(obj)
         obj.Proxy = self
 
+        if not hasattr(obj, "GeometryType"):
+            obj.addProperty("App::PropertyEnumeration",
+                            "GeometryType",
+                            "Fem",
+                            "Type of geometry")
+            obj.GeometryType = GEOMETRY_TYPES
+            obj.GeometryType = GEOMETRY_TYPES[0]
+
         if not hasattr(obj, "AnalysisType"):
             obj.addProperty("App::PropertyEnumeration",
                             "AnalysisType",
@@ -66,12 +75,12 @@ class Proxy(solverbase.Proxy):
             obj.AnalysisType = ANALYSIS_TYPES
             obj.AnalysisType = ANALYSIS_TYPES[0]
 
-        if not hasattr(obj, "ErrorThreshold"):
+        if not hasattr(obj, "ErrorTolerance"):
             obj.addProperty("App::PropertyFloatConstraint",
-                            "ErrorThreshold",
+                            "ErrorTolerance",
                             "Fem",
-                            "Error Threshold (%)")
-            obj.ErrorThreshold = 20.
+                            "Error Tolerance (%)")
+            obj.ErrorTolerance = 20.
     
     def createMachine(self, obj, directory, testmode=False):
         return run.Machine(

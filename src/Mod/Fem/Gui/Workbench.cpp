@@ -134,14 +134,14 @@ Gui::ToolBarItem* Workbench::setupToolBars() const
     mech->setCommand("Mechanical boundary conditions and loads");
     *mech << "FEM_ConstraintFixed"
         //   << "FEM_ConstraintRigidBody"
-        //   << "FEM_ConstraintDisplacement"
+          << "FEM_ConstraintDisplacement"
         //   << "FEM_ConstraintContact"
         //   << "FEM_ConstraintTie"
         //   << "FEM_ConstraintSpring"
           << "Separator"
           << "FEM_ConstraintForce"
           << "FEM_ConstraintPressure"
-        //   << "FEM_ConstraintCentrif"
+          << "FEM_ConstraintCentrif"
           << "FEM_ConstraintSelfWeight";
 
     // Gui::ToolBarItem* thermal = new Gui::ToolBarItem(root);
@@ -254,14 +254,14 @@ Gui::MenuItem* Workbench::setupMenuBar() const
     mech->setCommand("&Mechanical boundary conditions and loads");
     *mech << "FEM_ConstraintFixed"
         //   << "FEM_ConstraintRigidBody"
-        //   << "FEM_ConstraintDisplacement"
+          << "FEM_ConstraintDisplacement"
         //   << "FEM_ConstraintContact"
         //   << "FEM_ConstraintTie"
         //   << "FEM_ConstraintSpring"
           << "Separator"
           << "FEM_ConstraintForce"
           << "FEM_ConstraintPressure"
-        //   << "FEM_ConstraintCentrif"
+          << "FEM_ConstraintCentrif"
           << "FEM_ConstraintSelfWeight";
 
     // Gui::MenuItem* thermal = new Gui::MenuItem;

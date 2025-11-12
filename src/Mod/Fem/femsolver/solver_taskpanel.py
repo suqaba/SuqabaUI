@@ -223,7 +223,7 @@ class ControlTaskPanel(QtCore.QObject):
                                 f"result_{selected_job[:8]}")
         if not os.path.exists(input_file):
             QtWidgets.QMessageBox.warning(None, "Warning",
-                                          f"Selected job '{selected_job}' was not found in {self.machine.directory}.")
+                                          f"Selected job '{selected_job[:8]}' was not found in {self.machine.directory}.")
             return
 
         self.machine._state = femsolver.run.POSTPRO
@@ -449,17 +449,14 @@ class ControlWidget(QtGui.QWidget):
             self.postpro_checkboxes[label] = checkbox
 
         # Postprocess buttons
-        self._postproPreviewBtt = QtGui.QPushButton("Postpro (preview)")
-        self._postproHighBtt = QtGui.QPushButton("Postpro (standard)")
+        self._postproBtt = QtGui.QPushButton("Postprocess")
         self._viewBtt = QtGui.QPushButton("View")
 
-        self._postproPreviewBtt.clicked.connect(lambda: self.postproClicked.emit("preview"))
-        self._postproHighBtt.clicked.connect(lambda: self.postproClicked.emit("high_fidelity"))
+        self._postproBtt.clicked.connect(lambda: self.postproClicked.emit("postpro"))
         self._viewBtt.clicked.connect(lambda: self.postproClicked.emit("view"))
 
         button_layout = QtGui.QHBoxLayout()
-        button_layout.addWidget(self._postproPreviewBtt)
-        button_layout.addWidget(self._postproHighBtt)
+        button_layout.addWidget(self._postproBtt)
         button_layout.addWidget(self._viewBtt)
 
         self.postpro_layout.addLayout(button_layout)
@@ -582,8 +579,7 @@ class ControlWidget(QtGui.QWidget):
             self._pullBtt.setDisabled(True)
             self._cancelBtt.setDisabled(True)
             self._removeBtt.setDisabled(True)
-            self._postproPreviewBtt.setDisabled(True)
-            self._postproHighBtt.setDisabled(True)
+            self._postproBtt.setDisabled(True)
             self.auth_btt.setDisabled(True)
         else:
             self._runBtt.clicked.connect(self.abortClicked)
@@ -596,8 +592,7 @@ class ControlWidget(QtGui.QWidget):
             self._pullBtt.setDisabled(False)
             self._cancelBtt.setDisabled(False)
             self._removeBtt.setDisabled(False)
-            self._postproPreviewBtt.setDisabled(False)
-            self._postproHighBtt.setDisabled(False)
+            self._postproBtt.setDisabled(False)
             self.auth_btt.setDisabled(False)
     
     def enableAuth(self):

@@ -114,65 +114,116 @@ def solver_status(response):
 
 
 class Prepare(run.Prepare):
-    def check_body_single(self):
-        bodies_list = []
+    def check_geometry(self):
+        if self.solver.GeometryType == "single body":
+            bodies_list = []
 
-        for obj in FreeCAD.ActiveDocument.Objects:
-            if obj.isDerivedFrom("PartDesign::Body"):
-                bodies_list.append(obj)
+            for obj in FreeCAD.ActiveDocument.Objects:
+                if obj.isDerivedFrom("PartDesign::Body"):
+                    bodies_list.append(obj)
 
-        body_count = len(bodies_list)
+            body_count = len(bodies_list)
 
-        if body_count < 1:
-            self.report.error("Add one Body object.")
-            self.fail()
-        elif body_count > 1:
-            self.report.error("Only one Body object is supported for this solver (so far).")
-            self.fail()
-        else:
-            body = bodies_list[0]
-            if hasattr(body, "Shape"):
-                solid_count = len(body.Shape.Solids)
+            if body_count < 1:
+                self.report.error("Make one Body object (geometry type is \"single body\")")
+                self.fail()
+            elif body_count > 1:
+                self.report.error("When geometry type is \"single body\", the document must contain exactly one Body object")
+                self.fail()
+            else:
+                body = bodies_list[0]
+                if hasattr(body, "Shape"):
+                    solid_count = len(body.Shape.Solids)
 
-                if solid_count < 1:
-                    self.report.error("Add one 3D solid into body \"{}\".".format(body.Label))
-                    self.fail()
-                elif solid_count > 1:
-                    self.report.error("Only one 3D solid per Body object is supported for this solver (so far).")
+                    if solid_count < 1:
+                        self.report.error("Add one 3D solid into body \"{}\"".format(body.Label))
+                        self.fail()
+                    elif solid_count > 1:
+                        self.report.error("When geometry type is \"single body\", the Body object must contain exactly one 3D solid")
+                        self.fail()
+        
+        elif self.solver.GeometryType == "compound body":
+            bfrag_list = []
+
+            for obj in FreeCAD.ActiveDocument.Objects:
+                if obj.isDerivedFrom("Part::Feature"):
+                    bfrag_list.append(obj)
+            
+            bfrag_count = len(bfrag_list)
+
+            if bfrag_count < 1:
+                self.report.error("Make one BooleanFragments object from an assembly (geometry type is \"compound body\")")
+                self.fail()
+            elif bfrag_count > 1:
+                self.report.error("When geometry type is \"compound body\", the document must contain exactly one BooleanFragments object")
+                self.fail()
+            else:
+                body = bfrag_list[0]
+                if body.Name == "BooleanFragments":
+                    if hasattr(body, "Shape"):
+                        self.solid_count = len(body.Shape.Solids)
+
+                        if self.solid_count < 1:
+                            self.report.error("Have at least one 3D solid into compound body \"{}\"".format(body.Label))
+                            self.fail()
+                else:
+                    self.report.error("When geometry type is \"compound body\", the document must contain exactly one BooleanFragments object")
                     self.fail()
     
     def check_material_selected(self):
-        objs = self.get_several_member("App::MaterialObjectPython")
-        if len(objs) == 1:
-            mat = objs[0]["Object"]
-            if not mat.Material:
-                self.report.error(f"No material was selected for {mat.Name}.")
+        if self.solver.GeometryType == "single body":
+            if self.check_material_single():
+                mat = self.get_several_member("App::MaterialObjectPython")[0]["Object"]
+                if not mat.Material:
+                    self.report.error(f"No material was selected for {mat.Name}")
+                    self.fail()
+                if not mat.References:
+                    self.report.error(f"No solid geometry reference was selected for {mat.Name}")
+                    self.fail()
+        elif self.solver.GeometryType == "compound body":
+            mats = self.get_several_member("App::MaterialObjectPython")
+            reference_list = []
+            for mat in mats:
+                mat_obj = mat["Object"]
+                if not mat_obj.Material:
+                    self.report.error(f"No material was selected for {mat_obj.Name}")
+                    self.fail()
+                
+                if not mat_obj.References:
+                    self.report.error(f"No solid geometry reference was selected for {mat_obj.Name}")
+                    self.fail()
+                else:
+                    for ref_str in mat_obj.References[0][1]:
+                        if ref_str in reference_list:
+                            self.report.error(f"Solid {ref_str} was assigned more than one material")
+                            self.fail()
+                        else:
+                            reference_list.append(ref_str)
+
+            if self.solid_count != len(reference_list):
+                self.report.error(f"Some solids of the assembly were not assigned a material")
                 self.fail()
-                return False
-        return True
+                    
 
     def check_dirichlet(self):
         objs = self.get_several_member("Fem::ConstraintFixed")
         if len(objs) == 0:
             self.report.error("Missing a fixed boundary condition. At least one fixed boundary condition is required.")
             self.fail()
-            return False
     
     def check_target_error(self):
-        if self.solver.ErrorThreshold < 2.5:
-            self.solver.ErrorThreshold = 2.5
+        if self.solver.ErrorTolerance < 2.5:
+            self.solver.ErrorTolerance = 2.5
             msg = (
-                "Due to limited compute resources at this stage, "
-                "the minimum error threshold (quality requirement) "
+                "The minimum error tolerance (quality requirement) "
                 "cannot be set below 2.5%."
             )
             self.report.warning(msg)
 
     def run(self):
         self.pushStatus("Checking analysis member...\n\n")
-        self.check_body_single()
+        self.check_geometry()
         self.check_material_exists()
-        self.check_material_single()
         self.check_material_selected()
         self.check_dirichlet()
         self.check_target_error()

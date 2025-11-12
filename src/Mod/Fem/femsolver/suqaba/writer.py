@@ -55,7 +55,8 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
         self.geoname  = "{}.geo".format(self.basename)
         self.jsonname = "{}.json".format(self.basename)
         self.json_string = ""
-        self.faces_of_part = {}
+        self.geo_type = solver_obj.GeometryType
+        self.ansis_type = solver_obj.AnalysisType
 
         self.solid_tags = []
 
@@ -65,14 +66,14 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
         self.print("Input filename: {}\n".format(self.jsonname))
         self.print("Writing Suqaba input files to: {}\n".format(self.dir_name))
         
-        self.export_body_to_step()
+        self.export_body_to_brep()
 
         self.json_string += "{\n"        
         self.write_suqaba_parameters()
-        self.write_suqaba_unique_material()
+        self.write_suqaba_volume_load()
+        self.write_suqaba_materials()
         self.write_suqaba_dirichlet()
         self.write_suqaba_neumann()
-        self.write_suqaba_centrif_load()
         self.write_gmsh_geo_file()
         self.json_string += "}\n\n"
 
@@ -85,30 +86,14 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
         return self.dir_name
     
 
-    def export_body_to_step(self):
-        body = FreeCAD.ActiveDocument.findObjects("PartDesign::Body")[0]
+    def export_body_to_brep(self):
+        if self.geo_type == "single body":
+            body = FreeCAD.ActiveDocument.findObjects("PartDesign::Body")[0]
+        elif self.geo_type == "compound body":
+            body = FreeCAD.ActiveDocument.findObjects("Part::Feature")[0]
         self.phgrname = body.Label
         self.partname = "{}.brep".format(self.basename)
         body.Shape.exportBrep("{}/{}".format(self.dir_name, self.partname))
-    
-
-    # def export_part_to_step(self):
-    #     part = FreeCAD.ActiveDocument.findObjects("App::Part")[0]
-    #     self.partname = part.Label
-    #     shapes = []
-    #     tag = 1
-    #     for obj in part.OutList:
-    #         if obj.isDerivedFrom("Part::Feature"):
-    #             shapes.append(obj.Shape)
-
-    #             n_faces = len(obj.Shape.Faces)
-    #             face_tags = [i + tag for i in range(n_faces)]
-    #             tag += n_faces
-    #             self.faces_of_part[obj] = face_tags
-
-    #     compound = Part.makeCompound(shapes)
-    #     self.partname = "{}/{}.stp".format(self.dir_name, self.partname)
-    #     compound.exportStep(self.partname)
 
 
     def write_gmsh_geo_file(self):
@@ -117,12 +102,11 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
 
         with open("{}/{}".format(self.dir_name, self.geoname), "w") as f:
             geo_string += "Merge \"{}\";\n".format(self.partname)
-            geo_string += (
-                "Physical Volume(\"{PHGR_NAME}\") = {{{SOLID_TAG}"
-            ).format(PHGR_NAME=self.phgrname, SOLID_TAG=self.solid_tags[0])
-            for tag in self.solid_tags[1:]:
-                geo_string += ", {SOLID_TAG}".format(SOLID_TAG=tag)
-            geo_string += "};\n"
+
+            for key in self.solid_dict.keys():
+                geo_string += (
+                    "Physical Volume(\"{PHGR_NAME}\") = {{{SOLID_TAG}}};\n"
+                ).format(PHGR_NAME=key, SOLID_TAG=self.get_tag(key))
 
             if self.block_dict:
                 for key, value in self.block_dict.items():
@@ -141,71 +125,65 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
             f.write(geo_string)
     
 
-    def write_suqaba_unique_material(self):
-        mat_obj = self.member.mats_linear[0]["Object"]
-        volume_force = self.member.cons_selfweight
-        
-        self.solid_tags = [1] # unique volume
-
-        young_mod   = FreeCAD.Units.Quantity(mat_obj.Material["YoungsModulus"]).getValueAs("MPa")
-        poisson_rat = float(mat_obj.Material["PoissonRatio"])
-        density     = FreeCAD.Units.Quantity(mat_obj.Material["Density"]).getValueAs("1000kg/mm^3")
-
-        fvol = [0., 0., 0.]
-        if volume_force:
-            force_obj = volume_force[0]["Object"]
-            gravity_c = FreeCAD.Units.Quantity(force_obj.GravityAcceleration).getValueAs("mm/s^2")
-            gravity_v = force_obj.GravityDirection
-            
-            for i in range(3):
-                fvol[i] = density * gravity_c * gravity_v[i]
-
-        self.json_string += (
-            "    \"PHYSICAL_GROUPS_3D\": [\n"
-            "        {{\n"
-            "           \"name\"   : \"{PHGR_NAME}\",\n"
-            "           \"young_modulus\": {YOUNG_MOD},\n"
-            "           \"poisson_ratio\": {POISSON_RAT},\n"
-            "           \"load_fx\": {{\n"
-            "                \"x\": \"{FX}\",\n"
-            "                \"y\": \"{FY}\",\n"
-            "                \"z\": \"{FZ}\"\n"
-            "           }}\n"
-            "        }}\n"
-            "    ],\n"
-        ).format(PHGR_NAME=self.phgrname,
-                 YOUNG_MOD=young_mod,
-                 POISSON_RAT=poisson_rat,
-                 FX=fvol[0],
-                 FY=fvol[1],
-                 FZ=fvol[2])
-    
-
     def write_suqaba_materials(self):
-        mat_dict = self.member.mats_linear[0]
+        self.solid_dict = {}
 
-        for i, _ in enumerate(mat_dict["Object"].References):
-            self.solid_tags.append(i + 1)
+        for mat in self.member.mats_linear:
+            mat_obj = mat["Object"]
 
-        young_mod   = FreeCAD.Units.Quantity(mat_dict["Object"].Material["YoungsModulus"]).getValueAs("MPa")
-        poisson_rat = float(mat_dict["Object"].Material["PoissonRatio"])
+            young_mod   = FreeCAD.Units.Quantity(mat_obj.Material["YoungsModulus"]).getValueAs("MPa")
+            poisson_rat = float(mat_obj.Material["PoissonRatio"])
+            density     = FreeCAD.Units.Quantity(mat_obj.Material["Density"]).getValueAs("1000kg/mm^3")
 
-        self.json_string += (
-            "    \"PHYSICAL_GROUPS_3D\": [\n"
-            "        {{\n"
-            "           \"name\"   : \"{PHGR_NAME}\",\n"
-            "           \"young_modulus\": {YOUNG_MOD},\n"
-            "           \"poisson_ratio\": {POISSON_RAT},\n"
-            "           \"load_fx\": {{\n"
-            "                \"x\": \"0\",\n"
-            "                \"y\": \"0\",\n"
-            "                \"z\": \"0\"\n"
-            "           }}\n"
-            "        }}\n"
-            "    ],\n"
-        ).format(PHGR_NAME=self.partname,
-                 YOUNG_MOD=young_mod,
-                 POISSON_RAT=poisson_rat)
+            for ref in mat_obj.References[0][1]:
+                if ref in self.centri_load_expr.keys():
+                    ref_str = (
+                        "        {{\n"
+                        "           \"name\"   : \"{PHGR_NAME}\",\n"
+                        "           \"young_modulus\": {YOUNG_MOD},\n"
+                        "           \"poisson_ratio\": {POISSON_RAT},\n"
+                        "           \"load_fx\": {{\n"
+                        "                \"x\": \"{RHO} * ({FX} + {CX})\",\n"
+                        "                \"y\": \"{RHO} * ({FY} + {CY})\",\n"
+                        "                \"z\": \"{RHO} * ({FZ} + {CZ})\"\n"
+                        "           }}\n"
+                        "        }}"
+                    ).format(PHGR_NAME=ref,
+                            YOUNG_MOD=young_mod,
+                            POISSON_RAT=poisson_rat,
+                            RHO=density,
+                            FX=self.gravity_force[0],
+                            FY=self.gravity_force[1],
+                            FZ=self.gravity_force[2],
+                            CX=self.centri_load_expr[ref][0],
+                            CY=self.centri_load_expr[ref][1],
+                            CZ=self.centri_load_expr[ref][2])
+                else:
+                    ref_str = (
+                        "        {{\n"
+                        "           \"name\"   : \"{PHGR_NAME}\",\n"
+                        "           \"young_modulus\": {YOUNG_MOD},\n"
+                        "           \"poisson_ratio\": {POISSON_RAT},\n"
+                        "           \"load_fx\": {{\n"
+                        "                \"x\": \"{RHO} * {FX}\",\n"
+                        "                \"y\": \"{RHO} * {FY}\",\n"
+                        "                \"z\": \"{RHO} * {FZ}\"\n"
+                        "           }}\n"
+                        "        }}"
+                    ).format(PHGR_NAME=ref,
+                            YOUNG_MOD=young_mod,
+                            POISSON_RAT=poisson_rat,
+                            RHO=density,
+                            FX=self.gravity_force[0],
+                            FY=self.gravity_force[1],
+                            FZ=self.gravity_force[2])
+
+                self.solid_dict[ref] = ref_str
+
+        separator = ",\n"
+        self.json_string += "    \"PHYSICAL_GROUPS_3D\": [\n"
+        self.json_string += separator.join(self.solid_dict.values())
+        self.json_string += "    ],\n"
 
 
     def write_suqaba_dirichlet(self):
@@ -303,8 +281,85 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
                                             "\n    ]\n")
     
 
-    def write_suqaba_centrif_load(self):
-        pass
+    def write_suqaba_volume_load(self):
+        selfweight_force = self.member.cons_selfweight
+
+        self.gravity_force = [0., 0., 0.]
+        if selfweight_force:
+            force_obj = selfweight_force[0]["Object"]
+            gravity_c = FreeCAD.Units.Quantity(force_obj.GravityAcceleration).getValueAs("mm/s^2")
+            gravity_v = force_obj.GravityDirection
+            
+            for i in range(3):
+                self.gravity_force[i] = gravity_c * gravity_v[i]
+
+        self.centri_load_expr = {}
+        forces = self.member.cons_centrif
+
+        if forces:
+            for obj in forces:
+                force_obj = obj["Object"]
+
+                if force_obj.References:
+                    omega = FreeCAD.Units.Quantity(force_obj.RotationFrequency).getValueAs("0.5/pi/s")
+                    part = force_obj.RotationAxis[0][0]
+                    edge_ref = force_obj.RotationAxis[0][1][0]
+                    edge = part.Shape.getElement(edge_ref)
+                    p1 = edge.Vertexes[0].Point
+                    p2 = edge.Vertexes[1].Point
+                    w = p2 - p1
+                    w.normalize()
+                    w *= omega
+                    for ref in force_obj.References[0][1]:                    
+                        list_expr_x = []
+                        magx = w[1]**2 + w[2]**2
+                        magy = -w[0] * w[1]
+                        magz = -w[0] * w[2]
+
+                        if abs(magx) > 1.e-9:
+                            list_expr_x.append(f"{magx} * (x - {p1.x})")
+                        if abs(magy) > 1.e-9:
+                            list_expr_x.append(f"{magy} * (y - {p1.y})")
+                        if abs(magz) > 1.e-9:
+                            list_expr_x.append(f"{magz} * (z - {p1.z})")
+                        
+                        expr_x = " + ".join(list_expr_x) if list_expr_x else "0.0"
+                        expr_x = expr_x.replace("- -", "+ ")
+                        expr_x = expr_x.replace("+ -", "- ")
+
+                        list_expr_y = []
+                        magx = -w[0] * w[1]
+                        magy = w[0]**2 + w[2]**2
+                        magz = -w[1] * w[2]
+
+                        if abs(magx) > 1.e-9:
+                            list_expr_y.append(f"{magx} * (x - {p1.x})")
+                        if abs(magy) > 1.e-9:
+                            list_expr_y.append(f"{magy} * (y - {p1.y})")
+                        if abs(magz) > 1.e-9:
+                            list_expr_y.append(f"{magz} * (z - {p1.z})")
+                        
+                        expr_y = " + ".join(list_expr_y) if list_expr_y else "0.0"
+                        expr_y = expr_y.replace("- -", "+ ")
+                        expr_y = expr_y.replace("+ -", "- ")
+
+                        list_expr_z = []
+                        magx = -w[0] * w[2]
+                        magy = -w[1] * w[2]
+                        magz = w[0]**2 + w[1]**2
+
+                        if abs(magx) > 1.e-9:
+                            list_expr_z.append(f"{magx} * (x - {p1.x})")
+                        if abs(magy) > 1.e-9:
+                            list_expr_z.append(f"{magy} * (y - {p1.y})")
+                        if abs(magz) > 1.e-9:
+                            list_expr_z.append(f"{magz} * (z - {p1.z})")
+                        
+                        expr_z = " + ".join(list_expr_z) if list_expr_z else "0.0"
+                        expr_z = expr_z.replace("- -", "+ ")
+                        expr_z = expr_z.replace("+ -", "- ")
+
+                        self.centri_load_expr[ref] = [expr_x, expr_y, expr_z]
 
 
     def write_suqaba_parameters(self):
@@ -313,7 +368,7 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
             "    \"ERROR\"         : {ERR},\n"
             "    \"REFI_STEPS\"    : 7,\n"
             "    \"JOBNAME\"       : \"{JOBNAME}\",\n"
-        ).format(ERR=self.solver_obj.ErrorThreshold / 100,
+        ).format(ERR=self.solver_obj.ErrorTolerance / 100,
                  JOBNAME=self.basename)
     
 

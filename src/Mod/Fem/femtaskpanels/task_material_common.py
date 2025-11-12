@@ -132,9 +132,11 @@ class _TaskPanel(base_femtaskpanel._BaseTaskPanel):
             self.parameterWidget.groupBox_fluidic.setVisible(0)
 
         # geometry selection widget
+        # self.selectionWidget = selection_widgets.GeometryElementsSelection(
+        #     obj.References, ["Solid", "Face", "Edge"], False, True
+        # )  # start with Solid in list!
         self.selectionWidget = selection_widgets.GeometryElementsSelection(
-            obj.References, ["Solid", "Face", "Edge"], False, True
-        )  # start with Solid in list!
+            obj.References, ["Solid"], False, True)
 
         # form made from param and selection widget
         self.form = [self.parameterWidget, self.selectionWidget]
