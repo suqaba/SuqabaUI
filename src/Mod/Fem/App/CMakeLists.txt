@@ -236,18 +236,16 @@ endif(FREECAD_USE_PCH)
 
 add_library(Fem SHARED ${Fem_SRCS})
 
-#Zstd
+# Zstd
 find_path(ZSTD_INCLUDE_DIR NAMES zstd.h)
 find_library(ZSTD_LIBRARY NAMES zstd)
-
 target_link_libraries(Fem ${Fem_LIBS} zstd)
 
-target_link_libraries(Fem ${Fem_LIBS} ${VTK_LIBRARIES})
-
-if (${VTK_LIBRARIES})
-   message(STATUS "VTK LIBRARIES TROUVE ")
+if (VTK_FOUND)
+   message(STATUS "FOUND VTK LIBRARIES IN MOD/FEM/APP")
+   target_link_libraries(Fem ${Fem_LIBS} ${VTK_LIBRARIES})
 else ()
-   message(STATUS "VTK LIBRARIES NON TROUVE ")
+   message(STATUS "VTK LIBRARIES NOT FOUND IN MOD/FEM/APP")
 endif()
 
 if (FREECAD_WARN_ERROR)
