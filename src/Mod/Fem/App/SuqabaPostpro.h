@@ -47,17 +47,23 @@ public:
     enum PostproQuantity {
         QUALORACLE = 0,
         DISPLACEMENT,
+        STRAIN,
         STRESS,
+        VM_STRAIN,
         VM_STRESS,
-        /* add whatever you want */
+        TRESCA_STRAIN,
+        TRESCA_STRESS,
         N_QUANTITY
     };
 
     SuqabaPostpro() : postpro_request(N_QUANTITY, false) {}
     ~SuqabaPostpro() = default;
 
-    std::string getInputFile() const { return input_file; }
-    void setInputFile(std::string file_path) { input_file = file_path; }
+    std::string getWorkingDir() const { return working_dir; }
+    void setWorkingDir(std::string path) { working_dir = path; }
+    
+    std::string getCaseName() const { return case_name; }
+    void setCaseName(std::string name) { case_name = name; }
 
     const std::vector<bool>& getPostproRequest() { return postpro_request; }
     int setPostproRequest(std::vector<bool> request);
@@ -68,7 +74,8 @@ public:
     PyObject* getPyObject() override;
 
 private:
-    std::string input_file = "none";
+    std::string working_dir = "none";
+    std::string case_name  = "none";
     std::vector<bool> postpro_request;
 };
 

@@ -70,8 +70,12 @@ REMOVE  = 9
 
 POSTPRO_QUANTITY = { "Quality Oracle"  : 0,
                      "Displacement"    : 1,
-                     "Stress"          : 2,
-                     "Von-Mises Stress": 3 }
+                     "Strain"          : 2,
+                     "Stress"          : 3,
+                     "Von-Mises Strain": 4,
+                     "Von-Mises Stress": 5,
+                     "Tresca Strain"   : 6,
+                     "Tresca Stress"   : 7 }
 
 
 _machines = {}

@@ -54,20 +54,12 @@ int SuqabaPostpro::setPostproRequest(std::vector<bool> request)
 
 int SuqabaPostpro::run()
 {
-  /*std::ofstream outfile(input_file + "/setpostprorequest.txt", std::ios::out);
-  outfile << input_file << "\n\n";
-  for (const auto & x : postpro_request)
-    outfile << x << " ";
-
-  outfile << "\n\n";
-  */
-
-  std::string file_input = input_file + "/test.zst";
-  std::string file_output = input_file + "/test.vtu";
+  std::string input_fullpath = working_dir + "/" + case_name + ".zst";
+  std::string    output_file = working_dir + "/" + case_name + ".vtu";
   
   SuqabaMesh mesh;
   std::vector<std::unique_ptr<SuqabaField>> fields;
-  SuqabaZstdRead(file_input, mesh, fields);
+  SuqabaZstdRead(input_fullpath, mesh, fields);
 
   vtkNew<vtkUnstructuredGrid> vtk_unstructured_grid = mesh.getVtk();
   
@@ -86,6 +78,11 @@ int SuqabaPostpro::run()
           field->insertVtkField(vtk_unstructured_grid);
           break;
         }
+  
+  if (postpro_request[PostproQuantity::STRAIN])
+    {
+      // todo
+    }
 
   if (postpro_request[PostproQuantity::STRESS])
     for (auto& field : fields)
@@ -95,6 +92,11 @@ int SuqabaPostpro::run()
           break;
         }
   
+  if (postpro_request[PostproQuantity::VM_STRAIN])
+  {
+    // todo
+  }
+  
   if (postpro_request[PostproQuantity::VM_STRESS])
     for (auto& field : fields)
       if (auto *field_tensor = dynamic_cast<SuqabaFieldTensor*>(field.get()))
@@ -103,8 +105,17 @@ int SuqabaPostpro::run()
             auto field_vm = field_tensor->getFieldNormVM();
             field_vm->insertVtkField(vtk_unstructured_grid);
           }
+  
+  if (postpro_request[PostproQuantity::TRESCA_STRAIN])
+  {
+    // todo
+  }
 
-
+  if (postpro_request[PostproQuantity::TRESCA_STRESS])
+  {
+    // todo
+  }
+  
   /*Strain
   for (auto& field : fields)    
     if (auto *field_vector = dynamic_cast<SuqabaFieldVectorH1*>(field.get()))
@@ -118,7 +129,7 @@ int SuqabaPostpro::run()
   */
   
   vtkNew<vtkXMLUnstructuredGridWriter> vtk_xml; 
-  vtk_xml->SetFileName(file_output.c_str());
+  vtk_xml->SetFileName(output_file.c_str());
   vtk_xml->SetInputData(vtk_unstructured_grid);
   vtk_xml->SetDataModeToBinary();
   vtk_xml->SetCompressorTypeToZLib();

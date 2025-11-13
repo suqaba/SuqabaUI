@@ -15,15 +15,27 @@ std::string SuqabaPostproPy::representation() const
 }
 
 
-Py::String SuqabaPostproPy::getInputFile() const
+Py::String SuqabaPostproPy::getWorkingDir() const
 {
-  return Py::String(getSuqabaPostproPtr()->getInputFile());
+  return Py::String(getSuqabaPostproPtr()->getWorkingDir());
 }
 
 
-void SuqabaPostproPy::setInputFile(Py::String file_path)
+void SuqabaPostproPy::setWorkingDir(Py::String path)
 {
-  getSuqabaPostproPtr()->setInputFile(Py::String(file_path));
+  getSuqabaPostproPtr()->setWorkingDir(Py::String(path));
+}
+
+
+Py::String SuqabaPostproPy::getCaseName() const
+{
+  return Py::String(getSuqabaPostproPtr()->getCaseName());
+}
+
+
+void SuqabaPostproPy::setCaseName(Py::String file_name)
+{
+  getSuqabaPostproPtr()->setCaseName(Py::String(file_name));
 }
 
 

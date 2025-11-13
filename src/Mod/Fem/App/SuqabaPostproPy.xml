@@ -20,11 +20,17 @@
             </UserDocu>
         </Documentation>
 
-        <Attribute Name="InputFile" ReadOnly="false">
+        <Attribute Name="WorkingDir" ReadOnly="false">
             <Documentation>
                 <UserDocu>Absolute path of the input file used for postprocessing purposes</UserDocu>
             </Documentation>
-          <Parameter Name="InputFile" Type="String"/>
+          <Parameter Name="WorkingDir" Type="String"/>
+        </Attribute>
+        <Attribute Name="CaseName" ReadOnly="false">
+            <Documentation>
+                <UserDocu>Name of the postprocessing input file (with extension)</UserDocu>
+            </Documentation>
+          <Parameter Name="CaseName" Type="String"/>
         </Attribute>
         <Methode Name="setPostproRequest">
             <Documentation>

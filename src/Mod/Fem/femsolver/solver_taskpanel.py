@@ -30,6 +30,7 @@ __url__ = "https://www.freecad.org"
 
 import os
 import subprocess
+import pathlib
 
 from PySide import QtCore, QtGui, QtWidgets
 
@@ -39,10 +40,7 @@ import FreeCADGui as Gui
 import femsolver.report
 import femsolver.run
 
-from decouple import config
 
-
-_UPDATE_INTERVAL = 50
 _REPORT_TITLE = "Run Report"
 _REPORT_ERR = "Failed to run. Please try again after all of the following errors are resolved."
 
@@ -200,7 +198,7 @@ class ControlTaskPanel(QtCore.QObject):
             
             result_path, _ = QtWidgets.QFileDialog.getOpenFileName(None,
                                                                    "Select VTU File",
-                                                                   "",
+                                                                   self.machine.directory,
                                                                    "VTU Files (*.vtu);;All Files (*)")
             if not result_path:
                 QtWidgets.QMessageBox.information(None, "Info", "Result file to view not set. Operation cancelled.")
@@ -219,18 +217,24 @@ class ControlTaskPanel(QtCore.QObject):
             QtWidgets.QMessageBox.warning(None, "Warning", "Please select a job first.")
             return
 
-        input_file = os.path.join(self.machine.directory,
-                                f"result_{selected_job[:8]}")
-        if not os.path.exists(input_file):
+        working_dir = os.path.join(self.machine.directory, f"result_{selected_job[:8]}")
+        case_name = pathlib.Path(self.machine.solver.Document.FileName).stem
+        fullpath = os.path.join(working_dir, f"{case_name}.zst")
+        if not os.path.exists(working_dir):
             QtWidgets.QMessageBox.warning(None, "Warning",
-                                          f"Selected job '{selected_job[:8]}' was not found in {self.machine.directory}.")
+                                          f"The result folder of job '{selected_job[:8]}' was not found in {self.machine.directory}.")
+            return
+        if not os.path.exists(fullpath):
+            QtWidgets.QMessageBox.warning(None, "Warning",
+                                          f"The result file (.zst extension) was not found in {working_dir}.")
             return
 
         self.machine._state = femsolver.run.POSTPRO
         self.machine.target = femsolver.run.POSTPRO
         self.machine.postpro.mode = mode
         self.machine.postpro.job_id = selected_job
-        self.machine.postpro.input_file = input_file
+        self.machine.postpro.working_dir = working_dir
+        self.machine.postpro.case_name = case_name
         self.machine.postpro.postpro_request = self.get_selected_quantities()
         self.machine.postpro.need_auth.connect(self.form.enableAuth)
         self.machine.start()
@@ -609,6 +613,4 @@ class ControlWidget(QtGui.QWidget):
         self.solverStatus.insertPlainText(status)
 
 
-VHFITGR_MTZ    = config("VHFITGR_MTZ")
-TII_MTZ        = config("TII_MTZ")
 ##  @}

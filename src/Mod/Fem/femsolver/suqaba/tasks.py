@@ -534,16 +534,18 @@ class Postpro(run.Postpro, QtCore.QObject):
         QtCore.QObject.__init__(self)
         self.mode = None
         self.job_id = None
-        self.input_file = None
+        self.working_dir = None
+        self.case_name = None
         self.postpro_request = None
 
     
     def run(self):
-        self.pushStatus(f"Postprocessing of job {self.job_id} has been initialized ({self.mode} mode).\n\n")
+        self.pushStatus(f"Postprocessing of job {self.job_id[:8]} has been initialized...\n\n")
         doc = FreeCAD.ActiveDocument
         obj = doc.addObject("Fem::SuqabaPostpro")
-        obj.InputFile = self.input_file
-        self.pushStatus(f"Input file {obj.InputFile}.\n\n")
+        obj.WorkingDir = self.working_dir
+        obj.CaseName = self.case_name
+        self.pushStatus(f"Input file {obj.WorkingDir}/{obj.CaseName}.zst\n\n")
         obj.setPostproRequest(self.postpro_request)
         obj.run()
         doc.removeObject(obj.Name)
@@ -621,7 +623,7 @@ class Auth(run.Auth, QtCore.QObject):
 
     def run(self):
         response = authenticated_call("GET", f"{LXKOXK_NKE}/checkin/")
-
+        
         if response and response.ok:
             settings = QtCore.QSettings(VHFITGR_MTZ, TII_MTZ)
             settings.remove("access_token")
