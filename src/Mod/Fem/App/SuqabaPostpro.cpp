@@ -61,6 +61,12 @@ int SuqabaPostpro::run()
   std::vector<std::unique_ptr<SuqabaField>> fields;
   SuqabaZstdRead(input_fullpath, mesh, fields);
 
+  //Strain
+  for (auto& field : fields)    
+    if (auto *field_vector = dynamic_cast<SuqabaFieldVectorH1*>(field.get()))
+      if (field_vector->getName() == "Displacement")
+        fields.push_back(field_vector->getFieldGradSym("Strain"));
+  
   vtkNew<vtkUnstructuredGrid> vtk_unstructured_grid = mesh.getVtk();
   
   if (postpro_request[PostproQuantity::QUALORACLE])
@@ -80,10 +86,13 @@ int SuqabaPostpro::run()
         }
   
   if (postpro_request[PostproQuantity::STRAIN])
-    {
-      // todo
-    }
-
+    for (auto& field : fields)
+      if (field->getName() == "Strain")
+        {
+          field->insertVtkField(vtk_unstructured_grid);
+          break;
+        }
+  
   if (postpro_request[PostproQuantity::STRESS])
     for (auto& field : fields)
       if (field->getName() == "Stress")
@@ -93,41 +102,42 @@ int SuqabaPostpro::run()
         }
   
   if (postpro_request[PostproQuantity::VM_STRAIN])
-  {
-    // todo
-  }
+    for (auto& field : fields)
+      if (auto *field_tensor = dynamic_cast<SuqabaFieldTensor*>(field.get()))
+        if (field_tensor->getName() == "Strain")
+          {
+            auto field_vm = field_tensor->getFieldNorm<SuqabaFieldTensor::YieldCriterion::VonMises>();
+            field_vm->insertVtkField(vtk_unstructured_grid);
+          }
   
   if (postpro_request[PostproQuantity::VM_STRESS])
     for (auto& field : fields)
       if (auto *field_tensor = dynamic_cast<SuqabaFieldTensor*>(field.get()))
         if (field_tensor->getName() == "Stress")
           {
-            auto field_vm = field_tensor->getFieldNormVM();
+            auto field_vm = field_tensor->getFieldNorm<SuqabaFieldTensor::YieldCriterion::VonMises>();
             field_vm->insertVtkField(vtk_unstructured_grid);
           }
   
   if (postpro_request[PostproQuantity::TRESCA_STRAIN])
-  {
-    // todo
-  }
+    for (auto& field : fields)
+      if (auto *field_tensor = dynamic_cast<SuqabaFieldTensor*>(field.get()))
+        if (field_tensor->getName() == "Strain")
+          {
+            auto field_vm = field_tensor->getFieldNorm<SuqabaFieldTensor::YieldCriterion::Tresca>();
+            field_vm->insertVtkField(vtk_unstructured_grid);
+          }
 
   if (postpro_request[PostproQuantity::TRESCA_STRESS])
-  {
-    // todo
-  }
-  
-  /*Strain
-  for (auto& field : fields)    
-    if (auto *field_vector = dynamic_cast<SuqabaFieldVectorH1*>(field.get()))
-      if (field_vector->getName() == "Displacement")
-        {
-          auto field_tensor = field_vector->getFieldGradSym("Strain");
-          field_tensor->insertVtkField(vtk_unstructured_grid);
-          auto field_vm = field_tensor->getFieldNormVM();
-          field_vm->insertVtkField(vtk_unstructured_grid);
-        }
-  */
-  
+    for (auto& field : fields)
+      if (auto *field_tensor = dynamic_cast<SuqabaFieldTensor*>(field.get()))
+        if (field_tensor->getName() == "Stress")
+          {
+            auto field_vm = field_tensor->getFieldNorm<SuqabaFieldTensor::YieldCriterion::Tresca>();
+            field_vm->insertVtkField(vtk_unstructured_grid);
+          }
+
+  //
   vtkNew<vtkXMLUnstructuredGridWriter> vtk_xml; 
   vtk_xml->SetFileName(output_file.c_str());
   vtk_xml->SetInputData(vtk_unstructured_grid);

@@ -8,6 +8,10 @@ class SuqabaFieldTensor : public SuqabaField {
 public:
   using SuqabaField::SuqabaField;
 
+  enum class YieldCriterion {VonMises, Tresca};
+
+  std::string toStringYieldCriterion(YieldCriterion c) const ;
+  
   u64 getDim() const override {return dim;};
   
   void insertVtkField(vtkNew<vtkUnstructuredGrid>& vtk_unstructured_grid) override;
@@ -17,9 +21,11 @@ public:
   void getVtkFieldElementT4Sup(const u64 i, std::array<f64*, 6>& ptr_field);
   void getVtkFieldElementT4Sup(const u64 i, f64* ptr_field) {};
 
-  f64 getnormVM(const u64 i);
-  std::unique_ptr<SuqabaFieldScalarL2<1>> getFieldNormVM();
+  template<SuqabaFieldTensor::YieldCriterion YC>
+  f64 getNorm(const u64 i);
 
+  template<SuqabaFieldTensor::YieldCriterion YC>
+  std::unique_ptr<SuqabaFieldScalarL2<1>> getFieldNorm();
   void setValueFieldTensorT4sup(const u64 i, std::array<Eigen::Matrix<f64, 6, 4>, 4>& tensor);
   
 protected:

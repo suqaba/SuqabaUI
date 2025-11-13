@@ -1,6 +1,17 @@
 #include "SuqabaFieldTensor.hpp"
 
 //
+std::string SuqabaFieldTensor::toStringYieldCriterion(SuqabaFieldTensor::YieldCriterion yc) const 
+{
+  switch (yc)
+    {
+    case YieldCriterion::VonMises: return "VonMises";
+    case YieldCriterion::Tresca:   return "Tresca";
+    }
+  return "Unknown";
+}
+
+//
 void SuqabaFieldTensor::insertVtkField(vtkNew<vtkUnstructuredGrid>& vtk_unstructured_grid)
 {
   std::array<std::string, 6> field_name = {" xx", " yy", " zz", " xy", " yz", " xz"};
@@ -36,7 +47,9 @@ void SuqabaFieldTensor::getVtkFieldElementT4Sup(const u64 ii, std::array<f64*, 6
       }
 }
 
-f64 SuqabaFieldTensor::getnormVM(const u64 ii) 
+//
+template<>
+f64 SuqabaFieldTensor::getNorm<SuqabaFieldTensor::YieldCriterion::VonMises>(const u64 ii) 
 {
   std::array<f64, 6> tensor = {data[6 * ii], data[6 * ii + 1], data[6 * ii + 2], data[6 * ii + 3], data[6 * ii + 4], data[6 * ii + 5]};
   
@@ -56,21 +69,39 @@ f64 SuqabaFieldTensor::getnormVM(const u64 ii)
 }
 
 //
-std::unique_ptr<SuqabaFieldScalarL2<1>> SuqabaFieldTensor::getFieldNormVM()
- {   
-   auto field_vm = std::make_unique<SuqabaFieldScalarL2<1>>("Equivalent " + name + " VM", 4 * mesh.getElementT4SupCount(), getMesh());
+template<>
+f64 SuqabaFieldTensor::getNorm<SuqabaFieldTensor::YieldCriterion::Tresca>(const u64 ii)
+{
+  Eigen::Matrix<f64, 3, 3> sig; sig <<
+                                  data[6 * ii + 0], data[6 * ii + 3], data[6 * ii + 5],
+                                  data[6 * ii + 3], data[6 * ii + 1], data[6 * ii + 4], 
+                                  data[6 * ii + 5], data[6 * ii + 4], data[6 * ii + 2];
+  
+  Eigen::SelfAdjointEigenSolver<Eigen::Matrix<f64, 3, 3>> sig_val(sig);
+  
+  return sig_val.eigenvalues()(2) - sig_val.eigenvalues()(0);
+}
 
+//
+template<SuqabaFieldTensor::YieldCriterion YC>
+std::unique_ptr<SuqabaFieldScalarL2<1>> SuqabaFieldTensor::getFieldNorm()
+ {   
+   auto field_yc = std::make_unique<SuqabaFieldScalarL2<1>>("Equivalent " + name + " " + toStringYieldCriterion(YC), 4 * mesh.getElementT4SupCount(), getMesh());
+   std::cout << "YC : " << name << " "  << toStringYieldCriterion(YC) << "\n";
    u64 ii = 0;
    for (u64 i = 0; i < mesh.getElementT4Count(); ++i)
      for (u64 j = 0; j < 4; ++j)
        for (u64 k = 0; k < 4; ++k)
          {
-           field_vm->setValueField(ii, getnormVM(ii));
+           field_yc->setValueField(ii, getNorm<YC>(ii));
            ++ii;
          }
-     
-  return field_vm;
+   
+   return field_yc;
  }
+
+template std::unique_ptr<SuqabaFieldScalarL2<1>> SuqabaFieldTensor::getFieldNorm<SuqabaFieldTensor::YieldCriterion::VonMises>();
+template std::unique_ptr<SuqabaFieldScalarL2<1>> SuqabaFieldTensor::getFieldNorm<SuqabaFieldTensor::YieldCriterion::Tresca>();
 
 //
 void SuqabaFieldTensor::setValueFieldTensorT4sup(const u64 ii, std::array<Eigen::Matrix<f64, 6, 4>, 4>& tensor)
