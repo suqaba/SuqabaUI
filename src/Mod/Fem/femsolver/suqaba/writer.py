@@ -108,8 +108,8 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
                     "Physical Volume(\"{PHGR_NAME}\") = {{{SOLID_TAG}}};\n"
                 ).format(PHGR_NAME=key, SOLID_TAG=self.get_tag(key))
 
-            if self.block_dict:
-                for key, value in self.block_dict.items():
+            if self.displ_dict:
+                for key, value in self.displ_dict.items():
                     geo_string += "Physical Surface(\"{}\") = {{".format(key)
                     geo_string += separator.join(value)
                     geo_string += "};\n"
@@ -188,25 +188,26 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
 
     def write_suqaba_dirichlet(self):
         blocks = self.member.cons_fixed
-        self.block_dict = {}
+        displs = self.member.cons_displacement
+        self.displ_dict = {}
+
+        self.json_string += "    \"DIRICHLET\": [\n"
+        separator = ",\n"
+        displ_inputs = []
 
         if blocks:
-            self.json_string += "    \"DIRICHLET\": [\n"
-            block_inputs = []
-            separator = ",\n"
-
             for block in blocks:
                 block_obj = block["Object"]
                 label     = block_obj.Label
 
-                self.block_dict[label] = []
+                self.displ_dict[label] = []
 
                 for obj in block_obj.References:
                     for entity in obj[1]:
                         face_tag = self.get_tag(entity)
-                        self.block_dict[label].append(face_tag)
+                        self.displ_dict[label].append(face_tag)
                 
-                block_inputs.append((
+                displ_inputs.append((
                         "        {{\n"
                         "            \"name\"   : \"{LABEL}\",\n"
                         "            \"load_fx\": {{\n"
@@ -216,12 +217,56 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
                         "            }}\n"
                         "        }}"
                     ).format(LABEL=label,
-                             UX=0.,
-                             UY=0.,
-                             UZ=0.))
+                             UX="0.0",
+                             UY="0.0",
+                             UZ="0.0"))
+        
+        if displs:
+            for displ in displs:
+                displ_obj = displ["Object"]
+                label     = displ_obj.Label
+                ux        = "0.0"
+                uy        = "0.0"
+                uz        = "0.0"
+
+                self.displ_dict[label] = []
+
+                if displ_obj.hasXFormula:
+                    ux = displ_obj.xDisplacementFormula
+                else:
+                    ux = FreeCAD.Units.Quantity(displ_obj.xDisplacement).getValueAs("mm")
+
+                if displ_obj.hasYFormula:
+                    uy = displ_obj.yDisplacementFormula
+                else:
+                    uy = FreeCAD.Units.Quantity(displ_obj.yDisplacement).getValueAs("mm")
+
+                if displ_obj.hasZFormula:
+                    uz = displ_obj.zDisplacementFormula
+                else:
+                    uz = FreeCAD.Units.Quantity(displ_obj.zDisplacement).getValueAs("mm")
+
+                for obj in displ_obj.References:
+                    for entity in obj[1]:
+                        face_tag = self.get_tag(entity)
+                        self.displ_dict[label].append(face_tag)
+                
+                displ_inputs.append((
+                        "        {{\n"
+                        "            \"name\"   : \"{LABEL}\",\n"
+                        "            \"load_fx\": {{\n"
+                        "                \"x\": \"{UX}\",\n"
+                        "                \"y\": \"{UY}\",\n"
+                        "                \"z\": \"{UZ}\"\n"
+                        "            }}\n"
+                        "        }}"
+                    ).format(LABEL=label,
+                             UX=f"{ux}",
+                             UY=f"{uy}",
+                             UZ=f"{uz}"))
             
-            self.json_string += separator.join(block_inputs)
-            self.json_string += "\n    ],\n"
+        self.json_string += separator.join(displ_inputs)
+        self.json_string += "\n    ],\n"
         
     
     def write_suqaba_neumann(self):

@@ -82,12 +82,12 @@ TaskFemConstraintDisplacement::TaskFemConstraintDisplacement(
     ui->spinyDisplacement->setMaximum(max);
     ui->spinzDisplacement->setMinimum(-max);
     ui->spinzDisplacement->setMaximum(max);
-    ui->spinxRotation->setMinimum(-max);
-    ui->spinxRotation->setMaximum(max);
-    ui->spinyRotation->setMinimum(-max);
-    ui->spinyRotation->setMaximum(max);
-    ui->spinzRotation->setMinimum(-max);
-    ui->spinzRotation->setMaximum(max);
+    // ui->spinxRotation->setMinimum(-max);
+    // ui->spinxRotation->setMaximum(max);
+    // ui->spinyRotation->setMinimum(-max);
+    // ui->spinyRotation->setMaximum(max);
+    // ui->spinzRotation->setMinimum(-max);
+    // ui->spinzRotation->setMaximum(max);
 
     // Get the feature data
     Fem::ConstraintDisplacement* pcConstraint =
@@ -104,9 +104,9 @@ TaskFemConstraintDisplacement::TaskFemConstraintDisplacement(
     sStates[0] = pcConstraint->xDisplacementFormula.getValue();
     sStates[1] = pcConstraint->yDisplacementFormula.getValue();
     sStates[2] = pcConstraint->zDisplacementFormula.getValue();
-    bStates[0] = pcConstraint->xFree.getValue();
-    bStates[1] = pcConstraint->yFree.getValue();
-    bStates[2] = pcConstraint->zFree.getValue();
+    bStates[0] = false; // pcConstraint->xFree.getValue();
+    bStates[1] = false; // pcConstraint->yFree.getValue();
+    bStates[2] = false; // pcConstraint->zFree.getValue();
     bStates[3] = pcConstraint->rotxFree.getValue();
     bStates[4] = pcConstraint->rotyFree.getValue();
     bStates[5] = pcConstraint->rotzFree.getValue();
@@ -139,29 +139,29 @@ TaskFemConstraintDisplacement::TaskFemConstraintDisplacement(
             &QCheckBox::toggled,
             this,
             &TaskFemConstraintDisplacement::formulaZ);
-    connect(ui->FlowForceCB, &QCheckBox::toggled, this, &TaskFemConstraintDisplacement::flowForce);
+    // connect(ui->FlowForceCB, &QCheckBox::toggled, this, &TaskFemConstraintDisplacement::flowForce);
     // Connect to check box values for rotations
 
     // Fill data into dialog elements
     ui->spinxDisplacement->setValue(fStates[0]);
     ui->spinyDisplacement->setValue(fStates[1]);
     ui->spinzDisplacement->setValue(fStates[2]);
-    ui->spinxRotation->setValue(fStates[3]);
-    ui->spinyRotation->setValue(fStates[4]);
-    ui->spinzRotation->setValue(fStates[5]);
+    // ui->spinxRotation->setValue(fStates[3]);
+    // ui->spinyRotation->setValue(fStates[4]);
+    // ui->spinzRotation->setValue(fStates[5]);
     ui->DisplacementXFormulaLE->setText(QString::fromUtf8(sStates[0]));
     ui->DisplacementYFormulaLE->setText(QString::fromUtf8(sStates[1]));
     ui->DisplacementZFormulaLE->setText(QString::fromUtf8(sStates[2]));
     ui->DisplacementXGB->setChecked(!bStates[0]);
     ui->DisplacementYGB->setChecked(!bStates[1]);
     ui->DisplacementZGB->setChecked(!bStates[2]);
-    ui->RotationXGB->setChecked(!bStates[3]);
-    ui->RotationYGB->setChecked(!bStates[4]);
-    ui->RotationZGB->setChecked(!bStates[5]);
+    // ui->RotationXGB->setChecked(!bStates[3]);
+    // ui->RotationYGB->setChecked(!bStates[4]);
+    // ui->RotationZGB->setChecked(!bStates[5]);
     ui->DisplacementXFormulaCB->setChecked(bStates[6]);
     ui->DisplacementYFormulaCB->setChecked(bStates[7]);
     ui->DisplacementZFormulaCB->setChecked(bStates[8]);
-    ui->FlowForceCB->setChecked(bStates[9]);
+    // ui->FlowForceCB->setChecked(bStates[9]);
 
     // Selection buttons
     buttonGroup->addButton(ui->btnAdd, static_cast<int>(SelectionChangeModes::refAdd));
@@ -171,9 +171,9 @@ TaskFemConstraintDisplacement::TaskFemConstraintDisplacement(
     ui->spinxDisplacement->bind(pcConstraint->xDisplacement);
     ui->spinyDisplacement->bind(pcConstraint->yDisplacement);
     ui->spinzDisplacement->bind(pcConstraint->zDisplacement);
-    ui->spinxRotation->bind(pcConstraint->xRotation);
-    ui->spinyRotation->bind(pcConstraint->yRotation);
-    ui->spinzRotation->bind(pcConstraint->zRotation);
+    // ui->spinxRotation->bind(pcConstraint->xRotation);
+    // ui->spinyRotation->bind(pcConstraint->yRotation);
+    // ui->spinzRotation->bind(pcConstraint->zRotation);
 
     updateUI();
 }
@@ -213,25 +213,25 @@ void TaskFemConstraintDisplacement::flowForce(bool state)
         ui->DisplacementXGB->setChecked(!state);
         ui->DisplacementYGB->setChecked(!state);
         ui->DisplacementZGB->setChecked(!state);
-        ui->RotationXGB->setChecked(!state);
-        ui->RotationYGB->setChecked(!state);
-        ui->RotationZGB->setChecked(!state);
+        // ui->RotationXGB->setChecked(!state);
+        // ui->RotationYGB->setChecked(!state);
+        // ui->RotationZGB->setChecked(!state);
     }
 }
 
 void TaskFemConstraintDisplacement::formulaRotx(bool state)
 {
-    ui->spinxRotation->setEnabled(!state);
+    // ui->spinxRotation->setEnabled(!state);
 }
 
 void TaskFemConstraintDisplacement::formulaRoty(bool state)
 {
-    ui->spinyRotation->setEnabled(!state);
+    // ui->spinyRotation->setEnabled(!state);
 }
 
 void TaskFemConstraintDisplacement::formulaRotz(bool state)
 {
-    ui->spinzRotation->setEnabled(!state);
+    // ui->spinzRotation->setEnabled(!state);
 }
 
 void TaskFemConstraintDisplacement::addToSelection()
@@ -282,6 +282,12 @@ void TaskFemConstraintDisplacement::addToSelection()
             else {
                 searchStr = "Face";
             }
+
+            if (subName.substr(0, 4) != "Face") {
+                QMessageBox::warning(this, tr("Selection error"), tr("Only faces can be picked"));
+                return;
+            }
+
             for (const auto& SubElement : SubElements) {
                 if (SubElement.find(searchStr) == std::string::npos) {
                     QString msg = tr("Only one type of selection (vertex, face or edge) per "
@@ -392,17 +398,20 @@ std::string TaskFemConstraintDisplacement::get_spinzDisplacement() const
 
 std::string TaskFemConstraintDisplacement::get_spinxRotation() const
 {
-    return ui->spinxRotation->value().getSafeUserString();
+    // return ui->spinxRotation->value().getSafeUserString();
+    return "";
 }
 
 std::string TaskFemConstraintDisplacement::get_spinyRotation() const
 {
-    return ui->spinyRotation->value().getSafeUserString();
+    // return ui->spinyRotation->value().getSafeUserString();
+    return "";
 }
 
 std::string TaskFemConstraintDisplacement::get_spinzRotation() const
 {
-    return ui->spinzRotation->value().getSafeUserString();
+    // return ui->spinzRotation->value().getSafeUserString();
+    return "";
 }
 
 std::string TaskFemConstraintDisplacement::get_xFormula() const
@@ -428,7 +437,8 @@ std::string TaskFemConstraintDisplacement::get_zFormula() const
 
 bool TaskFemConstraintDisplacement::get_dispxfree() const
 {
-    return !ui->DisplacementXGB->isChecked();
+    // return !ui->DisplacementXGB->isChecked();
+    return false;
 }
 
 bool TaskFemConstraintDisplacement::get_hasDispXFormula() const
@@ -438,7 +448,8 @@ bool TaskFemConstraintDisplacement::get_hasDispXFormula() const
 
 bool TaskFemConstraintDisplacement::get_dispyfree() const
 {
-    return !ui->DisplacementYGB->isChecked();
+    // return !ui->DisplacementYGB->isChecked();
+    return false;
 }
 
 bool TaskFemConstraintDisplacement::get_hasDispYFormula() const
@@ -448,7 +459,8 @@ bool TaskFemConstraintDisplacement::get_hasDispYFormula() const
 
 bool TaskFemConstraintDisplacement::get_dispzfree() const
 {
-    return !ui->DisplacementZGB->isChecked();
+    // return !ui->DisplacementZGB->isChecked();
+    return false;
 }
 
 bool TaskFemConstraintDisplacement::get_hasDispZFormula() const
@@ -458,22 +470,26 @@ bool TaskFemConstraintDisplacement::get_hasDispZFormula() const
 
 bool TaskFemConstraintDisplacement::get_rotxfree() const
 {
-    return !ui->RotationXGB->isChecked();
+    // return !ui->RotationXGB->isChecked();
+    return true;
 }
 
 bool TaskFemConstraintDisplacement::get_rotyfree() const
 {
-    return !ui->RotationYGB->isChecked();
+    // return !ui->RotationYGB->isChecked();
+    return true;
 }
 
 bool TaskFemConstraintDisplacement::get_rotzfree() const
 {
-    return !ui->RotationZGB->isChecked();
+    // return !ui->RotationZGB->isChecked();
+    return true;
 }
 
 bool TaskFemConstraintDisplacement::get_useFlowSurfaceForce() const
 {
-    return ui->FlowForceCB->isChecked();
+    // return ui->FlowForceCB->isChecked();
+    return false;
 }
 
 void TaskFemConstraintDisplacement::changeEvent(QEvent*)

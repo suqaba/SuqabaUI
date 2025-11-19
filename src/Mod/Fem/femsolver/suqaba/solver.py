@@ -43,7 +43,7 @@ if FreeCAD.GuiUp:
     import FemGui
 
 GEOMETRY_TYPES = ["single body", "compound body"]
-ANALYSIS_TYPES = ["static linear elastic", "steady-state thermal"]
+ANALYSIS_TYPES = ["static linear elastic"] #, "steady-state thermal"]
 
 
 def create(doc, name="SolverSuqaba"):

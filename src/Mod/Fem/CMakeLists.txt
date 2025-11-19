@@ -209,6 +209,7 @@ SET(FemSolverSuqaba_SRCS
     femsolver/suqaba/solver.py
     femsolver/suqaba/tasks.py
     femsolver/suqaba/writer.py
+    femsolver/suqaba/network.py
 )
 
 SET(FemTests_SRCS

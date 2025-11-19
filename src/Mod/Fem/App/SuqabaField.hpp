@@ -7,7 +7,11 @@
 class SuqabaField {
 public:
 
-  SuqabaField(const std::string& field_name, const u64 field_size, SuqabaMesh& input_mesh) : name(field_name), size(field_size), mesh(input_mesh) {data.resize(size);}
+  SuqabaField(const std::string& field_name,
+              const u64 field_size,
+              SuqabaMesh& input_mesh) : name(field_name), 
+                                        size(field_size),
+                                        mesh(input_mesh) { data.resize(size); }
   virtual ~SuqabaField() = default;
 
   void setData(char *ptr);

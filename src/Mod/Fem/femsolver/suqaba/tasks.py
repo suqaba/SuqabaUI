@@ -32,6 +32,7 @@ __FcUrl__ = "https://www.freecad.org"
 import os
 import zipfile
 import requests
+from .network import ipv4_session
 import pathlib
 import json
 import threading
@@ -57,9 +58,9 @@ def authenticated_call(mode, endpoint, stream=None, file=None):
         return None
     else:
         if mode == "GET":
-            call = requests.get
+            call = ipv4_session.get
         elif mode == "POST":
-            call = requests.post
+            call = ipv4_session.post
         else:
             return None
         
@@ -206,9 +207,10 @@ class Prepare(run.Prepare):
                     
 
     def check_dirichlet(self):
-        objs = self.get_several_member("Fem::ConstraintFixed")
-        if len(objs) == 0:
-            self.report.error("Missing a fixed boundary condition. At least one fixed boundary condition is required.")
+        blocks = self.get_several_member("Fem::ConstraintFixed")
+        displs = self.get_several_member("Fem::ConstraintDisplacement")
+        if len(blocks) + len(displs) < 1:
+            self.report.error("Missing a Dirichlet boundary condition. At least one Dirichlet boundary condition is required.")
             self.fail()
     
     def check_target_error(self):
