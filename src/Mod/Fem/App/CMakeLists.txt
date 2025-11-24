@@ -239,6 +239,13 @@ add_library(Fem SHARED ${Fem_SRCS})
 # Zstd
 find_path(ZSTD_INCLUDE_DIR NAMES zstd.h)
 find_library(ZSTD_LIBRARY NAMES zstd)
+
+if (NOT ZSTD_INCLUDE_DIR OR NOT ZSTD_LIBRARY)
+    message(FATAL_ERROR "Zstd: NOT FOUND")
+elseif()
+    message(STATUS "Zstd: FOUND")
+endif()
+
 target_link_libraries(Fem ${Fem_LIBS} zstd)
 
 if (VTK_FOUND)

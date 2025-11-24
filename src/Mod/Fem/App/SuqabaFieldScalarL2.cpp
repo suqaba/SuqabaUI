@@ -1,3 +1,4 @@
+#include "PreCompiled.h"
 #include "SuqabaFieldScalarL2.hpp"
 
 //

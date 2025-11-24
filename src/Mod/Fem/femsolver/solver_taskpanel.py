@@ -130,12 +130,12 @@ class ControlTaskPanel(QtCore.QObject):
         if hasattr(self, "log_window") and self.log_window is not None:
             try:
                 self.machine.livelog.log_received.disconnect(self.log_window.append_log)
-            except (TypeError, RuntimeError):
+            except (TypeError, RuntimeError, RuntimeWarning):
                 pass
 
             try:
                 self.log_window.closed.disconnect(self.machine.livelog.stop)
-            except (TypeError, RuntimeError):
+            except (TypeError, RuntimeError, RuntimeWarning):
                 pass
             
             self.machine.livelog.stop()

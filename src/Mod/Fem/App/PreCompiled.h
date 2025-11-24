@@ -69,7 +69,7 @@
 #include <SMESH_Group.hxx>
 #include <SMESH_Mesh.hxx>
 #include <SMESH_MeshEditor.hxx>
-#include <SMESH_Version.h>
+// #include <SMESH_Version.h>
 
 #include <StdMeshers_Arithmetic1D.hxx>
 #include <StdMeshers_AutomaticLength.hxx>

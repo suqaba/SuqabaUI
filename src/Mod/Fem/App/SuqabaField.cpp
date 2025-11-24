@@ -1,3 +1,4 @@
+#include "PreCompiled.h"
 #include "SuqabaField.hpp"
 
 //

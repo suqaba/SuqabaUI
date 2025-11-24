@@ -175,7 +175,7 @@ macro(InitializeFreeCADBuildOptions)
     endif()
 
     if(MSVC)
-        option(BUILD_FEM_NETGEN "Build the FreeCAD FEM module with the NETGEN mesher" ON)
+        option(BUILD_FEM_NETGEN "Build the FreeCAD FEM module with the NETGEN mesher" OFF)
         option(FREECAD_USE_PCL "Build the features that use PCL libs" OFF)
     endif(MSVC)
     if(NOT MSVC)

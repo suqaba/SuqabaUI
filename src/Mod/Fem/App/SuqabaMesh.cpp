@@ -1,5 +1,6 @@
-#include "SuqabaMesh.hpp"
 #include <cstring>
+#include "PreCompiled.h"
+#include "SuqabaMesh.hpp"
 
 //
 void SuqabaMesh::setSize(const u64 n_node, const u64 n_edge, const u64 n_elem)
