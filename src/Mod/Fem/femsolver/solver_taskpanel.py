@@ -63,6 +63,7 @@ class ControlTaskPanel(QtCore.QObject):
         # Connect object to widget.
         self.form.writeClicked.connect(self.write)
         self.form.runClicked.connect(self.run)
+        self.form.logClicked.connect(self.livelog)
         self.form.fetchClicked.connect(self.fetch)
         self.form.pullClicked.connect(self.pull)
         self.form.cancelClicked.connect(self.cancel)
@@ -117,11 +118,39 @@ class ControlTaskPanel(QtCore.QObject):
         self.machine.solve.finished.connect(self.form.createJobBoxes)
         self.machine.solve.need_auth.connect(self.form.enableAuth)
         self.machine.auth_check.do_check = False
-        self.machine.auth_check.slv_status.connect(self.form.solveStatus)
-        self.machine.auth_check.slv_status.disconnect()
-        self.machine.solve.slv_status.connect(self.form.solveStatus)
-        self.machine.solve.slv_status.disconnect()
-        self.machine.solve.slv_status.connect(self.form.solveStatus)
+        self.machine.start()
+    
+    @QtCore.Slot()
+    def livelog(self):
+        self.machine._state = femsolver.run.LIVELOG
+        self.machine.target = femsolver.run.LIVELOG
+        selected_job = self.get_selected_job()
+        self.machine.livelog.job_id = selected_job
+
+        if hasattr(self, "log_window") and self.log_window is not None:
+            try:
+                self.machine.livelog.log_received.disconnect(self.log_window.append_log)
+            except (TypeError, RuntimeError):
+                pass
+
+            try:
+                self.log_window.closed.disconnect(self.machine.livelog.stop)
+            except (TypeError, RuntimeError):
+                pass
+            
+            self.machine.livelog.stop()
+            try:
+                self.log_window.close()
+            except RuntimeError:
+                pass
+            self.log_window = None
+
+        self.log_window = LogWindow(None)
+        self.log_window.show()
+        self.log_window.raise_()
+        self.log_window.activateWindow()
+        self.machine.livelog.log_received.connect(self.log_window.append_log)
+        self.log_window.closed.connect(self.machine.livelog.stop)
         self.machine.start()
 
     @QtCore.Slot()
@@ -245,12 +274,7 @@ class ControlTaskPanel(QtCore.QObject):
         self.machine._state = femsolver.run.AUTHCHK
         self.machine.target = femsolver.run.AUTHCHK
         self.machine.auth_check.finished.connect(self.form.checkIn)
-        self.machine.solve.do_check = False
-        self.machine.solve.slv_status.connect(self.form.solveStatus)
-        self.machine.solve.slv_status.disconnect()
-        self.machine.auth_check.slv_status.connect(self.form.solveStatus)
-        self.machine.auth_check.slv_status.disconnect()
-        self.machine.auth_check.slv_status.connect(self.form.solveStatus)
+        self.machine.auth_check.load_job.connect(self.form.createJobBoxes)
         self.machine.start()
     
     @QtCore.Slot()
@@ -260,6 +284,7 @@ class ControlTaskPanel(QtCore.QObject):
         self.machine._state = femsolver.run.AUTH
         self.machine.target = femsolver.run.AUTH
         self.machine.auth.finished.connect(self.form.checkIn)
+        self.machine.auth.load_job.connect(self.form.createJobBoxes)
         self.machine.start()
 
     @QtCore.Slot()
@@ -299,8 +324,6 @@ class ControlTaskPanel(QtCore.QObject):
 
     def _disconnectMachine(self):
         if self.machine is not None:
-            self.machine.auth_check.do_check = False
-            self.machine.solve.do_check = False
             self.machine.signalStatus.remove(self._statusProxy)
             self.machine.signalStatusCleared.add(self._statusClearedProxy)
             self.machine.signalStarted.remove(self._startedProxy)
@@ -340,6 +363,7 @@ class ControlWidget(QtGui.QWidget):
 
     writeClicked = QtCore.Signal()
     runClicked = QtCore.Signal()
+    logClicked = QtCore.Signal()
     fetchClicked = QtCore.Signal()
     pullClicked = QtCore.Signal()
     cancelClicked = QtCore.Signal()
@@ -396,9 +420,12 @@ class ControlWidget(QtGui.QWidget):
 
         self._writeBtt = QtGui.QPushButton(self.tr("Write"))
         self._runBtt = QtGui.QPushButton("Submit")
+        self._logBtt = QtGui.QPushButton("Live logs")
         prepro_layout.addWidget(self._writeBtt)
         prepro_layout.addWidget(self._runBtt)
+        prepro_layout.addWidget(self._logBtt)
         self._writeBtt.clicked.connect(self.writeClicked)
+        self._logBtt.clicked.connect(self.logClicked)
 
         self.prepro_group.setLayout(prepro_layout)
 
@@ -435,22 +462,33 @@ class ControlWidget(QtGui.QWidget):
         btn_layout.addWidget(self._cancelBtt)
         btn_layout.addWidget(self._removeBtt)
 
-        jobCtrl_layout.addLayout(btn_layout)
         jobCtrl_layout.addWidget(self.job_scroll)
+        jobCtrl_layout.addLayout(btn_layout)
         self.job_controls.setLayout(jobCtrl_layout)
 
         # Postprocessing group box
         self.postpro_groupbox = QtGui.QGroupBox("Postprocessing")
         self.postpro_layout = QtGui.QVBoxLayout(self.postpro_groupbox)
+        grid = QtGui.QGridLayout()
         self.postpro_group = QtGui.QButtonGroup()
         self.postpro_group.setExclusive(False)
 
         self.postpro_checkboxes = {}
+        row = 0
+        col = 0
         for label in femsolver.run.POSTPRO_QUANTITY.keys():
             checkbox = QtGui.QCheckBox(label)
             self.postpro_group.addButton(checkbox)
-            self.postpro_layout.addWidget(checkbox)
             self.postpro_checkboxes[label] = checkbox
+
+            grid.addWidget(checkbox, row, col)
+
+            col += 1
+            if col == 2:
+                col = 0
+                row += 1
+
+        self.postpro_layout.addLayout(grid)
 
         # Postprocess buttons
         self._postproBtt = QtGui.QPushButton("Postprocess")
@@ -468,21 +506,11 @@ class ControlWidget(QtGui.QWidget):
         # Solver status log
         self._statusEdt = QtGui.QPlainTextEdit()
         self._statusEdt.setReadOnly(True)
-        self._statusEdt.setMinimumHeight(250)
-        self._statusEdt.setMaximumHeight(280)
+        self._statusEdt.setFixedHeight(150)
         status_lyt = QtGui.QVBoxLayout()
         status_lyt.addWidget(self._statusEdt)
         self.log_group = QtGui.QGroupBox("General logs")
         self.log_group.setLayout(status_lyt)
-
-        self.solverStatus = QtGui.QPlainTextEdit()
-        self.solverStatus.setReadOnly(True)
-        self.solverStatus.setMinimumHeight(70)
-        self.solverStatus.setMaximumHeight(80)
-        live_lyt = QtGui.QVBoxLayout()
-        live_lyt.addWidget(self.solverStatus)
-        self.live_group = QtGui.QGroupBox("Job live status")
-        self.live_group.setLayout(live_lyt)
 
         # Main layout
         layout = QtGui.QVBoxLayout()
@@ -490,7 +518,6 @@ class ControlWidget(QtGui.QWidget):
         layout.addWidget(self._directoryGrp)
         layout.addWidget(self.prepro_group)
         layout.addWidget(self.log_group)
-        layout.addWidget(self.live_group)
         layout.addWidget(self.job_controls)
         layout.addWidget(self.postpro_groupbox)
         self.setLayout(layout)
@@ -530,7 +557,7 @@ class ControlWidget(QtGui.QWidget):
             self.email_text.show()
             self.password_text.setDisabled(False)
             self.password_text.show()
-            self.auth_group.show() 
+            self.auth_group.show()
         else:
             self.email_text.setText("")
             self.password_text.setText("")
@@ -579,11 +606,13 @@ class ControlWidget(QtGui.QWidget):
             self._directoryGrp.setDisabled(True)
             self._runBtt.setDisabled(True)
             self._writeBtt.setDisabled(True)
+            self._logBtt.setDisabled(True)
             self._fetchBtt.setDisabled(True)
             self._pullBtt.setDisabled(True)
             self._cancelBtt.setDisabled(True)
             self._removeBtt.setDisabled(True)
             self._postproBtt.setDisabled(True)
+            self._viewBtt.setDisabled(True)
             self.auth_btt.setDisabled(True)
         else:
             self._runBtt.clicked.connect(self.abortClicked)
@@ -592,11 +621,13 @@ class ControlWidget(QtGui.QWidget):
             self._directoryGrp.setDisabled(False)
             self._runBtt.setDisabled(False)
             self._writeBtt.setDisabled(False)
+            self._logBtt.setDisabled(False)
             self._fetchBtt.setDisabled(False)
             self._pullBtt.setDisabled(False)
             self._cancelBtt.setDisabled(False)
             self._removeBtt.setDisabled(False)
             self._postproBtt.setDisabled(False)
+            self._viewBtt.setDisabled(False)
             self.auth_btt.setDisabled(False)
     
     def enableAuth(self):
@@ -606,11 +637,39 @@ class ControlWidget(QtGui.QWidget):
         self.email_text.show()
         self.password_text.setDisabled(False)
         self.password_text.show()
-    
-    @QtCore.Slot(str)
-    def solveStatus(self, status):
-        self.solverStatus.setPlainText("")
-        self.solverStatus.insertPlainText(status)
+        self.auth_group.show()
 
+
+class LogWindow(QtWidgets.QDialog):
+    closed = QtCore.Signal()
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
+
+        self.setWindowTitle("Live Job Logs")
+        self.resize(900, 600)
+
+        layout = QtWidgets.QVBoxLayout()
+
+        self.textbox = QtWidgets.QTextEdit()
+        self.textbox.setReadOnly(True)
+
+        layout.addWidget(self.textbox)
+        self.setLayout(layout)
+
+    @QtCore.Slot(str)
+    def append_log(self, message):
+        self.textbox.append(message)
+        self.textbox.moveCursor(QtGui.QTextCursor.End)
+    
+    def closeEvent(self, event):
+        self.closed.emit()
+        super().closeEvent(event)
+    
+    def reject(self):
+        self.closed.emit()
+        self.close()
+        super().reject()
 
 ##  @}

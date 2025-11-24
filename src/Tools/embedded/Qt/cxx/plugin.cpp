@@ -23,7 +23,7 @@ PyMODINIT_FUNC FreeCAD_init()
 
     App::Application::Config()["RunMode"] = "Gui";
     App::Application::Config()["Console"] = "0";
-    App::Application::Config()["ExeVendor"] = "FreeCADxSuqaba";
+    App::Application::Config()["ExeVendor"] = "SuqabaUI";
     App::Application::Config()["SplashScreen"] = "freecadsplash";
 
     App::Application::init(1, argv.data());

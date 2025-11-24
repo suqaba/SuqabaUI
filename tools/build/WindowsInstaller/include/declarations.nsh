@@ -12,7 +12,7 @@ Configuration and variables of FreeCAD installer
 #--------------------------------
 # Names and version
 
-!define APP_NAME "FreeCADxSuqaba"
+!define APP_NAME "SuqabaUI"
 !define APP_VERSION_NUMBER "${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}.${APP_VERSION_REVISION}.${APP_VERSION_BUILD}"
 # For the proposed install folder we use the scheme "FreeCAD 0.18" 
 # however for the Registry, we need the scheme "FreeCAD 0.18.x" in order

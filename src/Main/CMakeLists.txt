@@ -30,7 +30,7 @@ if(BUILD_GUI)
         target_compile_warn_error(FreeCADMain)
     endif()
 
-    SET_BIN_DIR(FreeCADMain FreeCADxSuqaba)
+    SET_BIN_DIR(FreeCADMain SuqabaUI)
 
     if(WIN32)
         INSTALL(TARGETS FreeCADMain
@@ -79,7 +79,7 @@ if (FREECAD_WARN_ERROR)
     target_compile_warn_error(FreeCADMainCmd)
 endif()
 
-SET_BIN_DIR(FreeCADMainCmd FreeCADCmd)
+SET_BIN_DIR(FreeCADMainCmd SuqabaUICmd)
 
 if(WIN32)
     INSTALL(TARGETS FreeCADMainCmd
@@ -110,7 +110,7 @@ if (FREECAD_WARN_ERROR)
     target_compile_warn_error(FreeCADMainPy)
 endif()
 
-SET_BIN_DIR(FreeCADMainPy FreeCADxSuqaba)
+SET_BIN_DIR(FreeCADMainPy SuqabaUI)
 SET_PYTHON_PREFIX_SUFFIX(FreeCADMainPy)
 
 if(WIN32)

@@ -166,6 +166,11 @@ void TaskFemConstraintForce::addToSelection()
                 searchStr = "Face";
             }
 
+            if (subName.substr(0, 4) != "Face") {
+                QMessageBox::warning(this, tr("Selection error"), tr("Only faces can be picked"));
+                return;
+            }
+
             for (const auto& SubElement : SubElements) {
                 if (SubElement.find(searchStr) == std::string::npos) {
                     QString msg = tr("Only one type of selection (vertex, face or edge) per "

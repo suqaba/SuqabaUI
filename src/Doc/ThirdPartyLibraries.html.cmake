@@ -1,7 +1,7 @@
-<h2>FreeCADxSuqaba<br />
+<h2>SuqabaUI<br />
 List of Open Source components<br />
 </h2>
-<p>FreeCADxSuqaba uses the following Open Source Components.</p>
+<p>SuqabaUI uses the following Open Source Components.</p>
 <ul>
 <li><p><a href="#_TocBoost">Boost</a></p></li>
 <li><p><a href="#_TocCoin3D">Coin3D</a></p></li>

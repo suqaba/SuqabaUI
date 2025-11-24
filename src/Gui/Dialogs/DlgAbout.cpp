@@ -329,7 +329,7 @@ void AboutDialog::showCredits()
     creditsHTML += QStringLiteral("</p><h1>");
     creditsHTML += tr("Credits");
     creditsHTML += QStringLiteral("</h1><p>");
-    creditsHTML += tr("FreeCADxSuqaba would not be possible without the contributions of");
+    creditsHTML += tr("SuqabaUI would not be possible without the contributions of");
     creditsHTML += QStringLiteral(":</p><h2>");
     //: Header for the list of individual people in the Credits list.
     creditsHTML += tr("Individuals");

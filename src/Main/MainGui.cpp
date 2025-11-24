@@ -62,7 +62,7 @@ void PrintInitHelp();
 
 const char sBanner[] =
     "(C) 2001-2025 FreeCAD contributors & (C) 2025 Suqaba\n"
-    "FreeCADxSuqaba is free and open-source software licensed under the terms of LGPL2+ license.\n\n";
+    "SuqabaUI is free and open-source software licensed under the terms of LGPL2+ license.\n\n";
 
 #if defined(_MSC_VER)
 void InitMiniDumpWriter(const std::string&);
@@ -182,8 +182,8 @@ int main(int argc, char** argv)
 #endif
 
     // Name and Version of the Application
-    App::Application::Config()["ExeName"] = "FreeCADxSuqaba";
-    App::Application::Config()["ExeVendor"] = "FreeCADxSuqaba";
+    App::Application::Config()["ExeName"] = "SuqabaUI";
+    App::Application::Config()["ExeVendor"] = "SuqabaUI";
     App::Application::Config()["AppDataSkipVendor"] = "true";
     App::Application::Config()["MaintainerUrl"] = "https://www.freecad.org/wiki/Main_Page";
 

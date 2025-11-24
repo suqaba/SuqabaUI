@@ -91,6 +91,7 @@ class Proxy(solverbase.Proxy):
             fetch=tasks.Fetch(),
             results=tasks.Results(),
             postpro=tasks.Postpro(),
+            livelog=tasks.Livelog(),
             auth_check=tasks.AuthCheck(),
             auth=tasks.Auth(),
             cancel=tasks.Cancel(),

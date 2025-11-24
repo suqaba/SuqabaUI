@@ -63,10 +63,11 @@ SOLVE   = 2
 FETCH   = 3
 RESULTS = 4
 POSTPRO = 5
-AUTHCHK = 6
-AUTH    = 7
-CANCEL  = 8
-REMOVE  = 9
+LIVELOG = 6
+AUTHCHK = 7
+AUTH    = 8
+CANCEL  = 9
+REMOVE  = 10
 
 POSTPRO_QUANTITY = { "Quality Oracle"  : 0,
                      "Displacement"    : 1,
@@ -332,7 +333,7 @@ class BaseTask(task.Thread):
 class Machine(BaseTask):
 
     def __init__(self, solver, directory, prepare, solve, fetch,
-                 results, postpro, auth_check, auth, cancel, remove, testmode):
+                 results, postpro, livelog, auth_check, auth, cancel, remove, testmode):
         super().__init__()
         self.solver = solver
         self.directory = directory
@@ -342,6 +343,7 @@ class Machine(BaseTask):
         self.fetch = fetch
         self.results = results
         self.postpro = postpro
+        self.livelog = livelog
         self.auth_check = auth_check
         self.auth = auth
         self.cancel = cancel
@@ -427,6 +429,8 @@ class Machine(BaseTask):
             return self.results
         elif state == POSTPRO:
             return self.postpro
+        elif state == LIVELOG:
+            return self.livelog
         elif state == AUTHCHK:
             return self.auth_check
         elif state == AUTH:
@@ -552,6 +556,10 @@ class Results(BaseTask):
 
 
 class Postpro(BaseTask):
+    pass
+
+
+class Livelog(BaseTask):
     pass
 
 

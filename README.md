@@ -53,7 +53,7 @@ Installing
 Precompiled packages for stable releases is available for Windows on the
 [Releases page](https://github.com/suqaba/SuqabaUI/releases).
 
-For Linux and macOS, the FreeCADxSuqaba UI will have to be compiled from sources
+For Linux and macOS, the SuqabaUI UI will have to be compiled from sources
 (see section below). You can also compile the UI from sources on Windows if need be.
 
 **Note**: To visualize simulation results (e.g., Quality Oracle, displacement and stress fields),
@@ -63,7 +63,7 @@ you will need to install [ParaView](https://www.paraview.org/download/).
 Compiling
 ---------
 
-FreeCADxSuqaba requires several dependencies to correctly compile for development and
+SuqabaUI requires several dependencies to correctly compile for development and
 production builds. The following pages contain updated build instructions for
 their respective platforms:
 

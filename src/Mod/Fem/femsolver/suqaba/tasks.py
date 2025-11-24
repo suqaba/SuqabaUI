@@ -38,6 +38,8 @@ import json
 import threading
 from datetime import datetime
 import time
+import websockets
+import asyncio
 
 import FreeCAD
 from PySide import QtCore
@@ -83,11 +85,6 @@ def auth_success(response):
         "    {} job(s) are queued\n\n"
     ).format(counts.get("completed"), counts.get("processing"),
              counts.get("queued"))
-
-    if counts.get("next_queue"):
-        msg += (
-            "The first pending job in the queue is at position: {} (ID: {:.8s})\n"
-        ).format(counts["next_queue"][1], counts["next_queue"][0])
     
     return msg
 
@@ -95,27 +92,25 @@ def auth_success(response):
 def solver_status(response):
     counts = response.json()
     ts = datetime.now().strftime("[%Y-%m-%d %H:%M:%S]")
+    msg = ""
 
     if counts["processing"] == 0 and counts["queued"] == 0:
-        msg = "{} No job is being processed or queued\n".format(ts)
-        do_check = False
+        msg += "{} No job is being processed or queued\n".format(ts)
     else:
-        msg = ""
-        do_check = True
         if counts.get("is_processed"):
             msg += "{} Job {:.8s} is being processed\n".format(ts, counts["is_processed"])
         
         if counts.get("next_queue"):
-            msg += "{} Job {:.8s} is at position {} in the queue\n".format(ts, *counts["next_queue"])
+            msg += "{} The first pending job in the queue is at position: {} (ID: {:.8s})\n".format(ts,
+                                                                                                    counts["next_queue"][1],
+                                                                                                    counts["next_queue"][0])
     
-    if not msg:
-        do_check = False
-
-    return msg, do_check
+    return msg
 
 
 class Prepare(run.Prepare):
     def check_geometry(self):
+        self.solid_count = -1
         if self.solver.GeometryType == "single body":
             bodies_list = []
 
@@ -134,12 +129,12 @@ class Prepare(run.Prepare):
             else:
                 body = bodies_list[0]
                 if hasattr(body, "Shape"):
-                    solid_count = len(body.Shape.Solids)
+                    self.solid_count = len(body.Shape.Solids)
 
-                    if solid_count < 1:
+                    if self.solid_count < 1:
                         self.report.error("Add one 3D solid into body \"{}\"".format(body.Label))
                         self.fail()
-                    elif solid_count > 1:
+                    elif self.solid_count > 1:
                         self.report.error("When geometry type is \"single body\", the Body object must contain exactly one 3D solid")
                         self.fail()
         
@@ -250,15 +245,12 @@ class Solve(run.Solve, QtCore.QObject):
     
     finished = QtCore.Signal(list)
     need_auth = QtCore.Signal()
-    slv_status = QtCore.Signal(str)
 
 
     def __init__(self):
         run.Solve.__init__(self)
         QtCore.QObject.__init__(self)
         self.job_id = None
-        self.slv_thread = threading.Thread()
-        self.do_check = False
 
     @staticmethod
     def to_compress(ext):
@@ -292,20 +284,6 @@ class Solve(run.Solve, QtCore.QObject):
         else:
             self.pushStatus("Your job cannot be submitted.\n")
             return None
-    
-
-    def solver_status(self):
-        self.do_check = True
-        while self.do_check:
-            response = authenticated_call("GET", f"{LXKOXK_NKE}/checkin/")
-            if response and response.ok:
-                msg, self.do_check = solver_status(response)
-                self.slv_status.emit(msg)
-                time.sleep(KXJLM_BGMXKOTE)
-            else:
-                self.do_check = False
-        
-        self.slv_thread = threading.Thread()
 
 
     def run(self):
@@ -320,14 +298,11 @@ class Solve(run.Solve, QtCore.QObject):
             if response and response.ok:
                 self.job_id = response.json()["job_id"]
                 self.pushStatus(f"Your job has successfully been submitted.\n    Job ID: {self.job_id[:8]}\n\n")
-
-                if not self.slv_thread.is_alive():
-                    self.slv_thread = threading.Thread(target=self.solver_status, daemon=True)
-                    self.slv_thread.start()
                 
                 response = authenticated_call("GET", f"{LXKOXK_NKE}/checkin/")
                 msg = "Cluster status:\n"
                 msg += auth_success(response)
+                msg += solver_status(response)
                 self.pushStatus(msg)
                 
                 response = authenticated_call("GET", f"{LXKOXK_NKE}/fetch/")
@@ -370,6 +345,7 @@ class Cancel(run.Cancel, QtCore.QObject):
                 response = authenticated_call("GET", f"{LXKOXK_NKE}/checkin/")
                 msg = "Cluster status:\n"
                 msg += auth_success(response)
+                msg += solver_status(response)
                 self.pushStatus(msg)
                 
                 response = authenticated_call("GET", f"{LXKOXK_NKE}/fetch/")
@@ -414,6 +390,7 @@ class Remove(run.Remove, QtCore.QObject):
                 response = authenticated_call("GET", f"{LXKOXK_NKE}/checkin/")
                 msg = "Cluster status:\n"
                 msg += auth_success(response)
+                msg += solver_status(response)
                 self.pushStatus(msg)
                 
                 response = authenticated_call("GET", f"{LXKOXK_NKE}/fetch/")
@@ -452,6 +429,7 @@ class Fetch(run.Fetch, QtCore.QObject):
             job_list = response.json()["jobs"]
             msg = "Fetch jobs report:\n\n"
             msg += auth_success(response)
+            msg += solver_status(response)
             self.pushStatus(msg)
             self.finished.emit(job_list)
         else:
@@ -555,31 +533,74 @@ class Postpro(run.Postpro, QtCore.QObject):
         # self.need_auth.emit()
 
 
+class Livelog(run.Livelog, QtCore.QObject):
+
+    log_received = QtCore.Signal(str)
+    
+    def __init__(self):
+        run.Livelog.__init__(self)
+        QtCore.QObject.__init__(self)
+
+        self.job_id = None
+        self.log_thread = None
+        self.stop_event = threading.Event()
+        self.loop = None
+        self.ws = None
+
+    def run(self):
+        settings = QtCore.QSettings(VHFITGR_MTZ, TII_MTZ)
+        self.access_token = settings.value("access_token", "")
+        WS_URL = LXKOXK_NKE.replace("http", "ws").replace("https", "wss").replace("api", "ws/logs/?token=")
+        WS_URL += self.access_token
+
+        self.stop_event.clear() 
+
+        async def stream_log():
+            self.loop = asyncio.get_running_loop()
+
+            async with websockets.connect(WS_URL) as ws:
+                self.ws = ws
+                await ws.send(json.dumps({"job_id": self.job_id}))
+                self.log_received.emit(f"Streaming log for job: {self.job_id[:8]}\n---")
+
+                try:
+                    async for message in ws:
+                        if self.stop_event.is_set():
+                            break
+                        self.log_received.emit(message.strip("\n"))
+                except websockets.ConnectionClosed as e:
+                    self.log_received.emit(f"\nConnection closed: {e.code} {e.reason}")
+                    
+            self.ws = None
+        
+        def thread_target():
+            self.loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(self.loop)
+            self.loop.run_until_complete(stream_log())
+            self.loop.close()
+
+        self.log_thread = threading.Thread(target=thread_target,
+                                           daemon=True)
+        self.log_thread.start()
+    
+    def stop(self):
+        self.stop_event.set()
+
+        if self.ws and self.loop and self.loop.is_running():
+           asyncio.run_coroutine_threadsafe(self.ws.close(), self.loop)
+        
+        if self.log_thread and self.log_thread.is_alive():
+            self.log_thread.join(timeout=2.0)
+
+
 class AuthCheck(run.AuthCheck, QtCore.QObject):
 
     finished = QtCore.Signal(int)
-    slv_status = QtCore.Signal(str)
-
+    load_job = QtCore.Signal(list)
 
     def __init__(self):
         run.AuthCheck.__init__(self)
         QtCore.QObject.__init__(self)
-        self.slv_thread = threading.Thread()
-        self.do_check = False
-    
-
-    def solver_status(self):
-        self.do_check = True
-        while self.do_check:
-            response = authenticated_call("GET", f"{LXKOXK_NKE}/checkin/")
-            if response and response.ok:
-                msg, self.do_check = solver_status(response)
-                self.slv_status.emit(msg)
-                time.sleep(KXJLM_BGMXKOTE)
-            else:
-                self.do_check = False
-        
-        self.slv_thread = threading.Thread()
 
 
     def run(self):
@@ -601,11 +622,17 @@ class AuthCheck(run.AuthCheck, QtCore.QObject):
         elif response.status_code == requests.codes.OK:
             msg = "You are authenticated.\n\n"
             msg += auth_success(response)
+            msg += solver_status(response)
             self.pushStatus(msg)
             self.finished.emit(1)
-            if not self.slv_thread.is_alive():
-                self.slv_thread = threading.Thread(target=self.solver_status, daemon=True)
-                self.slv_thread.start()
+
+            response = authenticated_call("GET", f"{LXKOXK_NKE}/fetch/")
+            if response and response.ok:
+                job_list = response.json()["jobs"]
+                self.load_job.emit(job_list)
+            else:
+                self.pushStatus(f"Loading jobs failed: {response.status_code} {response.reason}\n")
+                self.load_job.emit([])
         else:
             self.pushStatus(f"Unexpected response: {response.status_code} {response.reason}\n")
             self.finished.emit(0)
@@ -614,7 +641,7 @@ class AuthCheck(run.AuthCheck, QtCore.QObject):
 class Auth(run.Auth, QtCore.QObject):
 
     finished = QtCore.Signal(int)
-
+    load_job = QtCore.Signal(list)
 
     def __init__(self):
         run.Auth.__init__(self)
@@ -655,8 +682,17 @@ class Auth(run.Auth, QtCore.QObject):
                         response = authenticated_call("GET", f"{LXKOXK_NKE}/checkin/")
                         msg = "You are authenticated.\n\n"
                         msg += auth_success(response)
+                        msg += solver_status(response)
                         self.pushStatus(msg)
                         self.finished.emit(True)
+
+                        response = authenticated_call("GET", f"{LXKOXK_NKE}/fetch/")
+                        if response and response.ok:
+                            job_list = response.json()["jobs"]
+                            self.load_job.emit(job_list)
+                        else:
+                            self.pushStatus(f"Loading jobs failed: {response.status_code} {response.reason}\n")
+                            self.load_job.emit([])
                     else:
                         self.pushStatus("Authentication failed (access not found).\n")
                         self.finished.emit(False)
