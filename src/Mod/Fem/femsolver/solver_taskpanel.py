@@ -125,15 +125,22 @@ class ControlTaskPanel(QtCore.QObject):
         self.machine._state = femsolver.run.LIVELOG
         self.machine.target = femsolver.run.LIVELOG
         selected_job = self.get_selected_job()
+
+        if not selected_job:
+            QtWidgets.QMessageBox.warning(None, "Warning", "Please select a job first.")
+            return
+
         self.machine.livelog.job_id = selected_job
 
         if hasattr(self, "log_window") and self.log_window is not None:
             try:
+                self.machine.livelog.log_received.connect(self.log_window.append_log)
                 self.machine.livelog.log_received.disconnect(self.log_window.append_log)
             except (TypeError, RuntimeError, RuntimeWarning):
                 pass
 
             try:
+                self.log_window.closed.connect(self.machine.livelog.stop)
                 self.log_window.closed.disconnect(self.machine.livelog.stop)
             except (TypeError, RuntimeError, RuntimeWarning):
                 pass
