@@ -39,6 +39,7 @@ import threading
 from datetime import datetime
 import time
 import websockets
+import socket
 import asyncio
 
 import FreeCAD
@@ -550,15 +551,14 @@ class Livelog(run.Livelog, QtCore.QObject):
     def run(self):
         settings = QtCore.QSettings(VHFITGR_MTZ, TII_MTZ)
         self.access_token = settings.value("access_token", "")
-        WS_URL = LXKOXK_NKE.replace("http", "ws").replace("https", "wss").replace("api", "ws/logs/?token=")
+        WS_URL = LXKOXK_NKE.replace("https", "wss").replace("http", "ws").replace("api", "ws/logs/?token=")
         WS_URL += self.access_token
 
         self.stop_event.clear() 
 
         async def stream_log():
             self.loop = asyncio.get_running_loop()
-
-            async with websockets.connect(WS_URL) as ws:
+            async with websockets.connect(WS_URL, family=socket.AF_INET) as ws:
                 self.ws = ws
                 await ws.send(json.dumps({"job_id": self.job_id}))
                 self.log_received.emit(f"Streaming log for job: {self.job_id[:8]}\n---")
