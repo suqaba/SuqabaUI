@@ -63,7 +63,7 @@ class FemWorkbench(Workbench):
 
     def __init__(self):
         self.__class__.Icon = FreeCAD.getResourceDir() + "Mod/Fem/Resources/icons/FemWorkbench.svg"
-        self.__class__.MenuText = "Physical Solver"
+        self.__class__.MenuText = "Simulation"
         self.__class__.ToolTip = "FEM workbench"
 
     def Initialize(self):

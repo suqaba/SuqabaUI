@@ -30,6 +30,10 @@
 #include <QMessageBox>
 #include <limits>
 #include <sstream>
+#include <QWidgetAction>
+#include <QLabel>
+#include <QLineEdit>
+#include <QTextCursor>
 #endif
 
 #include <Gui/Command.h>
@@ -52,6 +56,59 @@ TaskFemConstraintForce::TaskFemConstraintForce(ViewProviderFemConstraintForce* C
 {
   proxy = new QWidget(this);
   ui->setupUi(proxy);
+  
+  //
+  auto addUnitSuffix = [](QLineEdit* le, const QString& unit) {
+      for (QAction* a : le->actions())
+          le->removeAction(a);
+
+      auto updateWithUnit = [le, unit]() {
+          QString text = le->text();
+          QString suffix = QStringLiteral(" ") + unit;
+
+          if (text.endsWith(suffix))
+              text.chop(suffix.length());
+
+          if (!text.isEmpty() && !le->isReadOnly()) {
+              le->blockSignals(true);
+              le->setText(text + suffix);
+              le->setCursorPosition(text.length()); 
+              le->blockSignals(false);
+          }
+      };
+
+      QObject::connect(le, &QLineEdit::textChanged, le, updateWithUnit);
+      updateWithUnit();
+
+      if (le->text().trimmed().isEmpty()) {
+          le->setPlaceholderText(QStringLiteral("  %1").arg(unit));
+      }
+  };
+
+  addUnitSuffix(ui->ForceXFormulaLE, QStringLiteral("MPa"));
+  addUnitSuffix(ui->ForceYFormulaLE, QStringLiteral("MPa"));
+  addUnitSuffix(ui->ForceZFormulaLE, QStringLiteral("MPa"));
+
+  QMetaObject::connectSlotsByName(this);
+
+  // create a context menu for the listview of the references
+  createDeleteAction(ui->lw_references);
+  connect(deleteAction,
+          &QAction::triggered,
+          this,
+          &TaskFemConstraintForce::onReferenceDeleted);
+  
+  connect(ui->lw_references,
+          &QListWidget::currentItemChanged,
+          this,
+          &TaskFemConstraintForce::setSelection);
+  
+
+addUnitSuffix(ui->ForceXFormulaLE, QStringLiteral("MPa"));
+addUnitSuffix(ui->ForceYFormulaLE, QStringLiteral("MPa"));
+addUnitSuffix(ui->ForceZFormulaLE, QStringLiteral("MPa"));
+
+  //
   QMetaObject::connectSlotsByName(this);
 
   // create a context menu for the listview of the references
@@ -113,7 +170,7 @@ TaskFemConstraintForce::TaskFemConstraintForce(ViewProviderFemConstraintForce* C
     ui->lw_references->setCurrentRow(0, QItemSelectionModel::ClearAndSelect);
   }
 
-  // Connect check box values displacements
+  // Connect check box values force
   connect(ui->ForceXFormulaCB,
           &QCheckBox::toggled,
           this,
@@ -357,23 +414,36 @@ std::string TaskFemConstraintForce::get_spinzForce() const
   return ui->spinzForce->value().getSafeUserString();
 }
 
+//
+static QString cleanFormulaText(const QLineEdit* le)
+{
+    QString text = le->text();
+
+    static const QString unit = QStringLiteral(" MPa");
+
+    if (text.endsWith(unit))
+      text.chop(unit.length());
+    
+    return text.trimmed();
+}
+
 std::string TaskFemConstraintForce::get_xFormula() const
 {
-  QString xFormula = ui->ForceXFormulaLE->text();
+  QString xFormula = cleanFormulaText(ui->ForceXFormulaLE);
   xFormula.replace(QStringLiteral("\""), QStringLiteral("\\\""));
   return xFormula.toStdString();
 }
 
 std::string TaskFemConstraintForce::get_yFormula() const
 {
-  QString yFormula = ui->ForceYFormulaLE->text();
+  QString yFormula = cleanFormulaText(ui->ForceYFormulaLE);
   yFormula.replace(QStringLiteral("\""), QStringLiteral("\\\""));
   return yFormula.toStdString();
 }
 
 std::string TaskFemConstraintForce::get_zFormula() const
 {
-  QString zFormula = ui->ForceZFormulaLE->text();
+  QString zFormula = cleanFormulaText(ui->ForceZFormulaLE);
   zFormula.replace(QStringLiteral("\""), QStringLiteral("\\\""));
   return zFormula.toStdString();
 }

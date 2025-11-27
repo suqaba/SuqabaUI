@@ -85,6 +85,6 @@ void ViewProviderFemConstraintForce::updateData(const App::Property* prop)
         sw->whichChild.setValue((pcConstraint->zFree.getValue() ? -1 : 0));
     }
     else {
-        ViewProviderFemConstraint::updateData(prop);
+      ViewProviderFemConstraint::updateData(prop);
     }
 }
