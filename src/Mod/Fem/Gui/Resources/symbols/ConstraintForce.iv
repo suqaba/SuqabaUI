@@ -28,22 +28,49 @@ Separator {
 
   Separator {
 
-    Translation {
-      translation 0 3.3333334 0
-    }
-    Cone {
-      bottomRadius 0.66666669
-      height 1.3333334
+    DEF X_FORCE Switch {
 
-    }
-    Translation {
-      translation 0 -2 0
+      Separator {
 
-    }
-    Cylinder {
-      radius 0.26666668
-      height 2.6666667
+        Rotation {
+          rotation 0 0 1  1.5707964
 
+        }
+        DEF FORCE Separator {
+
+          Translation {
+            translation 0 -2 0
+
+          }
+          Cone {
+            bottomRadius 0.3
+            height 4
+
+          }
+        }
+      }
+    }
+    DEF Y_FORCE Switch {
+
+      Separator {
+
+        Rotation {
+          rotation 0 0 1  3.1415927
+
+        }
+        USE FORCE
+      }
+    }
+    DEF Z_FORCE Switch {
+
+      Separator {
+
+        Rotation {
+          rotation -1 0 0  1.5707964
+
+        }
+        USE FORCE
+      }
     }
   }
 }

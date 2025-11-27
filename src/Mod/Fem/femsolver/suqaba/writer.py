@@ -277,6 +277,50 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
         forces = self.member.cons_force
         if forces:
             for force in forces:
+                force_obj = force["Object"]
+                label     = force_obj.Label
+                fx        = "0.0"
+                fy        = "0.0"
+                fz        = "0.0"
+
+                self.neum_dict[label] = []
+
+                if force_obj.hasXFormula:
+                    fx = force_obj.xForceFormula
+                else:
+                    fx = FreeCAD.Units.Quantity(force_obj.xForce).getValueAs("MPa")
+
+                if force_obj.hasYFormula:
+                    fy = force_obj.yForceFormula
+                else:
+                    fy = FreeCAD.Units.Quantity(force_obj.yForce).getValueAs("MPa")
+
+                if force_obj.hasZFormula:
+                    fz = force_obj.zForceFormula
+                else:
+                    fz = FreeCAD.Units.Quantity(force_obj.zForce).getValueAs("MPa")
+                    
+                for obj in force_obj.References:
+                    for entity in obj[1]:
+                        face_tag = self.get_tag(entity)
+                        self.neum_dict[label].append(face_tag)
+                
+                neum_inputs.append((
+                    "        {{\n"
+                    "            \"name\"   : \"{LABEL}\",\n"
+                    "            \"load_fx\": {{\n"
+                    "                \"x\": \"{FX}\",\n"
+                    "                \"y\": \"{FY}\",\n"
+                    "                \"z\": \"{FZ}\"\n"
+                    "            }}\n"
+                    "        }}"
+                ).format(LABEL=label,
+                         FX=f"{fx}",
+                         FY=f"{fy}",
+                         FZ=f"{fz}"))
+                
+            """
+            for force in forces:
                 force_obj     = force["Object"]
                 direction_vec = force_obj.DirectionVector
                 force_mag     = force_obj.Force.getValueAs("N")
@@ -304,7 +348,7 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
                              FX=direction_vec.x * force_mag / area,
                              FY=direction_vec.y * force_mag / area,
                              FZ=direction_vec.z * force_mag / area))
-                
+            """                
         pressures = self.member.cons_pressure
         if pressures:
             for pressure in pressures:

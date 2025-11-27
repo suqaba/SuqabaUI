@@ -575,19 +575,12 @@ void CmdFemConstraintForce::activated(int)
 
     std::string FeatName = getUniqueObjectName("ConstraintForce");
 
-    openCommand(QT_TRANSLATE_NOOP("Command", "Make force load on geometry"));
+    openCommand(QT_TRANSLATE_NOOP("Command", "Make force boundary condition on face"));
     doCommand(Doc,
               "App.activeDocument().addObject(\"Fem::ConstraintForce\",\"%s\")",
               FeatName.c_str());
-    doCommand(Doc,
-              "App.activeDocument().%s.Force = \"1 N\"",
-              FeatName.c_str());  // OvG: set default to 1 N
-    doCommand(Doc,
-              "App.activeDocument().%s.Reversed = False",
-              FeatName.c_str());  // OvG: set default to False
-    doCommand(Doc,
-              "App.activeDocument().%s.Scale = 0.5",
-              FeatName.c_str());  // OvG: set initial scale to 1
+    // OvG: set initial scale to 1 
+    doCommand(Doc, "App.activeDocument().%s.Scale = 0.5", FeatName.c_str());
     doCommand(Doc,
               "App.activeDocument().%s.addObject(App.activeDocument().%s)",
               Analysis->getNameInDocument(),
@@ -599,6 +592,7 @@ void CmdFemConstraintForce::activated(int)
     updateActive();
 
     doCommand(Gui, "Gui.activeDocument().setEdit('%s')", FeatName.c_str());
+
 }
 
 bool CmdFemConstraintForce::isActive()
@@ -961,7 +955,7 @@ void CmdFemConstraintPulley::activated(int)
     doCommand(Doc, "App.activeDocument().%s.Diameter = 300.0", FeatName.c_str());
     doCommand(Doc, "App.activeDocument().%s.OtherDiameter = 100.0", FeatName.c_str());
     doCommand(Doc, "App.activeDocument().%s.CenterDistance = 500.0", FeatName.c_str());
-    doCommand(Doc, "App.activeDocument().%s.Force = 100.0", FeatName.c_str());
+    //doCommand(Doc, "App.activeDocument().%s.Force = 100.0", FeatName.c_str());
     doCommand(Doc, "App.activeDocument().%s.TensionForce = 100.0", FeatName.c_str());
     doCommand(Doc,
               "App.activeDocument().%s.addObject(App.activeDocument().%s)",

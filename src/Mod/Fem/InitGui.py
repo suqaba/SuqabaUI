@@ -63,7 +63,7 @@ class FemWorkbench(Workbench):
 
     def __init__(self):
         self.__class__.Icon = FreeCAD.getResourceDir() + "Mod/Fem/Resources/icons/FemWorkbench.svg"
-        self.__class__.MenuText = "FEM"
+        self.__class__.MenuText = "Physical Solver"
         self.__class__.ToolTip = "FEM workbench"
 
     def Initialize(self):
@@ -73,7 +73,7 @@ class FemWorkbench(Workbench):
         import femcommands.commands
         import fempreferencepages
 
-        FreeCADGui.addPreferencePage(fempreferencepages.DlgSettingsNetgen, "FEM")
+        FreeCADGui.addPreferencePage(fempreferencepages.DlgSettingsNetgen, "Simulation")
 
         # dummy usage to get flake8 and lgtm quiet
         False if Fem.__name__ else True

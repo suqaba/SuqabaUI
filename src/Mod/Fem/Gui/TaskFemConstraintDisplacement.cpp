@@ -82,6 +82,7 @@ TaskFemConstraintDisplacement::TaskFemConstraintDisplacement(
     ui->spinyDisplacement->setMaximum(max);
     ui->spinzDisplacement->setMinimum(-max);
     ui->spinzDisplacement->setMaximum(max);
+
     // ui->spinxRotation->setMinimum(-max);
     // ui->spinxRotation->setMaximum(max);
     // ui->spinyRotation->setMinimum(-max);

@@ -41,8 +41,8 @@ class Ui_TaskFemConstraintDisplacement;
 
 namespace FemGui
 {
-class TaskFemConstraintDisplacement: public TaskFemConstraintOnBoundary
-{
+  class TaskFemConstraintDisplacement: public TaskFemConstraintOnBoundary
+  {
     Q_OBJECT
 
 public:
@@ -50,26 +50,34 @@ public:
                                            QWidget* parent = nullptr);
     ~TaskFemConstraintDisplacement() override;
 
-    const std::string getReferences() const override;
-    std::string get_spinxDisplacement() const;
-    std::string get_spinyDisplacement() const;
-    std::string get_spinzDisplacement() const;
-    std::string get_spinxRotation() const;
-    std::string get_spinyRotation() const;
-    std::string get_spinzRotation() const;
-    std::string get_xFormula() const;
-    std::string get_yFormula() const;
-    std::string get_zFormula() const;
-    bool get_dispxfree() const;
-    bool get_hasDispXFormula() const;
-    bool get_dispyfree() const;
-    bool get_hasDispYFormula() const;
-    bool get_dispzfree() const;
-    bool get_hasDispZFormula() const;
-    bool get_rotxfree() const;
-    bool get_rotyfree() const;
-    bool get_rotzfree() const;
-    bool get_useFlowSurfaceForce() const;
+  const std::string getReferences() const override;
+
+  std::string get_spinxDisplacement() const;
+  std::string get_spinyDisplacement() const;
+  std::string get_spinzDisplacement() const;
+  
+  std::string get_spinxRotation() const;
+  std::string get_spinyRotation() const;
+  std::string get_spinzRotation() const;
+
+  std::string get_xFormula() const;
+  std::string get_yFormula() const;
+  std::string get_zFormula() const;
+
+  bool get_dispxfree() const;
+  bool get_hasDispXFormula() const;
+
+  bool get_dispyfree() const;
+  bool get_hasDispYFormula() const;
+
+  bool get_dispzfree() const;
+  bool get_hasDispZFormula() const;
+
+  bool get_rotxfree() const;
+  bool get_rotyfree() const;
+  bool get_rotzfree() const;
+
+  bool get_useFlowSurfaceForce() const;
 
 private Q_SLOTS:
     void onReferenceDeleted();

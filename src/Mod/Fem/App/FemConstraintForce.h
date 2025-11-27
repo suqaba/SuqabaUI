@@ -1,7 +1,9 @@
 /***************************************************************************
- *   Copyright (c) 2013 Jan Rheinländer                                    *
- *                                   <jrheinlaender@users.sourceforge.net> *
- *                                                                         *
+ *   Copyright (c) 2015 FreeCAD Developers                                 *
+ *   Authors: Michael Hindley <hindlemp@eskom.co.za>                       *
+ *            Ruan Olwagen <olwager@eskom.co.za>                           *
+ *            Oswald van Ginkel <vginkeo@eskom.co.za>                      *
+ *   Based on Force constraint by Jan Rheinländer                          *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
  *   This library is free software; you can redistribute it and/or         *
@@ -38,28 +40,31 @@ public:
     /// Constructor
     ConstraintForce();
 
-    App::PropertyForce Force;
-    App::PropertyLinkSub Direction;
-    App::PropertyBool Reversed;
-    App::PropertyVector DirectionVector;
+    // Displacement parameters
+    App::PropertyPressure xForce;
+    App::PropertyPressure yForce;
+    App::PropertyPressure zForce;
+    App::PropertyString xForceFormula;
+    App::PropertyString yForceFormula;
+    App::PropertyString zForceFormula;
+    App::PropertyBool xFree;
+    App::PropertyBool yFree;
+    App::PropertyBool zFree;
+    App::PropertyBool hasXFormula;
+    App::PropertyBool hasYFormula;
+    App::PropertyBool hasZFormula;
 
     /// recalculate the object
     App::DocumentObjectExecReturn* execute() override;
 
     /// returns the type name of the ViewProvider
-    const char* getViewProviderName() const override
-    {
-        return "FemGui::ViewProviderFemConstraintForce";
-    }
+    const char* getViewProviderName() const override;
 
 protected:
     void handleChangedPropertyType(Base::XMLReader& reader,
                                    const char* TypeName,
                                    App::Property* prop) override;
     void onChanged(const App::Property* prop) override;
-
-private:
-    Base::Vector3d naturalDirectionVector;
 };
 
 }  // namespace Fem
