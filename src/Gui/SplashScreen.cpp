@@ -316,7 +316,8 @@ QPixmap SplashScreen::splashImage()
         QString minor = QString::fromStdString(App::Application::Config()["BuildVersionMinor"]);
         QString point = QString::fromStdString(App::Application::Config()["BuildVersionPoint"]);
         QString suffix = QString::fromStdString(App::Application::Config()["BuildVersionSuffix"]);
-        QString version = QStringLiteral("%1.%2.%3%4").arg(major, minor, point, suffix);
+        QString version = QStringLiteral("");
+        // QString version = QStringLiteral("%1.%2.%3%4").arg(major, minor, point, suffix);
         QString position, fontFamily;
 
         std::map<std::string, std::string>::const_iterator te =

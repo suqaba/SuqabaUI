@@ -2,32 +2,180 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="48"
-   height="48"
-   viewBox="0 0 48 48"
+   width="351.34918mm"
+   height="351.34933mm"
+   viewBox="0 0 351.34918 351.34933"
    version="1.1"
    id="svg1"
-   xml:space="preserve"
+   sodipodi:docname="freecad.svg"
+   inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:dc="http://purl.org/dc/elements/1.1/"><title
-     id="title11">FreeCAD</title><defs
-     id="defs1" /><g
-     id="g1"
-     transform="matrix(2,0,0,2,0.11243557,0)"><path
-       d="m 22,3.9997423 -3.999742,4.0002581 h -8 V 10.999806 H 14 v 4.000259 h -3.999742 v 4.999678 L 5.9999997,24 h 4.0503843 c 0.30326,-1e-6 0.571883,-0.195269 0.66559,-0.48369 l 0.723985,-2.22828 c 0.06925,-0.213087 0.236489,-0.379833 0.449583,-0.449065 l 0.556553,-0.180868 c 0.213108,-0.06926 0.446577,-0.03248 0.627866,0.09922 l 1.894968,1.377173 c 0.245331,0.178232 0.57787,0.178229 0.823203,0 l 1.698598,-1.234547 c 0.245363,-0.178242 0.347963,-0.493948 0.254247,-0.782378 l -0.723984,-2.22828 c -0.06926,-0.213109 -0.03197,-0.446575 0.09974,-0.627866 l 0.344164,-0.473355 c 0.131697,-0.181276 0.34179,-0.288856 0.565855,-0.28887 l 2.343001,5.1e-4 c 0.303278,10e-6 0.571885,-0.19577 0.66559,-0.484207 l 0.649054,-1.996771 c 0.0937,-0.288413 -0.0089,-0.60465 -0.254247,-0.782895 L 19.538664,11.858666 C 19.357381,11.726957 19.250306,11.516889 19.250311,11.292812 V 10.70732 c 1.9e-5,-0.224072 0.107062,-0.434681 0.288353,-0.566372 L 21.711646,8.5622376 C 21.892924,8.4305313 21.999999,8.219938 22,7.9958659 Z"
-       style="fill:#418fde;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.64567;stroke-linecap:square"
-       id="path8" /><path
-       id="path7"
-       style="display:inline;fill:#ff585d;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.64567;stroke-linecap:square"
-       d="m 18,0 -4,4 h 4 V 8 L 22,4 V 0 Z M 6,16 2,20 v 4 h 4 l 4,-4 H 6 Z" /><path
-       d="M 6,0 2,4 V 20 L 6,16 V 4 h 8 l 4,-4 z"
-       style="fill:#cb333b;fill-rule:evenodd;stroke-width:2.64567;stroke-linecap:square"
-       id="path3" /><path
-       d="M 5.9999997,19.999743 H 10.000258 V 15.000065 H 14 V 10.999806 H 10.000258 V 8.0000004 h 8 V 3.9997423 H 5.9999997 Z"
-       style="fill:#fefefe;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.64567;stroke-linecap:square"
-       id="path9" /></g><metadata
-     id="metadata11"><rdf:RDF><cc:Work
-         rdf:about=""><dc:title>FreeCAD</dc:title></cc:Work></rdf:RDF></metadata></svg>
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.35981578"
+     inkscape:cx="43.077599"
+     inkscape:cy="671.17679"
+     inkscape:window-width="1916"
+     inkscape:window-height="1041"
+     inkscape:window-x="960"
+     inkscape:window-y="1098"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient63"
+       id="linearGradient362"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(1858.2183,-13.697213)"
+       x1="-17.163437"
+       y1="4249.7314"
+       x2="1120.8618"
+       y2="3544.0977" />
+    <linearGradient
+       id="linearGradient63"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#822ebe;stop-opacity:1;"
+         offset="0"
+         id="stop63" />
+      <stop
+         style="stop-color:#007bff;stop-opacity:1;"
+         offset="1"
+         id="stop64" />
+    </linearGradient>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath9">
+      <path
+         style="fill:#ffffff;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+         d="m 2741.8473,3706.4583 128.1198,221.91 -128.1197,221.912 h -256.2403 l 128.1201,221.911 -128.12,221.91 h -512.4806 l -128.1203,-221.911 128.1207,-221.911 h 256.24 l -128.1198,-221.91 128.1199,-221.911 z"
+         id="path10" />
+    </clipPath>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-14.287503,107.68536)">
+    <path
+       id="rect16"
+       clip-path="url(#clipPath9)"
+       style="fill:url(#linearGradient362);stroke-width:5.90297;stroke-linecap:round;stroke-linejoin:round"
+       inkscape:label="rect16"
+       d="m 2229.3675,3706.4587 -128.1211,221.9102 128.1211,221.9101 h -256.2402 l -128.1211,221.9121 128.1211,221.9102 h 512.4805 l 128.1191,-221.9102 -128.1191,-221.9101 h 256.2402 l 128.1191,-221.9121 -128.1191,-221.9102 z"
+       transform="matrix(0.26458333,0,0,0.26458333,-433.78941,-1021.7008)" />
+    <path
+       id="path346"
+       style="fill:none;stroke:#1a1a1f;stroke-width:15.875;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 291.65746,76.394136 h -67.79683 l -33.89842,-58.713951 33.89842,-58.713951 h 67.79683 l 33.89842,58.713686 z"
+       sodipodi:nodetypes="ccccccc" />
+    <path
+       id="path347"
+       style="fill:none;stroke:#1a1a1f;stroke-width:15.875;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 156.0638,193.82177 H 88.266779 L 54.368284,135.10782 88.266885,76.393872 H 156.0638 l 33.89841,58.713948 z"
+       sodipodi:nodetypes="ccccccc" />
+    <path
+       style="fill:none;stroke:#1a1a1f;stroke-width:15.875;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 223.86063,76.393872 33.89842,58.713948 -33.89842,58.71369 H 156.0638"
+       id="path348"
+       sodipodi:nodetypes="cccc" />
+    <path
+       style="fill:none;stroke:#1a1a1f;stroke-width:15.875;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 156.0638,76.393872 122.16538,17.680185 156.0638,-41.033766 h 67.79683"
+       id="path349"
+       sodipodi:nodetypes="cccc" />
+    <path
+       style="fill:none;stroke:#1a1a1f;stroke-width:15.875;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 223.83417,76.393872 189.96221,17.680185 223.86063,-41.033766"
+       id="path350"
+       sodipodi:nodetypes="ccc" />
+    <path
+       style="fill:none;stroke:#1a1a1f;stroke-width:15.875;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 156.0638,193.82151 189.96221,135.10782 156.0638,76.393872"
+       id="path351"
+       sodipodi:nodetypes="ccc" />
+    <circle
+       style="fill:#1a1a1f;fill-opacity:1;stroke:none;stroke-width:0.485534;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       id="circle351"
+       cx="257.75925"
+       cy="17.680632"
+       r="7.9375" />
+    <path
+       style="fill:none;stroke:#1a1a1f;stroke-width:15.875;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 156.0638,193.82151 122.16538,135.10756"
+       id="path352"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#1a1a1f;stroke-width:15.875;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 179.60351,235.72648 154.51625,192.27449"
+       id="path353" />
+    <path
+       style="fill:none;stroke:#1a1a1f;stroke-width:15.875;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 223.86063,-41.033766 33.89842,-58.713952"
+       id="path354" />
+    <path
+       style="fill:none;stroke:#1a1a1f;stroke-width:5.29167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 73.431539,135.10756 H 103.10213"
+       id="path355"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#1a1a1f;stroke-width:5.29167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 206.16662,135.10782 h 29.67037"
+       id="path356"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#1a1a1f;stroke-width:5.29167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 175.1138,76.394136 h 29.67037"
+       id="path357"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#1a1a1f;stroke-width:5.29167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 143.89826,17.681773 h 29.67037"
+       id="path358"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#1a1a1f;stroke-width:5.29167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 146.53218,92.903078 131.697,118.59835"
+       id="path359"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#1a1a1f;stroke-width:5.29167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 276.82227,17.67992 h 29.67011"
+       id="path360"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#1a1a1f;stroke-width:5.29167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 248.22743,1.170979 233.39251,-24.524296"
+       id="path361"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#1a1a1f;stroke-width:5.29167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 248.2277,34.189126 233.39224,59.884401"
+       id="path362"
+       sodipodi:nodetypes="cc" />
+    <rect
+       style="opacity:0.453;fill:none;stroke:none;stroke-width:0.647716;stroke-linecap:round"
+       id="rect366"
+       width="351.34918"
+       height="351.34918"
+       x="14.287503"
+       y="-107.68536"
+       inkscape:export-filename="../../SuqabaUI/src/Gui/Icons/freecad-icon-64.png"
+       inkscape:export-xdpi="4.6267366"
+       inkscape:export-ydpi="4.6267366" />
+  </g>
+</svg>
