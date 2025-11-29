@@ -272,7 +272,9 @@ class ControlTaskPanel(QtCore.QObject):
         self.machine.postpro.working_dir = working_dir
         self.machine.postpro.case_name = case_name
         self.machine.postpro.postpro_request = self.get_selected_quantities()
-        self.machine.postpro.need_auth.connect(self.form.enableAuth)
+        self.machine.postpro.ppro_status.connect(self.form.postproStatus)
+        self.machine.postpro.ppro_status.disconnect()
+        self.machine.postpro.ppro_status.connect(self.form.postproStatus)
         self.machine.start()
         
     
@@ -510,7 +512,7 @@ class ControlWidget(QtGui.QWidget):
 
         self.postpro_layout.addLayout(button_layout)
         
-        # Solver status log
+        # General logs
         self._statusEdt = QtGui.QPlainTextEdit()
         self._statusEdt.setReadOnly(True)
         self._statusEdt.setFixedHeight(150)
@@ -645,6 +647,10 @@ class ControlWidget(QtGui.QWidget):
         self.password_text.setDisabled(False)
         self.password_text.show()
         self.auth_group.show()
+    
+    @QtCore.Slot(str)
+    def postproStatus(self, status):
+        self._statusEdt.insertPlainText(status)
 
 
 class LogWindow(QtWidgets.QDialog):

@@ -30,6 +30,7 @@ __FcUrl__ = "https://www.freecad.org"
 #  @{
 
 import os
+import subprocess
 import zipfile
 import requests
 from .network import ipv4_session
@@ -37,7 +38,6 @@ import pathlib
 import json
 import threading
 from datetime import datetime
-import time
 import websockets
 import socket
 import asyncio
@@ -507,29 +507,39 @@ class Results(run.Results, QtCore.QObject):
 
 class Postpro(run.Postpro, QtCore.QObject):
 
-    need_auth = QtCore.Signal()
-
+    ppro_status = QtCore.Signal(str)
 
     def __init__(self):
         run.Postpro.__init__(self)
         QtCore.QObject.__init__(self)
-        self.mode = None
         self.job_id = None
         self.working_dir = None
         self.case_name = None
         self.postpro_request = None
 
-    
+    def _stream_worker_output(self):
+        for line in iter(self.process.stdout.readline, ''):
+            if "Suqaba" not in line:
+                self.ppro_status.emit(line)
+
     def run(self):
+        moddir = FreeCAD.getHomePath()
+        bindir = os.path.join(moddir, "bin")
+        cmd = os.path.join(bindir, "SuqabaUICmd")
+        script_path = f"{moddir}Mod/Fem/femsolver/suqaba/postpro_worker.py"
+
         self.pushStatus(f"Postprocessing of job {self.job_id[:8]} has been initialized...\n\n")
-        doc = FreeCAD.ActiveDocument
-        obj = doc.addObject("Fem::SuqabaPostpro")
-        obj.WorkingDir = self.working_dir
-        obj.CaseName = self.case_name
-        obj.setPostproRequest(self.postpro_request)
-        obj.run()
-        doc.removeObject(obj.Name)
-        self.pushStatus(f"Postprocessing of job {self.job_id[:8]} is done.\n")
+        
+        args = [cmd,
+                script_path,
+                self.working_dir,
+                self.case_name,
+                json.dumps(self.postpro_request)]
+        self.process = subprocess.Popen(args,
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.STDOUT,
+                                        text=True)
+        threading.Thread(target=self._stream_worker_output, daemon=True).start()
 
 
 class Livelog(run.Livelog, QtCore.QObject):

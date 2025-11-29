@@ -57,6 +57,7 @@ int SuqabaPostpro::run()
   std::string input_fullpath = working_dir + "/" + case_name + ".zst";
   std::string    output_file = working_dir + "/" + case_name + ".vtu";
   
+  std::cout << "Extracting results..." << std::endl;
   SuqabaMesh mesh;
   std::vector<std::unique_ptr<SuqabaField>> fields;
   SuqabaZstdRead(input_fullpath, mesh, fields);
@@ -146,6 +147,7 @@ int SuqabaPostpro::run()
   vtk_xml->SetCompressionLevel(5);
 
   vtk_xml->Write();
+  std::cout << "Posprocessing done." << std::endl;
   return 0;
 }
 
