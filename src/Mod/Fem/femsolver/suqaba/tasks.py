@@ -526,12 +526,10 @@ class Postpro(run.Postpro, QtCore.QObject):
         obj = doc.addObject("Fem::SuqabaPostpro")
         obj.WorkingDir = self.working_dir
         obj.CaseName = self.case_name
-        self.pushStatus(f"Input file {obj.WorkingDir}/{obj.CaseName}.zst\n\n")
         obj.setPostproRequest(self.postpro_request)
         obj.run()
         doc.removeObject(obj.Name)
-        self.pushStatus(f"Postprocessing of job {self.job_id} done.\n")
-        # self.need_auth.emit()
+        self.pushStatus(f"Postprocessing of job {self.job_id[:8]} is done.\n")
 
 
 class Livelog(run.Livelog, QtCore.QObject):
