@@ -175,6 +175,9 @@ class ControlTaskPanel(QtCore.QObject):
         self.machine._state = femsolver.run.RESULTS
         self.machine.target = femsolver.run.RESULTS
         self.machine.results.job_id = selected_job
+        self.machine.results.dl_status.connect(self.form.pullStatus)
+        self.machine.results.dl_status.disconnect()
+        self.machine.results.dl_status.connect(self.form.pullStatus)
         self.machine.results.need_auth.connect(self.form.enableAuth)
         self.machine.start()
     
@@ -647,6 +650,11 @@ class ControlWidget(QtGui.QWidget):
         self.password_text.setDisabled(False)
         self.password_text.show()
         self.auth_group.show()
+    
+    @QtCore.Slot(str)
+    def pullStatus(self, status):
+        self._statusEdt.setPlainText("")
+        self._statusEdt.insertPlainText(status)
     
     @QtCore.Slot(str)
     def postproStatus(self, status):

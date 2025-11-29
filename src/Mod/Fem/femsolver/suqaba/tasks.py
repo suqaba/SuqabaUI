@@ -446,6 +446,7 @@ class Fetch(run.Fetch, QtCore.QObject):
 class Results(run.Results, QtCore.QObject):
 
     need_auth = QtCore.Signal()
+    dl_status = QtCore.Signal(str)
 
 
     def __init__(self):
@@ -456,7 +457,7 @@ class Results(run.Results, QtCore.QObject):
     
     def run(self):
         if self.job_id:
-            self.pushStatus(f"Downloading Job {self.job_id[:8]}... This may take a little while.\nThank you for your patience.\n\n")
+            msg = f"Downloading Job {self.job_id[:8]}... This may take a little while.\nThank you for your patience.\n\n"
             endpoint = f"{LXKOXK_NKE}/download/{self.job_id}/"
             response = authenticated_call("GET",
                                           endpoint,
@@ -465,6 +466,8 @@ class Results(run.Results, QtCore.QObject):
             if response and response.ok:
                 res_filename = "job_result.zip"
                 content_disposition = response.headers.get("Content-Disposition")
+                total_size = int(response.headers.get("Content-Length", 1))
+                
                 if content_disposition:
                     res_filename = content_disposition.split("filename=\"")[-1][:-1]
 
@@ -479,16 +482,21 @@ class Results(run.Results, QtCore.QObject):
 
                 result_path = os.path.join(self.directory, res_filename)
 
+                dl_size = 0
                 with open(result_path, "wb") as f:
                     for chunk in response.iter_content(chunk_size=8192):
                         if chunk:
                             f.write(chunk)
+                            dl_size += len(chunk)
+                            percent = 100. * dl_size / total_size
+                            msg = msg.split("Downloaded")[0] + f"Downloaded {percent:.1f}%..."
+                            self.dl_status.emit(msg)
                 
                 with zipfile.ZipFile(result_path, 'r') as zip_ref:
                     zip_ref.extractall(self.directory)
                 
                 os.remove(result_path)
-                self.pushStatus(f"Result files downloaded successfully in {self.directory}/{res_filename[:-4]}\n")
+                self.pushStatus(f"\n\nResult files downloaded successfully in {self.directory}/{res_filename[:-4]}\n")
             else:
                 if response == None:
                     self.pushStatus("Please, authenticate yourself.\n")
@@ -529,7 +537,7 @@ class Postpro(run.Postpro, QtCore.QObject):
         script_path = f"{moddir}Mod/Fem/femsolver/suqaba/postpro_worker.py"
 
         self.pushStatus(f"Postprocessing of job {self.job_id[:8]} has been initialized...\n\n")
-        
+
         args = [cmd,
                 script_path,
                 self.working_dir,
