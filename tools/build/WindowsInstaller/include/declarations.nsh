@@ -27,9 +27,9 @@ Configuration and variables of FreeCAD installer
 #!define APP_DIR_USERDATA "${APP_NAME}${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}"
 !define APP_SHORTCUT_INFO "${APP_NAME} - Your Own 3D Parametric Modeler"
 !define APP_INFO "Install/Uninstall ${APP_NAME}"
-!define APP_WEBPAGE "https://www.freecad.org/"
+!define APP_WEBPAGE "https://suqaba.com"
 !define APP_WEBPAGE_INFO "${APP_NAME} Website"
-!define APP_WIKI "https://wiki.freecad.org/Main_Page"
+!define APP_WIKI "https://suqaba.com/faq"
 !define APP_WIKI_INFO "${APP_NAME} Wiki"
 !define APP_COPYRIGHT "${APP_NAME} is Copyright © 2001-${COPYRIGHT_YEAR} by the ${APP_NAME} Team"
 
@@ -58,7 +58,7 @@ Configuration and variables of FreeCAD installer
 
 !define SETUP_EXE ${ExeFile}
 
-!define SETUP_ICON "icons\FreeCAD.ico"
+!define SETUP_ICON "icons\SuqabaUI.ico"
 !define SETUP_HEADERIMAGE "graphics\header.bmp"
 !define SETUP_WIZARDIMAGE "graphics\orange.bmp"
 !define SETUP_UNINSTALLER "Uninstall-${APP_NAME}.exe"
