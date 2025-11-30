@@ -49,7 +49,7 @@ ${LangFileString} NewerInstalled "You are trying to install an older version of 
 #${LangFileString} FinishPageMessage "Congratulations! FreeCAD has been installed successfully.$\r$\n\
 #					$\r$\n\
 #					(The first start of FreeCAD might take some seconds.)"
-${LangFileString} FinishPageRun "Launch FreeCAD"
+${LangFileString} FinishPageRun "Launch SuqabaUI"
 
 ${LangFileString} UnNotInRegistryLabel "Unable to find FreeCAD in the registry.$\r$\n\
 					Shortcuts on the desktop and in the Start Menu will not be removed."
