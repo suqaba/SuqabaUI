@@ -30,10 +30,10 @@ __FcUrl__ = "https://www.freecad.org"
 #  @{
 
 import os
+import sys
 import subprocess
 import zipfile
 import requests
-from .network import ipv4_session
 import pathlib
 import json
 import threading
@@ -41,6 +41,7 @@ from datetime import datetime
 import websockets
 import socket
 import asyncio
+from decouple import config
 
 import FreeCAD
 from PySide import QtCore
@@ -50,7 +51,7 @@ from .. import run
 from .. import settings
 from femtools import femutils
 from femtools import membertools
-from decouple import config
+from .network import ipv4_session
 
 
 def authenticated_call(mode, endpoint, stream=None, file=None):
@@ -458,6 +459,7 @@ class Results(run.Results, QtCore.QObject):
     def run(self):
         if self.job_id:
             msg = f"Downloading Job {self.job_id[:8]}... This may take a little while.\nThank you for your patience.\n\n"
+            self.pushStatus(msg)
             endpoint = f"{LXKOXK_NKE}/download/{self.job_id}/"
             response = authenticated_call("GET",
                                           endpoint,
@@ -536,17 +538,22 @@ class Postpro(run.Postpro, QtCore.QObject):
         cmd = os.path.join(bindir, "SuqabaUICmd")
         script_path = f"{moddir}Mod/Fem/femsolver/suqaba/postpro_worker.py"
 
-        self.pushStatus(f"Postprocessing of job {self.job_id[:8]} has been initialized...\n\n")
+        self.pushStatus(f"Postprocessing of job {self.job_id[:8]} has been initialized...\n")
 
         args = [cmd,
                 script_path,
                 self.working_dir,
                 self.case_name,
                 json.dumps(self.postpro_request)]
-        self.process = subprocess.Popen(args,
-                                        stdout=subprocess.PIPE,
-                                        stderr=subprocess.STDOUT,
-                                        text=True)
+
+        kwargs = { "stdout": subprocess.PIPE,
+                   "stderr": subprocess.STDOUT,
+                   "text": True }
+
+        if sys.platform == "win32":
+            kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
+        
+        self.process = subprocess.Popen(args, **kwargs)
         threading.Thread(target=self._stream_worker_output, daemon=True).start()
 
 
