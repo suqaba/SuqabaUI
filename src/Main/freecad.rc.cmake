@@ -19,12 +19,12 @@ BEGIN
     BEGIN
         BLOCK "040904b0" // 409 stands for US English
         BEGIN
-            VALUE "CompanyName", "${PROJECT_NAME} Team"
-            VALUE "FileDescription", "${PROJECT_NAME} main executable"
-            VALUE "InternalName", "FreeCAD.exe"
-            VALUE "LegalCopyright", "Copyright (C) 2022"
-            VALUE "OriginalFilename", "FreeCAD.exe"
-            VALUE "ProductName", "${PROJECT_NAME}"
+            VALUE "CompanyName", "$Suqaba Team"
+            VALUE "FileDescription", "SuqabaUI main executable"
+            VALUE "InternalName", "SuqabaUI.exe"
+            VALUE "LegalCopyright", "Copyright (C) 2025"
+            VALUE "OriginalFilename", "SuqabaUI.exe"
+            VALUE "ProductName", "SuqabaUI"
             VALUE "ProductVersion", "${PACKAGE_VERSION}${PACKAGE_VERSION_SUFFIX}"
         END
     END
