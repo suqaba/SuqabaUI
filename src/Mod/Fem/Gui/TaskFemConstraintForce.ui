@@ -2,15 +2,12 @@
 <ui version="4.0">
  <class>TaskFemConstraintForce</class>
  <widget class="QWidget" name="TaskFemConstraintForce">
-  <property name="enabled">
-   <bool>true</bool>
-  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>300</width>
-    <height>649</height>
+    <height>243</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,12 +16,6 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
-  <property name="minimumSize">
-   <size>
-    <width>0</width>
-    <height>0</height>
-   </size>
-  </property>
   <property name="baseSize">
    <size>
     <width>400</width>
@@ -32,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Prescribed Surface Load</string>
+   <string>Prescribed Force</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -43,259 +34,110 @@
     </widget>
    </item>
    <item>
-    <layout class="QGridLayout" name="gridLayout_7">
-     <item row="0" column="0">
-      <layout class="QHBoxLayout" name="hLayout1">
-       <item>
-        <widget class="QToolButton" name="btnAdd">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Add</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QToolButton" name="btnRemove">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Remove</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="1" column="0">
-      <widget class="QListWidget" name="lw_references">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QToolButton" name="btnAdd">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>100</height>
-        </size>
+       <property name="text">
+        <string>Add</string>
        </property>
-       <property name="selectionMode">
-        <enum>QAbstractItemView::ExtendedSelection</enum>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="btnRemove">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Remove</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
     </layout>
    </item>
    <item>
-    <widget class="QGroupBox" name="ForceXGB">
-     <property name="title">
-      <string>Surface Load x</string>
+    <widget class="QListWidget" name="listReferences">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
-     <!-- <property name="checkable">
-      <bool>true</bool>
-     </property> -->
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="1" column="0">
-       <widget class="QLineEdit" name="ForceXFormulaLE"/>
-      </item>
-      <item row="1" column="1">
-       <widget class="QCheckBox" name="ForceXFormulaCB">
-        <!-- <property name="toolTip">
-         <string>Formulas are only valid
-for the Elmer solver</string>
-        </property> -->
-        <property name="text">
-         <string>Formula</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="Gui::QuantitySpinBox" name="spinxForce">
-        <property name="unit" stdset="0">
-         <string notr="true">Pa</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="ForceYGB">
-     <property name="title">
-      <string>Surface Load y</string>
-     </property>
-     <!-- <property name="checkable">
-      <bool>true</bool>
-     </property> -->
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="1" column="0">
-       <widget class="QLineEdit" name="ForceYFormulaLE"/>
-      </item>
-      <item row="1" column="1">
-       <widget class="QCheckBox" name="ForceYFormulaCB">
-        <!-- <property name="toolTip">
-         <string>Formulas are only valid
-for the Elmer solver</string>
-        </property> -->
-        <property name="text">
-         <string>Formula</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="Gui::QuantitySpinBox" name="spinyForce">
-        <property name="unit" stdset="0">
-         <string notr="true">Pa</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="ForceZGB">
-     <property name="title">
-      <string>Surface Load z</string>
-     </property>
-     <!-- <property name="checkable">
-      <bool>true</bool>
-     </property> -->
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="1" column="0">
-       <widget class="QLineEdit" name="ForceZFormulaLE"/>
-      </item>
-      <item row="1" column="1">
-       <widget class="QCheckBox" name="ForceZFormulaCB">
-        <!-- <property name="toolTip">
-         <string>Formulas are only valid
-for the Elmer solver</string>
-        </property> -->
-        <property name="text">
-         <string>Formula</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="Gui::QuantitySpinBox" name="spinzForce">
-        <property name="unit" stdset="0">
-         <string>Pa</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <!-- <item>
-    <widget class="QCheckBox" name="FlowForceCB">
-     <property name="toolTip">
-      <string>Flow solution is used to determine
-surface force (and thus displacement)
-generated by the flow
-(Option only applies for Elmer solver)</string>
-     </property>
-     <property name="text">
-      <string>Surface force by flow</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="Line" name="line">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="label">
-     <property name="maximumSize">
+     <property name="minimumSize">
       <size>
-       <width>400</width>
-       <height>16777215</height>
+       <width>0</width>
+       <height>100</height>
       </size>
      </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="layoutForce">
+     <item>
+      <widget class="QLabel" name="labelForce">
+       <property name="text">
+        <string>Force</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="Gui::QuantitySpinBox" name="spinForce">
+       <property name="unit" stdset="0">
+        <string>N</string>
+       </property>
+       <property name="minimum">
+        <double>0.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>500.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="layoutDirection">
+     <item>
+      <widget class="QToolButton" name="buttonDirection">
+       <property name="toolTip">
+        <string>Select a planar edge or face, then press this button</string>
+       </property>
+       <property name="text">
+        <string>Direction</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineDirection">
+       <property name="toolTip">
+        <string>The direction of the edge or the direction of the
+normal vector of the face is used as direction</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="checkReverse">
      <property name="text">
-      <string>Rotations are only valid for Beam and Shell elements.</string>
-     </property>
-     <property name="scaledContents">
-      <bool>false</bool>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
+      <string>Reverse direction</string>
      </property>
     </widget>
    </item>
-   <item>
-    <widget class="QGroupBox" name="RotationXGB">
-     <property name="title">
-      <string>Rotation x</string>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_6">
-      <item row="0" column="0">
-       <widget class="Gui::QuantitySpinBox" name="spinxRotation">
-        <property name="unit" stdset="0">
-         <string notr="true">deg</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="RotationYGB">
-     <property name="title">
-      <string>Rotation y</string>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_5">
-      <item row="0" column="0">
-       <widget class="Gui::QuantitySpinBox" name="spinyRotation">
-        <property name="unit" stdset="0">
-         <string notr="true">deg</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="RotationZGB">
-     <property name="title">
-      <string>Rotation z</string>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_4">
-      <item row="0" column="0">
-       <widget class="Gui::QuantitySpinBox" name="spinzRotation">
-        <property name="unit" stdset="0">
-         <string notr="true">deg</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item> -->
   </layout>
  </widget>
  <customwidgets>
@@ -306,102 +148,5 @@ generated by the flow
   </customwidget>
  </customwidgets>
  <resources/>
- <!-- <connections>
-  <connection>
-   <sender>FlowForceCB</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>RotationXGB</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>149</x>
-     <y>394</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>149</x>
-     <y>463</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>FlowForceCB</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>DisplacementXGB</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>149</x>
-     <y>394</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>149</x>
-     <y>170</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>FlowForceCB</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>DisplacementYGB</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>149</x>
-     <y>394</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>149</x>
-     <y>255</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>FlowForceCB</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>DisplacementZGB</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>149</x>
-     <y>394</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>149</x>
-     <y>340</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>FlowForceCB</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>RotationYGB</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>149</x>
-     <y>394</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>149</x>
-     <y>522</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>FlowForceCB</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>RotationZGB</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>149</x>
-     <y>394</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>149</x>
-     <y>581</y>
-    </hint>
-   </hints>
-  </connection>
- </connections> -->
+ <connections/>
 </ui>

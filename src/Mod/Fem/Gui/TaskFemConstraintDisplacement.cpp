@@ -30,9 +30,6 @@
 #include <QMessageBox>
 #include <limits>
 #include <sstream>
-#include <QWidgetAction>
-#include <QLabel>
-#include <QLineEdit>
 #endif
 
 #include <Gui/Command.h>
@@ -57,60 +54,25 @@ TaskFemConstraintDisplacement::TaskFemConstraintDisplacement(
 {
     proxy = new QWidget(this);
     ui->setupUi(proxy);
+    QMetaObject::connectSlotsByName(this);
 
-  //
-  auto addUnitSuffix = [](QLineEdit* le, const QString& unit) {
-      for (QAction* a : le->actions())
-          le->removeAction(a);
+    // create a context menu for the listview of the references
+    createDeleteAction(ui->lw_references);
+    connect(deleteAction,
+            &QAction::triggered,
+            this,
+            &TaskFemConstraintDisplacement::onReferenceDeleted);
 
-      auto updateWithUnit = [le, unit]() {
-          QString text = le->text();
-          QString suffix = QStringLiteral(" ") + unit;
+    connect(ui->lw_references,
+            &QListWidget::currentItemChanged,
+            this,
+            &TaskFemConstraintDisplacement::setSelection);
+    connect(ui->lw_references,
+            &QListWidget::itemClicked,
+            this,
+            &TaskFemConstraintDisplacement::setSelection);
 
-          if (text.endsWith(suffix))
-              text.chop(suffix.length());
-
-          if (!text.isEmpty() && !le->isReadOnly()) {
-              le->blockSignals(true);
-              le->setText(text + suffix);
-              le->setCursorPosition(text.length()); 
-              le->blockSignals(false);
-          }
-      };
-
-      QObject::connect(le, &QLineEdit::textChanged, le, updateWithUnit);
-      updateWithUnit();
-
-      if (le->text().trimmed().isEmpty()) {
-          le->setPlaceholderText(QStringLiteral("  %1").arg(unit));
-      }
-  };
-  
-  addUnitSuffix(ui->DisplacementXFormulaLE, QStringLiteral("mm"));
-  addUnitSuffix(ui->DisplacementYFormulaLE, QStringLiteral("mm"));
-  addUnitSuffix(ui->DisplacementZFormulaLE, QStringLiteral("mm"));
-
-
-  //
-  QMetaObject::connectSlotsByName(this);
-
-  // create a context menu for the listview of the references
-  createDeleteAction(ui->lw_references);
-  connect(deleteAction,
-          &QAction::triggered,
-          this,
-          &TaskFemConstraintDisplacement::onReferenceDeleted);
-
-  connect(ui->lw_references,
-          &QListWidget::currentItemChanged,
-          this,
-          &TaskFemConstraintDisplacement::setSelection);
-  connect(ui->lw_references,
-          &QListWidget::itemClicked,
-          this,
-          &TaskFemConstraintDisplacement::setSelection);
-
-  this->groupLayout()->addWidget(proxy);
+    this->groupLayout()->addWidget(proxy);
 
     // setup ranges
     constexpr float max = std::numeric_limits<float>::max();
@@ -120,7 +82,6 @@ TaskFemConstraintDisplacement::TaskFemConstraintDisplacement(
     ui->spinyDisplacement->setMaximum(max);
     ui->spinzDisplacement->setMinimum(-max);
     ui->spinzDisplacement->setMaximum(max);
-
     // ui->spinxRotation->setMinimum(-max);
     // ui->spinxRotation->setMaximum(max);
     // ui->spinyRotation->setMinimum(-max);
@@ -453,39 +414,23 @@ std::string TaskFemConstraintDisplacement::get_spinzRotation() const
     return "";
 }
 
-//
-static QString cleanFormulaText(const QLineEdit* le)
-{
-    QString text = le->text();
-
-    static const QString unit = QStringLiteral(" mm");
-
-    if (text.endsWith(unit))
-      text.chop(unit.length());
-    
-    return text.trimmed();
-}
-
 std::string TaskFemConstraintDisplacement::get_xFormula() const
 {
-    //QString xFormula = ui->DisplacementXFormulaLE->text();
-    QString xFormula = cleanFormulaText(ui->DisplacementXFormulaLE);
+    QString xFormula = ui->DisplacementXFormulaLE->text();
     xFormula.replace(QStringLiteral("\""), QStringLiteral("\\\""));
     return xFormula.toStdString();
 }
 
 std::string TaskFemConstraintDisplacement::get_yFormula() const
 {
-    //QString yFormula = ui->DisplacementYFormulaLE->text();
-    QString yFormula = cleanFormulaText(ui->DisplacementYFormulaLE);
+    QString yFormula = ui->DisplacementYFormulaLE->text();
     yFormula.replace(QStringLiteral("\""), QStringLiteral("\\\""));
     return yFormula.toStdString();
 }
 
 std::string TaskFemConstraintDisplacement::get_zFormula() const
 {
-    //QString zFormula = ui->DisplacementZFormulaLE->text();
-    QString zFormula = cleanFormulaText(ui->DisplacementZFormulaLE);
+    QString zFormula = ui->DisplacementZFormulaLE->text();
     zFormula.replace(QStringLiteral("\""), QStringLiteral("\\\""));
     return zFormula.toStdString();
 }

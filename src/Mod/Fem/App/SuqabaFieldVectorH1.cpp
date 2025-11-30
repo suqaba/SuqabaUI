@@ -51,10 +51,7 @@ Eigen::Matrix<f64, 45, 1> SuqabaFieldVectorH1::getFieldElementT4Sup(const u64 ii
 }
 
 
-
-
 //
-//std::array<Eigen::Matrix<f64, 6, 4>, 4> FieldVectorH1::getGradSymElementT4sup(const u64 iel)
 void SuqabaFieldVectorH1::getGradSymElementT4sup(const u64 iel, std::array<Eigen::Matrix<f64, 6, 4>, 4> &eps)
 {
   Eigen::Matrix<f64, 30, 1> u_T10;
@@ -127,9 +124,9 @@ void SuqabaFieldVectorH1::getGradSymElementT4sup(const u64 iel, std::array<Eigen
 }
 
 //
-std::unique_ptr<SuqabaFieldTensorL2> SuqabaFieldVectorH1::getFieldGradSym(const std::string& name_field)
+std::unique_ptr<SuqabaFieldTensorL2> SuqabaFieldVectorH1::getFieldGradSym(const std::string& name_field, const std::string& unit)
 {
-  auto field_tensor = std::make_unique<SuqabaFieldTensorL2>(name_field, 6 * 4 * mesh.getElementT4SupCount(), getMesh());
+  auto field_tensor = std::make_unique<SuqabaFieldTensorL2>(name_field, unit, 6 * 4 * mesh.getElementT4SupCount(), getMesh());
 
   std::array<Eigen::Matrix<f64, 6, 4>, 4> eps;
   for (u64 i = 0; i < mesh.getElementT4Count(); ++i)

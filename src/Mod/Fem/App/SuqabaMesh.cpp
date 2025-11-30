@@ -20,8 +20,6 @@ void SuqabaMesh::setMesh(char *ptr)
   node.resize(4 * size.elem);
   edge.resize(6 * size.elem);
 
-  std::cout << "Mesh size : " << size.node << " " << size.edge << " " << size.elem << "\n";
-  
   u64 offset_bytes = 0;
   
   u64 size_bytes = 3 * size.node * sizeof(u64);

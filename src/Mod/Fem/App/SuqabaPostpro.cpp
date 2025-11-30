@@ -66,7 +66,7 @@ int SuqabaPostpro::run()
   for (auto& field : fields)    
     if (auto *field_vector = dynamic_cast<SuqabaFieldVectorH1*>(field.get()))
       if (field_vector->getName() == "Displacement")
-        fields.push_back(field_vector->getFieldGradSym("Strain"));
+        fields.push_back(field_vector->getFieldGradSym("Strain", "(mm/mm)"));
   
   vtkNew<vtkUnstructuredGrid> vtk_unstructured_grid = mesh.getVtk();
   

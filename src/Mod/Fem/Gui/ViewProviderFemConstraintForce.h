@@ -1,9 +1,7 @@
 /***************************************************************************
- *   Copyright (c) 2015 FreeCAD Developers                                 *
- *   Authors: Michael Hindley <hindlemp@eskom.co.za>                       *
- *            Ruan Olwagen <olwager@eskom.co.za>                           *
- *            Oswald van Ginkel <vginkeo@eskom.co.za>                      *
- *   Based on Force constraint by Jan Rheinländer                          *
+ *   Copyright (c) 2013 Jan Rheinländer                                    *
+ *                                   <jrheinlaender@users.sourceforge.net> *
+ *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
  *   This library is free software; you can redistribute it and/or         *
@@ -23,6 +21,7 @@
  *                                                                         *
  ***************************************************************************/
 
+
 #ifndef GUI_VIEWPROVIDERFEMCONSTRAINTFORCE_H
 #define GUI_VIEWPROVIDERFEMCONSTRAINTFORCE_H
 
@@ -37,14 +36,24 @@ class FemGuiExport ViewProviderFemConstraintForce
     PROPERTY_HEADER_WITH_OVERRIDE(FemGui::ViewProviderFemConstraintForce);
 
 public:
+    /// Constructor
     ViewProviderFemConstraintForce();
     ~ViewProviderFemConstraintForce() override;
+
     void updateData(const App::Property*) override;
 
 protected:
     bool setEdit(int ModNum) override;
+    void transformSymbol(const Base::Vector3d& point,
+                         const Base::Vector3d& normal,
+                         SbMatrix& mat) const override;
+
+private:
+    /// Direction of the force
+    Base::Vector3f forceDirection;
 };
 
 }  // namespace FemGui
+
 
 #endif  // GUI_VIEWPROVIDERFEMCONSTRAINTFORCE_H

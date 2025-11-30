@@ -15,14 +15,14 @@ std::string SuqabaFieldTensor::toStringYieldCriterion(SuqabaFieldTensor::YieldCr
 //
 void SuqabaFieldTensor::insertVtkField(vtkNew<vtkUnstructuredGrid>& vtk_unstructured_grid)
 {
-  std::array<std::string, 6> field_name = {" xx", " yy", " zz", " xy", " yz", " xz"};
+  std::array<std::string, 6> field_name = {" xx ", " yy ", " zz ", " xy ", " yz ", " xz "};
 
   std::array<vtkNew<vtkDoubleArray>, 6> vtk_field;
   std::array<f64*, 6> ptr_field;
   
   for (u64 i = 0; i < 6; ++i)
     {
-      vtk_field[i]->SetName((name + field_name[i]).c_str());
+      vtk_field[i]->SetName((name + field_name[i] + unit).c_str());
       vtk_field[i]->SetNumberOfComponents(1);
       vtk_field[i]->SetNumberOfTuples(getSizeField());
       ptr_field[i] = vtk_field[i]->GetPointer(0);
@@ -87,8 +87,8 @@ f64 SuqabaFieldTensor::getNorm<SuqabaFieldTensor::YieldCriterion::Tresca>(const 
 template<SuqabaFieldTensor::YieldCriterion YC>
 std::unique_ptr<SuqabaFieldScalarL2<1>> SuqabaFieldTensor::getFieldNorm()
  {   
-   auto field_yc = std::make_unique<SuqabaFieldScalarL2<1>>("Equivalent " + name + " " + toStringYieldCriterion(YC), 4 * mesh.getElementT4SupCount(), getMesh());
-   std::cout << "YC : " << name << " "  << toStringYieldCriterion(YC) << "\n";
+   auto field_yc = std::make_unique<SuqabaFieldScalarL2<1>>("Equivalent " + name + " " + toStringYieldCriterion(YC), unit, 4 * mesh.getElementT4SupCount(), getMesh());
+
    u64 ii = 0;
    for (u64 i = 0; i < mesh.getElementT4Count(); ++i)
      for (u64 j = 0; j < 4; ++j)

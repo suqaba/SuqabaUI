@@ -6,8 +6,6 @@ void SuqabaZstdRead(const std::string& filename, SuqabaMesh& mesh, std::vector<s
   std::ifstream file(filename, std::ios::binary);
     
   std::string line;
-  u64 total_bytes = 0;
-
   std::getline(file, line);
   std::istringstream iss(line);
 
@@ -22,11 +20,14 @@ void SuqabaZstdRead(const std::string& filename, SuqabaMesh& mesh, std::vector<s
       if (line == "---") break;
       std::istringstream iss(line);
 
-      std::string name, type, space;
+      std::string name, unite, type, space;
       u64 size;
-      iss >> name >> type >> space >> size;
+      iss >> name >> unite >> type >> space >> size;
 
-      fields.push_back(createField(name, type, space, size, mesh));
+      if (unite == "(None)")
+        unite = "";
+      
+      fields.push_back(createField(name, unite, type, space, size, mesh));
     }
 
   //
@@ -40,7 +41,7 @@ void SuqabaZstdRead(const std::string& filename, SuqabaMesh& mesh, std::vector<s
 
   //
   std::vector<char> data(raw_size);
-  u64 dsize = ZSTD_decompress(data.data(), raw_size, compressed.data(), comp_size);
+  ZSTD_decompress(data.data(), raw_size, compressed.data(), comp_size);
 
   mesh.setMesh(data.data());
 

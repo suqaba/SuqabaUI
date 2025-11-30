@@ -376,7 +376,7 @@ void CmdFemConstraintDisplacement::activated(int)
               "App.activeDocument().addObject(\"Fem::ConstraintDisplacement\",\"%s\")",
               FeatName.c_str());
     // OvG: set initial scale to 1
-    doCommand(Doc, "App.activeDocument().%s.Scale = 0.5", FeatName.c_str());
+    doCommand(Doc, "App.activeDocument().%s.Scale = 0.25", FeatName.c_str());
     doCommand(Doc,
               "App.activeDocument().%s.addObject(App.activeDocument().%s)",
               Analysis->getNameInDocument(),
@@ -426,7 +426,7 @@ void CmdFemConstraintFixed::activated(int)
               "App.activeDocument().addObject(\"Fem::ConstraintFixed\",\"%s\")",
               FeatName.c_str());
     // OvG: set initial scale to 1
-    doCommand(Doc, "App.activeDocument().%s.Scale = 0.5", FeatName.c_str());
+    doCommand(Doc, "App.activeDocument().%s.Scale = 0.25", FeatName.c_str());
     doCommand(Doc,
               "App.activeDocument().%s.addObject(App.activeDocument().%s)",
               Analysis->getNameInDocument(),
@@ -580,7 +580,7 @@ void CmdFemConstraintForce::activated(int)
               "App.activeDocument().addObject(\"Fem::ConstraintForce\",\"%s\")",
               FeatName.c_str());
     // OvG: set initial scale to 1 
-    doCommand(Doc, "App.activeDocument().%s.Scale = 0.5", FeatName.c_str());
+    doCommand(Doc, "App.activeDocument().%s.Scale = 0.25", FeatName.c_str());
     doCommand(Doc,
               "App.activeDocument().%s.addObject(App.activeDocument().%s)",
               Analysis->getNameInDocument(),
@@ -848,7 +848,7 @@ void CmdFemConstraintPressure::activated(int)
               "App.activeDocument().%s.Reversed = False",
               FeatName.c_str());  // OvG: set default to False
     // OvG: set initial scale to 1
-    doCommand(Doc, "App.activeDocument().%s.Scale = 0.5", FeatName.c_str());
+    doCommand(Doc, "App.activeDocument().%s.Scale = 0.25", FeatName.c_str());
     doCommand(Doc,
               "App.activeDocument().%s.addObject(App.activeDocument().%s)",
               Analysis->getNameInDocument(),

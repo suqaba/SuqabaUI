@@ -7,16 +7,15 @@
 class SuqabaField {
 public:
 
-  SuqabaField(const std::string& field_name,
-              const u64 field_size,
-              SuqabaMesh& input_mesh) : name(field_name), 
-                                        size(field_size),
-                                        mesh(input_mesh) { data.resize(size); }
+  SuqabaField(const std::string& field_name, const std::string& unit_name, const u64 field_size, SuqabaMesh& input_mesh) :
+    size(field_size), name(field_name), unit(unit_name), mesh(input_mesh) { data.resize(size); }
+
   virtual ~SuqabaField() = default;
 
   void setData(char *ptr);
   SuqabaMesh& getMesh() const {return mesh;}
   std::string getName() const {return name;}
+  std::string getVtkName() const {return name + " " + unit;}
   u64 getSize() const {return size;};
   virtual u64 getDim() const {return dim;};
 
@@ -34,6 +33,7 @@ protected:
   static constexpr u64 dim = 1;
   u64 size;
   std::string name;
+  std::string unit;
   SuqabaMesh& mesh;
   std::vector<f64> data;
 };

@@ -1,9 +1,7 @@
 /***************************************************************************
- *   Copyright (c) 2015 FreeCAD Developers                                 *
- *   Authors: Michael Hindley <hindlemp@eskom.co.za>                       *
- *            Ruan Olwagen <olwager@eskom.co.za>                           *
- *            Oswald van Ginkel <vginkeo@eskom.co.za>                      *
- *   Based on Force constraint by Jan Rheinländer                          *
+ *   Copyright (c) 2013 Jan Rheinländer                                    *
+ *                                   <jrheinlaender@users.sourceforge.net> *
+ *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
  *   This library is free software; you can redistribute it and/or         *
@@ -25,6 +23,10 @@
 
 #include "PreCompiled.h"
 
+#ifndef _PreComp_
+#include <Precision.hxx>
+#endif
+
 #include "FemConstraintForce.h"
 
 
@@ -34,71 +36,24 @@ PROPERTY_SOURCE(Fem::ConstraintForce, Fem::Constraint)
 
 ConstraintForce::ConstraintForce()
 {
-    // x Force
-    ADD_PROPERTY_TYPE(xFree,
-                      (true),
+    ADD_PROPERTY(Force, (0.0));
+    ADD_PROPERTY_TYPE(Direction,
+                      (nullptr),
                       "ConstraintForce",
-                      App::Prop_None,
-                      "Use free Surface Load in X direction");
-    ADD_PROPERTY_TYPE(xForce,
-                      (0.0),
-                      "ConstraintForce",
-                      App::Prop_None,
-                      "Surface Load in local X direction");
-    ADD_PROPERTY_TYPE(hasXFormula,
-                      (false),
-                      "ConstraintForce",
-                      App::Prop_None,
-                      "Surface Load in X direction as a formula");
-    ADD_PROPERTY_TYPE(xForceFormula,
-                      (""),
-                      "ConstraintForce",
-                      App::Prop_None,
-                      "Formula for Surface Load in X direction");
+                      (App::PropertyType)(App::Prop_None),
+                      "Element giving direction of constraint");
+    // RefDispl must get a global scope, see
+    Direction.setScope(App::LinkScope::Global);
 
-    // y Force
-    ADD_PROPERTY_TYPE(yFree,
-                      (true),
+    ADD_PROPERTY(Reversed, (0));
+    ADD_PROPERTY_TYPE(DirectionVector,
+                      (Base::Vector3d(0, 0, 1)),
                       "ConstraintForce",
-                      App::Prop_None,
-                      "Use free Surface Load in Y direction");
-    ADD_PROPERTY_TYPE(yForce,
-                      (0.0),
-                      "ConstraintForce",
-                      App::Prop_None,
-                      "Surface Load in local Y direction");
-    ADD_PROPERTY_TYPE(hasYFormula,
-                      (false),
-                      "ConstraintForce",
-                      App::Prop_None,
-                      "Define Surface Load in Y direction as a formula");
-    ADD_PROPERTY_TYPE(yForceFormula,
-                      (""),
-                      "ConstraintForce",
-                      App::Prop_None,
-                      "Formula for Surface Load in Y direction");
+                      App::PropertyType(App::Prop_ReadOnly | App::Prop_Output),
+                      "Direction of arrows");
 
-    // z Force
-    ADD_PROPERTY_TYPE(zFree,
-                      (true),
-                      "ConstraintForce",
-                      App::Prop_None,
-                      "Use free Surface Load in Z direction");
-    ADD_PROPERTY_TYPE(zForce,
-                      (0.0),
-                      "ConstraintForce",
-                      App::Prop_None,
-                      "Surface Load in local Z direction");
-    ADD_PROPERTY_TYPE(hasZFormula,
-                      (false),
-                      "ConstraintForce",
-                      App::Prop_None,
-                      "Define Surface Load in Z direction as a formula");
-    ADD_PROPERTY_TYPE(zForceFormula,
-                      (""),
-                      "ConstraintForce",
-                      App::Prop_None,
-                      "Formula for Surface Load in Z direction");
+    // by default use the null vector to indicate an invalid value
+    naturalDirectionVector = Base::Vector3d(0, 0, 0);
 }
 
 App::DocumentObjectExecReturn* ConstraintForce::execute()
@@ -106,29 +61,18 @@ App::DocumentObjectExecReturn* ConstraintForce::execute()
     return Constraint::execute();
 }
 
-const char* ConstraintForce::getViewProviderName() const
+void ConstraintForce::handleChangedPropertyType(Base::XMLReader& reader,
+                                                const char* TypeName,
+                                                App::Property* prop)
 {
-    return "FemGui::ViewProviderFemConstraintForce";
-}
-
-void ConstraintForce::handleChangedPropertyType(Base::XMLReader& reader, const char* TypeName, App::Property* prop)
-{
-    // properties _Displacement had App::PropertyFloat and were changed to App::PropertyPressure
-    if (prop == &xForce && strcmp(TypeName, "App::PropertyFloat") == 0) {
-        App::PropertyFloat xForceProperty;
+    // property Force had App::PropertyFloat, was changed to App::PropertyForce
+    if (prop == &Force && strcmp(TypeName, "App::PropertyFloat") == 0) {
+        App::PropertyFloat ForceProperty;
         // restore the PropertyFloat to be able to set its value
-        xForceProperty.Restore(reader);
-        xForce.setValue(xForceProperty.getValue());
-    }
-    else if (prop == &yForce && strcmp(TypeName, "App::PropertyFloat") == 0) {
-        App::PropertyFloat yForceProperty;
-        yForceProperty.Restore(reader);
-        yForce.setValue(yForceProperty.getValue());
-    }
-    else if (prop == &zForce && strcmp(TypeName, "App::PropertyFloat") == 0) {
-        App::PropertyFloat zForceProperty;
-        zForceProperty.Restore(reader);
-        zForce.setValue(zForceProperty.getValue());
+        ForceProperty.Restore(reader);
+        // force uses m while FreeCAD uses internally mm thus
+        // e.g. "2.5" must become 2500 to result in 2.5 N
+        Force.setValue(ForceProperty.getValue() * 1000);
     }
     else {
         Constraint::handleChangedPropertyType(reader, TypeName, prop);
@@ -137,5 +81,45 @@ void ConstraintForce::handleChangedPropertyType(Base::XMLReader& reader, const c
 
 void ConstraintForce::onChanged(const App::Property* prop)
 {
+    // Note: If we call this at the end, then the arrows are not oriented correctly initially
+    // because the NormalDirection has not been calculated yet
     Constraint::onChanged(prop);
+
+    if (prop == &Direction) {
+        Base::Vector3d direction = getDirection(Direction);
+        if (direction.Length() < Precision::Confusion()) {
+            return;
+        }
+        naturalDirectionVector = direction;
+        if (Reversed.getValue()) {
+            direction = -direction;
+        }
+        DirectionVector.setValue(direction);
+    }
+    else if (prop == &Reversed) {
+        // if the direction is invalid try to compute it again
+        if (naturalDirectionVector.Length() < Precision::Confusion()) {
+            naturalDirectionVector = getDirection(Direction);
+        }
+        if (naturalDirectionVector.Length() >= Precision::Confusion()) {
+            if (Reversed.getValue() && (DirectionVector.getValue() == naturalDirectionVector)) {
+                DirectionVector.setValue(-naturalDirectionVector);
+            }
+            else if (!Reversed.getValue()
+                     && (DirectionVector.getValue() != naturalDirectionVector)) {
+                DirectionVector.setValue(naturalDirectionVector);
+            }
+        }
+    }
+    else if (prop == &NormalDirection) {
+        // Set a default direction if no direction reference has been given
+        if (!Direction.getValue()) {
+            Base::Vector3d direction = NormalDirection.getValue();
+            if (Reversed.getValue()) {
+                direction = -direction;
+            }
+            DirectionVector.setValue(direction);
+            naturalDirectionVector = direction;
+        }
+    }
 }
