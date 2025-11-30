@@ -64,7 +64,7 @@ ${LangFileString} SecUnPreferencesDescription 'Suprimeix les carptes de configur
 						$AppSuff\$\r$\n\
 						${APP_DIR_USERDATA}$\")$\r$\n\
 						de tots els usuaris.'
-${LangFileString} DialogUnPreferences 'You chose to delete the FreeCADs user configuration.$\r$\n\
+${LangFileString} DialogUnPreferences 'you chose to delete the SuqabaUIs user configuration.$\r$\n\
 						This will also delete all installed FreeCAD addons.$\r$\n\
 						Do you agree with this?'
 ${LangFileString} SecUnProgramFilesDescription "Desinstal·la el FreeCAD i tots els seus components."

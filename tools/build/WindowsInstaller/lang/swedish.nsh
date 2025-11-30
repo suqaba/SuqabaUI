@@ -64,7 +64,7 @@ ${LangFileString} SecUnPreferencesDescription 'Raderar FreeCAD-konfiguration$\r$
 						$AppSuff\$\r$\n\
 						${APP_DIR_USERDATA}$\")$\r$\n\
 						för dig eller för alla användare (om du är admin).'
-${LangFileString} DialogUnPreferences 'You chose to delete the FreeCADs user configuration.$\r$\n\
+${LangFileString} DialogUnPreferences 'you chose to delete the SuqabaUIs user configuration.$\r$\n\
 						This will also delete all installed FreeCAD addons.$\r$\n\
 						Do you agree with this?'
 ${LangFileString} SecUnProgramFilesDescription "Avinstallera FreeCAD och alla dess komponenter."

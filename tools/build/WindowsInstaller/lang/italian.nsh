@@ -64,7 +64,7 @@ ${LangFileString} SecUnPreferencesDescription 'Elimina la cartella con la config
 						$AppSuff\$\r$\n\
 						${APP_DIR_USERDATA}$\")$\r$\n\
 						per tutti gli utenti.'
-${LangFileString} DialogUnPreferences 'You chose to delete the FreeCADs user configuration.$\r$\n\
+${LangFileString} DialogUnPreferences 'you chose to delete the SuqabaUIs user configuration.$\r$\n\
 						This will also delete all installed FreeCAD addons.$\r$\n\
 						Do you agree with this?'
 ${LangFileString} SecUnProgramFilesDescription "Rimuove FreeCAD e tutti i suoi componenti."
