@@ -41,6 +41,6 @@ These typically need to be modified for each FreeCAD release
 # File locations
 # !!! you need to adjust them to the folders in your Windows system !!!
 
-!define FILES_FREECAD "C:\Users\!!!\Documents\FreeCADxSuqaba-win-beta"
-!define FILES_DEPS "C:\Users\!!!\Documents\freecad-dev\tools\build\WindowsInstaller\MSVCRedist"
-!define FILES_THUMBS "C:\Users\!!!\Documents\freecad-dev\tools\build\WindowsInstaller\thumbnail"
+!define FILES_FREECAD "C:\Users\!!!\Documents\SuqabaUI-win"
+!define FILES_DEPS "C:\Users\!!!\Documents\SuqabaUI\tools\build\WindowsInstaller\MSVCRedist"
+!define FILES_THUMBS "C:\Users\!!!\Documents\SuqabaUI\tools\build\WindowsInstaller\thumbnail"
