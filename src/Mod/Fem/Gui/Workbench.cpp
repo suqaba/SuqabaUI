@@ -175,6 +175,7 @@ Gui::ToolBarItem* Workbench::setupToolBars() const
         //    << "FEM_EquationFlux"
         //    << "FEM_EquationHeat"
         //    << "Separator"
+           << "FEM_SolverSuqaba"
            << "FEM_SolverControl";
         //    << "FEM_SolverRun";
 

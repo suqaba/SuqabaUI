@@ -226,6 +226,11 @@ class ControlTaskPanel(QtCore.QObject):
         if mode == "view":
             paraview_path = FreeCAD.ParamGet("User parameter:BaseApp/Suqaba/ParaView").GetString("Path")
             if not paraview_path or not os.path.isfile(paraview_path):
+                QtWidgets.QMessageBox.information(None,
+                                                  "Info",
+                                                  "Please browse to the ParaView installation folder and "
+                                                  "select the ParaView executable file (e.g., 'paraview' "
+                                                  "or 'paraview.exe').")
                 paraview_path, _ = QtWidgets.QFileDialog.getOpenFileName(None,
                                                                         "Select ParaView Executable", 
                                                                         "",

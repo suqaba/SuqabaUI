@@ -804,7 +804,7 @@ class _SolverSuqaba(CommandManager):
         super().__init__()
         self.menutext = Qt.QT_TRANSLATE_NOOP("FEM_SolverSuqaba", "Solver Suqaba")
         self.accel = "S, Q"
-        self.tooltip = Qt.QT_TRANSLATE_NOOP("FEM_SolverSuqaba", "Creates a Suqaba FEM solver")
+        self.tooltip = Qt.QT_TRANSLATE_NOOP("FEM_SolverSuqaba", "Creates a Suqaba solver")
         self.is_active = "with_analysis"
         self.do_activated = "add_obj_on_gui_expand_noset_edit"
 
