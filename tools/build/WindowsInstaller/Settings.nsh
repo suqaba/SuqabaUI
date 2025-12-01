@@ -16,7 +16,7 @@ These typically need to be modified for each FreeCAD release
 # Version number
 
 !define APP_VERSION_MAJOR 1
-!define APP_VERSION_MINOR 0
+!define APP_VERSION_MINOR 1
 !define APP_VERSION_REVISION 0
 !define APP_VERSION_EMERGENCY "beta" # use "1" for an emergency release of FreeCAD otherwise ""
 	# alternatively you can use APP_VERSION_EMERGENCY for a custom suffix of the version number

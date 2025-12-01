@@ -48,10 +48,10 @@ if(FREECAD_USE_CCACHE)
     endif()
 endif()
 
-project(FreeCAD)
+project(SuqabaUI)
 
 set(PACKAGE_VERSION_MAJOR "1")
-set(PACKAGE_VERSION_MINOR "0")
+set(PACKAGE_VERSION_MINOR "1")
 set(PACKAGE_VERSION_PATCH "0") # number of patch release (e.g. "4" for the 0.18.4 release)
 set(PACKAGE_VERSION_SUFFIX "") # either "dev" for development snapshot or "" (empty string)
 set(PACKAGE_BUILD_VERSION "0") # used when the same FreeCAD version will be re-released (for example using an updated LibPack)
