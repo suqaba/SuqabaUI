@@ -185,7 +185,7 @@ int main(int argc, char** argv)
     App::Application::Config()["ExeName"] = "SuqabaUI";
     App::Application::Config()["ExeVendor"] = "SuqabaUI";
     App::Application::Config()["AppDataSkipVendor"] = "true";
-    App::Application::Config()["MaintainerUrl"] = "https://www.freecad.org/wiki/Main_Page";
+    App::Application::Config()["MaintainerUrl"] = "https://suqaba.com";
 
     // set the banner (for logging and console)
     App::Application::Config()["CopyrightInfo"] = sBanner;

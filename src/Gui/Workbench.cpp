@@ -760,10 +760,16 @@ MenuItem* StdWorkbench::setupMenuBar() const
     help->setCommand("&Help");
     *help << "Std_OnlineHelp" << "Std_WhatsThis" << "Separator"
           // Start page and additional separator are dynamically inserted here
-          << "Std_FreeCADUserHub" << "Std_FreeCADForum" << "Std_FreeCADFAQ" << "Std_ReportBug" << "Separator"
+        //   << "Std_FreeCADUserHub"
+        //   << "Std_FreeCADForum"
+          << "Std_SuqabaFAQ" << "Std_GetSupport" << "Separator"
           << "Std_RestartInSafeMode" << "Separator"
-          << "Std_FreeCADPowerUserHub" << "Std_PythonHelp" << "Separator"
-          << "Std_FreeCADWebsite" << "Std_FreeCADDonation" << "Std_About";
+          << "Std_FreeCADPowerUserHub"
+        //   << "Std_PythonHelp"
+          << "Separator"
+          << "Std_SuqabaWebsite"
+        //   << "Std_FreeCADDonation"
+          << "Std_About";
 
     return menuBar;
 }

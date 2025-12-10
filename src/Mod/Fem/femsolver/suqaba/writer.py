@@ -90,7 +90,12 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
         if self.geo_type == "single body":
             body = FreeCAD.ActiveDocument.findObjects("PartDesign::Body")[0]
         elif self.geo_type == "compound body":
-            body = FreeCAD.ActiveDocument.findObjects("Part::Feature")[0]
+            body = None
+            for obj in FreeCAD.ActiveDocument.Objects:
+                if obj.isDerivedFrom("Part::Feature"):
+                    if "BooleanFragments" in obj.Name:
+                        body = obj
+        
         self.phgrname = body.Label
         self.partname = "{}.brep".format(self.basename)
         body.Shape.exportBrep("{}/{}".format(self.dir_name, self.partname))

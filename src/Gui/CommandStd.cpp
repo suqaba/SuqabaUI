@@ -595,24 +595,24 @@ void StdCmdFreeCADDonation::activated(int iMsg)
 // Std_FreeCADWebsite
 //===========================================================================
 
-DEF_STD_CMD(StdCmdFreeCADWebsite)
+DEF_STD_CMD(StdCmdSuqabaWebsite)
 
-StdCmdFreeCADWebsite::StdCmdFreeCADWebsite()
-  :Command("Std_FreeCADWebsite")
+StdCmdSuqabaWebsite::StdCmdSuqabaWebsite()
+  :Command("Std_SuqabaWebsite")
 {
     sGroup        = "Help";
-    sMenuText     = QT_TR_NOOP("FreeCAD W&ebsite");
-    sToolTipText  = QT_TR_NOOP("Navigates to the official FreeCAD website");
-    sWhatsThis    = "Std_FreeCADWebsite";
+    sMenuText     = QT_TR_NOOP("Suqaba W&ebsite");
+    sToolTipText  = QT_TR_NOOP("Navigates to the official Suqaba website");
+    sWhatsThis    = "Std_SuqabaWebsite";
     sStatusTip    = sToolTipText;
     sPixmap       = "internet-web-browser";
     eType         = 0;
 }
 
-void StdCmdFreeCADWebsite::activated(int iMsg)
+void StdCmdSuqabaWebsite::activated(int iMsg)
 {
     Q_UNUSED(iMsg);
-    std::string defaulturl = QCoreApplication::translate(this->className(),"https://www.freecad.org").toStdString();
+    std::string defaulturl = QCoreApplication::translate(this->className(),"https://suqaba.com").toStdString();
     ParameterGrp::handle hURLGrp = App::GetApplication().GetParameterGroupByPath("User parameter:BaseApp/Preferences/Websites");
     std::string url = hURLGrp->GetASCII("WebPage", defaulturl.c_str());
     hURLGrp->SetASCII("WebPage", url.c_str());
@@ -707,24 +707,24 @@ void StdCmdFreeCADForum::activated(int iMsg)
 // Std_FreeCADFAQ
 //===========================================================================
 
-DEF_STD_CMD(StdCmdFreeCADFAQ)
+DEF_STD_CMD(StdCmdSuqabaFAQ)
 
-StdCmdFreeCADFAQ::StdCmdFreeCADFAQ()
-  :Command("Std_FreeCADFAQ")
+StdCmdSuqabaFAQ::StdCmdSuqabaFAQ()
+  :Command("Std_SuqabaFAQ")
 {
     sGroup        = "Help";
-    sMenuText     = QT_TR_NOOP("FreeCAD FA&Q");
+    sMenuText     = QT_TR_NOOP("Suqaba FA&Q");
     sToolTipText  = QT_TR_NOOP("Opens the Frequently Asked Questions");
-    sWhatsThis    = "Std_FreeCADFAQ";
+    sWhatsThis    = "Std_SuqabaFAQ";
     sStatusTip    = sToolTipText;
     sPixmap       = "internet-web-browser";
     eType         = 0;
 }
 
-void StdCmdFreeCADFAQ::activated(int iMsg)
+void StdCmdSuqabaFAQ::activated(int iMsg)
 {
     Q_UNUSED(iMsg);
-    std::string defaulturl = QCoreApplication::translate(this->className(),"https://wiki.freecad.org/Frequently_asked_questions").toStdString();
+    std::string defaulturl = QCoreApplication::translate(this->className(),"https://suqaba.com/faq").toStdString();
     ParameterGrp::handle hURLGrp = App::GetApplication().GetParameterGroupByPath("User parameter:BaseApp/Preferences/Websites");
     std::string url = hURLGrp->GetASCII("FAQ", defaulturl.c_str());
     hURLGrp->SetASCII("FAQ", url.c_str());
@@ -757,28 +757,28 @@ void StdCmdPythonWebsite::activated(int iMsg)
 
 
 //===========================================================================
-// Std_ReportBug
+// Std_GetSupport
 //===========================================================================
 
-DEF_STD_CMD(StdCmdReportBug)
+DEF_STD_CMD(StdCmdGetSupport)
 
-StdCmdReportBug::StdCmdReportBug()
-  :Command("Std_ReportBug")
+StdCmdGetSupport::StdCmdGetSupport()
+  :Command("Std_GetSupport")
 {
     sGroup        = "Help";
-    sMenuText     = QT_TR_NOOP("Report an &Issue");
-    sToolTipText  = QT_TR_NOOP("Report an issue or suggest a new feature");
-    sWhatsThis    = "Std_ReportBug";
+    sMenuText     = QT_TR_NOOP("&Get Support");
+    sToolTipText  = QT_TR_NOOP("Get support");
+    sWhatsThis    = "Std_GetSupport";
     sStatusTip    = sToolTipText;
     sPixmap       = "internet-web-browser";
     eType         = 0;
 }
 
-void StdCmdReportBug::activated(int iMsg)
+void StdCmdGetSupport::activated(int iMsg)
 {
     Q_UNUSED(iMsg);
     ParameterGrp::handle hURLGrp = App::GetApplication().GetParameterGroupByPath("User parameter:BaseApp/Preferences/Websites");
-    std::string url = hURLGrp->GetASCII("IssuesPage", "https://github.com/FreeCAD/FreeCAD/issues");
+    std::string url = "https://suqaba.com/faq";
     hURLGrp->SetASCII("IssuesPage", url.c_str());
     OpenURLInBrowser(url.c_str());
 }
@@ -990,17 +990,17 @@ void CreateStdCommands()
     rcCmdMgr.addCommand(new StdCmdRecentMacros());
     rcCmdMgr.addCommand(new StdCmdWhatsThis());
     rcCmdMgr.addCommand(new StdCmdRestartInSafeMode());
-    rcCmdMgr.addCommand(new StdCmdPythonHelp());
+    // rcCmdMgr.addCommand(new StdCmdPythonHelp());
     rcCmdMgr.addCommand(new StdCmdOnlineHelp());
     rcCmdMgr.addCommand(new StdCmdOnlineHelpWebsite());
-    rcCmdMgr.addCommand(new StdCmdFreeCADWebsite());
-    rcCmdMgr.addCommand(new StdCmdFreeCADDonation());
-    rcCmdMgr.addCommand(new StdCmdFreeCADUserHub());
+    rcCmdMgr.addCommand(new StdCmdSuqabaWebsite());
+    // rcCmdMgr.addCommand(new StdCmdFreeCADDonation());
+    // rcCmdMgr.addCommand(new StdCmdFreeCADUserHub());
     rcCmdMgr.addCommand(new StdCmdFreeCADPowerUserHub());
-    rcCmdMgr.addCommand(new StdCmdFreeCADForum());
-    rcCmdMgr.addCommand(new StdCmdFreeCADFAQ());
+    // rcCmdMgr.addCommand(new StdCmdFreeCADForum());
+    rcCmdMgr.addCommand(new StdCmdSuqabaFAQ());
     rcCmdMgr.addCommand(new StdCmdPythonWebsite());
-    rcCmdMgr.addCommand(new StdCmdReportBug());
+    rcCmdMgr.addCommand(new StdCmdGetSupport());
     rcCmdMgr.addCommand(new StdCmdTextDocument());
     rcCmdMgr.addCommand(new StdCmdUnitsCalculator());
     rcCmdMgr.addCommand(new StdCmdUserEditMode());

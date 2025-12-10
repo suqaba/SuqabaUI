@@ -145,29 +145,26 @@ class Prepare(run.Prepare):
 
             for obj in FreeCAD.ActiveDocument.Objects:
                 if obj.isDerivedFrom("Part::Feature"):
-                    bfrag_list.append(obj)
+                    if "BooleanFragments" in obj.Name:
+                        bfrag_list.append(obj)
             
             bfrag_count = len(bfrag_list)
 
             if bfrag_count < 1:
-                self.report.error("Make one BooleanFragments object from an assembly (geometry type is \"compound body\")")
+                self.report.error("Make one BooleanFragments object (geometry type is \"compound body\")")
                 self.fail()
             elif bfrag_count > 1:
                 self.report.error("When geometry type is \"compound body\", the document must contain exactly one BooleanFragments object")
                 self.fail()
             else:
                 body = bfrag_list[0]
-                if body.Name == "BooleanFragments":
-                    if hasattr(body, "Shape"):
-                        self.solid_count = len(body.Shape.Solids)
+                if hasattr(body, "Shape"):
+                    self.solid_count = len(body.Shape.Solids)
 
-                        if self.solid_count < 1:
-                            self.report.error("Have at least one 3D solid into compound body \"{}\"".format(body.Label))
-                            self.fail()
-                else:
-                    self.report.error("When geometry type is \"compound body\", the document must contain exactly one BooleanFragments object")
-                    self.fail()
-    
+                    if self.solid_count < 1:
+                        self.report.error("Have at least one 3D solid into compound body \"{}\"".format(body.Label))
+                        self.fail()
+
     def check_material_selected(self):
         if self.solver.GeometryType == "single body":
             if self.check_material_single():

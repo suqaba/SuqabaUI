@@ -324,7 +324,7 @@ void AboutDialog::showCredits()
     QString creditsHTML = QStringLiteral("<html><body><p>");
     //: Header for bgbsww
     creditsHTML +=
-        tr("This version of FreeCAD is dedicated to the memory of Brad McLean, aka bgbsww.");
+        tr("The version of FreeCAD on which SuqabaUI is based is dedicated to the memory of Brad McLean, aka bgbsww.");
     //: Header for the Credits tab of the About screen
     creditsHTML += QStringLiteral("</p><h1>");
     creditsHTML += tr("Credits");
