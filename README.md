@@ -2,8 +2,6 @@
 
 [Suqaba Website](https://suqaba.com) •
 [Suqaba Tutorials](https://youtube.com/playlist?list=PLDs89bTacmzVPuK0SwfxOo5KqCiULLm3x&si=awPtJZR_IcqfcAse) •
-[FreeCAD Documentation](https://wiki.freecad.org) •
-[FreeCAD Forum](https://forum.freecad.org/) •
 [Bug tracker](https://github.com/suqaba/SuqabaUI/issues)
 
 <a href="https://suqaba.com"><img src="/src/Gui/Icons/freecadsplash_2x.png" width="800"/></a>
@@ -31,15 +29,15 @@ Parametric modeling allows you to easily modify your design by going back into
 your model history to change its parameters. The Suqaba team is grateful to
 everyone involved in the FreeCAD project.
 
-Features accessible in the version beta 1.0
+Features accessible in the version beta 1.1
 --------
 
 <a href="https://suqaba.com"><img src="/src/Gui/Icons/freecadabout.png" height="175px"></a>
 
-In the framework of our version beta 1.0, users have access to the following features:
+In the framework of our beta 1.1, users have access to the following features:
 - Static linear elastic simulation for structural analysis
 - Automated mesh generation and refinement, based on a certified error estimator
-- Quality Oracle: an indicator of the confidence level in simulation results
+- Quality Oracle: a local indicator of the confidence level in simulation results
 - Issuance of quality certificates
 - Access to computing resources (SaaS model, _Simulation_ as a Service)
 - Dedicated UI
@@ -72,27 +70,13 @@ their respective platforms:
 - [macOS](https://wiki.freecad.org/Compile_on_MacOS)
 - [MinGW](https://wiki.freecad.org/Compile_on_MinGW)
 
-**Note**: The "python-decouple" package must also be installed in the Python environment
+**Note**: The "python-decouple" and "websockets" packages must also be installed in the Python environment
 that the UI runs with.
 
 Reporting Issues
 ---------
 
-To report an issue please:
-
-- If the issue seems to originate from the integrated Suqaba solver, please, contact us at support@suqaba.com;
-- Explain step-by-step how to reproduce the issue; 
-- Consider posting to the [Forum](https://forum.freecad.org), [Discord](https://discord.com/invite/w2cTKGzccC) channel, or [Reddit](https://www.reddit.com/r/FreeCAD) to verify the issue; 
-- Search the existing [issues](https://github.com/FreeCAD/FreeCAD/issues) for potential duplicates;
-- Upload an example file (FCStd as ZIP file) to demonstrate the problem.
-
-For more details see:
-
-- [Bug Tracker](https://github.com/FreeCAD/FreeCAD/issues)
-- [Reporting Issues and Requesting Features](https://github.com/FreeCAD/FreeCAD/issues/new/choose)
-- [Contributing](https://github.com/FreeCAD/FreeCAD/blob/main/CONTRIBUTING.md)
-- [Help Forum](https://forum.freecad.org/viewforum.php?f=3)
-- [Developers Handbook](https://freecad.github.io/DevelopersHandbook/)
+To report an issue, please, contact us at support@suqaba.com
 
 Usage & Getting Help regarding FreeCAD-related features
 --------------------
