@@ -35,7 +35,7 @@ jobs:
         echo "last_month=$first_day..$last_day" >> "$GITHUB_ENV"
 
     - name: Run issue-metrics tool
-      uses: github/issue-metrics@ed6e4b2b46f44ec7cdd2f6c145757a67a07ecf5b # v3.18.4
+      uses: github/issue-metrics@67526e7bd8100b870f10b1c120780a8375777b43 # v3.25.5
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SEARCH_QUERY: 'repo:FreeCAD/FreeCAD is:issue created:${{ env.last_month }}'
