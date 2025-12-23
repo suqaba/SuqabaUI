@@ -106,7 +106,7 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
         separator  = ", "
 
         with open("{}/{}".format(self.dir_name, self.geoname), "w") as f:
-            geo_string += "Merge \"{}\";\n".format(self.partname)
+            geo_string += "Merge \"{}.mesh\";\n".format(self.partname[:-5])
 
             for key in self.solid_dict.keys():
                 geo_string += (
@@ -219,12 +219,14 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
                         "                \"x\": \"{UX}\",\n"
                         "                \"y\": \"{UY}\",\n"
                         "                \"z\": \"{UZ}\"\n"
-                        "            }}\n"
+                        "            }},\n"
+                        "            \"tags\": [{TAGS}]\n"
                         "        }}"
                     ).format(LABEL=label,
                              UX="0.0",
                              UY="0.0",
-                             UZ="0.0"))
+                             UZ="0.0",
+                             TAGS=", ".join(map(lambda t: str(t), self.displ_dict[label]))))
         
         if displs:
             for displ in displs:
@@ -263,12 +265,14 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
                         "                \"x\": \"{UX}\",\n"
                         "                \"y\": \"{UY}\",\n"
                         "                \"z\": \"{UZ}\"\n"
-                        "            }}\n"
+                        "            }},\n"
+                        "            \"tags\": [{TAGS}]\n"
                         "        }}"
                     ).format(LABEL=label,
                              UX=f"{ux}",
                              UY=f"{uy}",
-                             UZ=f"{uz}"))
+                             UZ=f"{uz}",
+                             TAGS=", ".join(map(lambda t: str(t), self.displ_dict[label]))))
             
         self.json_string += separator.join(displ_inputs)
         self.json_string += "\n    ],\n"
@@ -303,12 +307,14 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
                         "                \"x\": \"{FX}\",\n"
                         "                \"y\": \"{FY}\",\n"
                         "                \"z\": \"{FZ}\"\n"
-                        "            }}\n"
+                        "            }},\n"
+                        "            \"tags\": [{TAGS}]\n"
                         "        }}"
                     ).format(LABEL=label,
                              FX=direction_vec.x * force_mag / area,
                              FY=direction_vec.y * force_mag / area,
-                             FZ=direction_vec.z * force_mag / area))
+                             FZ=direction_vec.z * force_mag / area,
+                             TAGS=", ".join(map(lambda t: str(t), self.neum_dict[label]))))
 
         pressures = self.member.cons_pressure
         if pressures:
@@ -332,10 +338,12 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
                         "            \"name\"   : \"{LABEL}\",\n"
                         "            \"load_fx\": {{\n"
                         "                \"p\": \"{P}\"\n"
-                        "            }}\n"
+                        "            }},\n"
+                        "            \"tags\": [{TAGS}]\n"
                         "        }}"
                     ).format(LABEL=label,
-                             P=pressure_mag))
+                             P=pressure_mag,
+                             TAGS=", ".join(map(lambda t: str(t), self.neum_dict[label]))))
         
         self.json_string += "{}{}{}".format("    \"NEUMANN\": [\n",
                                             separator.join(neum_inputs),
