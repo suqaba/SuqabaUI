@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: LGPL-2.1-or-later
+
 #ifndef LIBRARY_VERSIONS_H
 #define LIBRARY_VERSIONS_H
 
@@ -40,13 +42,13 @@ constexpr const char * fcPclVersion = "${PCL_VERSION}";
 constexpr const char * fcPycxxVersion = "${PYCXX_VERSION}";
 
 // PySide
-constexpr const char * fcPysideVersion = "${PySide2_VERSION}";
+constexpr const char * fcPysideVersion = "${PySide_VERSION}";
 
 // PyBind
 constexpr const char * fcPybind11Version = "${pybind11_VERSION}";
 
 // Shiboken
-constexpr const char * fcShibokenVersion = "${Shiboken2_VERSION}";
+constexpr const char * fcShibokenVersion = "${Shiboken_VERSION}";
 
 // vtk
 constexpr const char * fcVtkVersion = "${VTK_VERSION}";

@@ -455,7 +455,12 @@ class Results(run.Results, QtCore.QObject):
     
     def run(self):
         if self.job_id:
-            msg = f"Downloading Job {self.job_id[:8]}... This may take a little while.\nThank you for your patience.\n\n"
+            msg = (
+                f"Downloading job {self.job_id[:8]}... This may take a little while.\n\n"
+                "Thank you for your patience.\n\n"
+                "The result file is now being compressed...\n\n"
+            )
+
             self.pushStatus(msg)
             endpoint = f"{LXKOXK_NKE}/download/{self.job_id}/"
             response = authenticated_call("GET",

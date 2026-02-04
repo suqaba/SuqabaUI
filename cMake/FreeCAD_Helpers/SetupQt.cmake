@@ -1,4 +1,6 @@
 # -------------------------------- Qt --------------------------------
+set(QT_DEFAULT_MAJOR_VERSION 6)
+set(FREECAD_QT_MAJOR_VERSION 6)
 
 set(FREECAD_QT_COMPONENTS Core Concurrent Network Xml)
 if (FREECAD_QT_MAJOR_VERSION EQUAL 6)

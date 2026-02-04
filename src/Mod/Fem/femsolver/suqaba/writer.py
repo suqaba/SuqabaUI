@@ -106,7 +106,7 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
         separator  = ", "
 
         with open("{}/{}".format(self.dir_name, self.geoname), "w") as f:
-            geo_string += "Merge \"{}.mesh\";\n".format(self.partname[:-5])
+            geo_string += "Merge \"{}\";\n".format(self.partname)
 
             for key in self.solid_dict.keys():
                 geo_string += (
@@ -151,18 +151,20 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
                         "                \"x\": \"{RHO} * ({FX} + {CX})\",\n"
                         "                \"y\": \"{RHO} * ({FY} + {CY})\",\n"
                         "                \"z\": \"{RHO} * ({FZ} + {CZ})\"\n"
-                        "           }}\n"
+                        "           }},\n"
+                        "           \"tag\": {TAG}\n"
                         "        }}"
                     ).format(PHGR_NAME=ref,
-                            YOUNG_MOD=young_mod,
-                            POISSON_RAT=poisson_rat,
-                            RHO=density,
-                            FX=self.gravity_force[0],
-                            FY=self.gravity_force[1],
-                            FZ=self.gravity_force[2],
-                            CX=self.centri_load_expr[ref][0],
-                            CY=self.centri_load_expr[ref][1],
-                            CZ=self.centri_load_expr[ref][2])
+                             TAG=self.get_tag(ref),
+                             YOUNG_MOD=young_mod,
+                             POISSON_RAT=poisson_rat,
+                             RHO=density,
+                             FX=self.gravity_force[0],
+                             FY=self.gravity_force[1],
+                             FZ=self.gravity_force[2],
+                             CX=self.centri_load_expr[ref][0],
+                             CY=self.centri_load_expr[ref][1],
+                             CZ=self.centri_load_expr[ref][2])
                 else:
                     ref_str = (
                         "        {{\n"
@@ -173,22 +175,26 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
                         "                \"x\": \"{RHO} * {FX}\",\n"
                         "                \"y\": \"{RHO} * {FY}\",\n"
                         "                \"z\": \"{RHO} * {FZ}\"\n"
-                        "           }}\n"
+                        "           }},\n"
+                        "           \"tag\": {TAG}\n"
                         "        }}"
                     ).format(PHGR_NAME=ref,
-                            YOUNG_MOD=young_mod,
-                            POISSON_RAT=poisson_rat,
-                            RHO=density,
-                            FX=self.gravity_force[0],
-                            FY=self.gravity_force[1],
-                            FZ=self.gravity_force[2])
+                             TAG=self.get_tag(ref),
+                             YOUNG_MOD=young_mod,
+                             POISSON_RAT=poisson_rat,
+                             RHO=density,
+                             FX=self.gravity_force[0],
+                             FY=self.gravity_force[1],
+                             FZ=self.gravity_force[2])
 
                 self.solid_dict[ref] = ref_str
 
+        key_fx = lambda x: int(x.split("\"tag\": ")[-1].split("\n")[0])
+        sorted_phgr3d = sorted(self.solid_dict.values(), key=key_fx)
         separator = ",\n"
         self.json_string += "    \"PHYSICAL_GROUPS_3D\": [\n"
-        self.json_string += separator.join(self.solid_dict.values())
-        self.json_string += "    ],\n"
+        self.json_string += separator.join(sorted_phgr3d)
+        self.json_string += "\n    ],\n"
 
 
     def write_suqaba_dirichlet(self):
