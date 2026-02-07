@@ -14,6 +14,7 @@
 #include "SuqabaCommon.hpp"
 #include "SuqabaProtos.hpp"
 #include "SuqabaMesh.hpp"
+#include "SuqabaField.hpp"
 #include "SuqabaFieldFactory.hpp"
 
 void SuqabaZstdRead(const std::string& filename, SuqabaMesh& mesh, std::vector<std::unique_ptr<SuqabaField>>& field);

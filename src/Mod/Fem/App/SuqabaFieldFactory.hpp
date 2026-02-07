@@ -2,27 +2,28 @@
 #include "SuqabaCommon.hpp"
 #include "SuqabaFields.hpp"
 
+template <u64 order>
 inline std::unique_ptr<SuqabaField> createField(const std::string& name, const std::string& unit, const std::string& type, const std::string& space, const u64 size, SuqabaMesh& mesh)
 {
   if (type == "Scalar")
     {
       if (space == "L2")
-        return std::make_unique<SuqabaFieldScalarL2<0>>(name, unit, size, mesh);
+        return std::make_unique<SuqabaFieldScalarL2<order>>(name, unit, size, mesh);
       
     }
   else if (type == "Vector")
     {
       if (space == "H1")
-        return std::make_unique<SuqabaFieldVectorH1>(name, unit, size, mesh);
+        return std::make_unique<SuqabaFieldVectorH1<order>>(name, unit, size, mesh);
       
       throw std::runtime_error("Espace non reconnu : " + space);
     }
   else if (type == "Tensor")
     {
       if (space == "L2")
-        return std::make_unique<SuqabaFieldTensorL2>(name, unit, size, mesh);
+        return std::make_unique<SuqabaFieldTensorL2<order>>(name, unit, size, mesh);
       else if (space == "Hdiv")
-        return std::make_unique<SuqabaFieldTensorHdiv>(name, unit, size, mesh);
+        return std::make_unique<SuqabaFieldTensorHdiv<order>>(name, unit, size, mesh);
 
       throw std::runtime_error("Espace non reconnu : " + space);
     }

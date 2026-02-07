@@ -3,41 +3,35 @@
 
 
 //
-void SuqabaFieldVectorH1::getVtkFieldElementT4Sup(const u64 ii, f64* ptr_field)
+template <u64 order>
+void SuqabaFieldVectorH1<order>::getVtkFieldElementSup(const u64 ii, f64* ptr_field)
 {
-  constexpr u64 id_T4_sup[4][12] =
-    {{ 0,  1,  2,  3,  4,  5,  6,  7,  8, 12, 13, 14},
-     { 0,  1,  2,  3,  4,  5, 12, 13, 14,  9, 10, 11},
-     { 0,  1,  2, 12, 13, 14,  6,  7,  8,  9, 10, 11},
-     {12, 13, 14,  3,  4,  5,  6,  7,  8,  9, 10, 11}};
+  constexpr u64 id_T4_sup[4][30] =    
+    {{15, 16, 17, 18, 19, 20, 21, 22, 23,  0,  1,  2, 27, 28, 29, 30, 31, 32, 33, 34, 35,  3,  4,  5, 9, 10, 11, 6,  7,  8},
+     {15, 16, 17, 18, 19, 20,  0,  1,  2, 24, 25, 26, 27, 28, 29,  9, 10, 11,  3,  4,  5, 36, 37, 38, 42, 43, 44, 12, 13, 14},
+     {15, 16, 17,  0,  1,  2, 21, 22, 23, 24, 25, 26,  3,  4,  5,  6,  7,  8, 33, 34, 35, 36, 37, 38, 12, 13, 14, 39, 40, 41},
+     { 0,  1,  2, 18, 19, 20, 21, 22, 23, 24, 25, 26,  9, 10, 11, 30, 31, 32,  6,  7,  8, 12, 13, 14, 42, 43, 44, 39, 40, 41}};
   
-  std::array<u64, 4> i_node = mesh.getElementT4Node(ii);
-  std::array<f64, 15> u_T4_sup;
+  //  
+  Eigen::Matrix<f64, 45, 1>  u_T4_sup = getFieldElementSup(ii);
 
-  for (u64 i = 0; i < 4; ++i)
-    for (u64 k = 0; k < 3; ++k)
-      u_T4_sup[3 * i + k] = data[3 * i_node[i] + k];
-
-  u_T4_sup[12] = data[offset_node_edge + 15 * ii + 0];
-  u_T4_sup[13] = data[offset_node_edge + 15 * ii + 1];
-  u_T4_sup[14] = data[offset_node_edge + 15 * ii + 2];
-  
   u64 jj = 0;
-  for (u64 i = 0; i < 4; ++i)
-    for (u64 j = 0; j < 12; ++j)
+  for (u64 i = 0; i < T4<order>::nTet; ++i)
+    for (u64 j = 0; j < 3 * T4<order>::nEnt; ++j)
       ptr_field[jj++] = u_T4_sup[id_T4_sup[i][j]];
 }
 
 //
-Eigen::Matrix<f64, 45, 1> SuqabaFieldVectorH1::getFieldElementT4Sup(const u64 ii)
+template <u64 order>
+Eigen::Matrix<f64, 45, 1> SuqabaFieldVectorH1<order>::getFieldElementSup(const u64 ii)
 {
   Eigen::Matrix<f64, 45, 1> u_T4sup;
 
   for (u64 i = 0; i < 15; ++i)
     u_T4sup(i) = data[offset_node_edge + 15 * ii + i];
 
-  std::array<u64, 4> i_node = mesh.getElementT4Node(ii);
-  std::array<u64, 6> i_edge = mesh.getElementT4Edge(ii);
+  std::array<u64, 4> i_node = mesh.getElementNode(ii);
+  std::array<u64, 6> i_edge = mesh.getElementEdge(ii);
   
   for (u64 i = 0; i < 4; ++i)
     for (u64 k = 0; k < 3; ++k)
@@ -52,13 +46,14 @@ Eigen::Matrix<f64, 45, 1> SuqabaFieldVectorH1::getFieldElementT4Sup(const u64 ii
 
 
 //
-void SuqabaFieldVectorH1::getGradSymElementT4sup(const u64 iel, std::array<Eigen::Matrix<f64, 6, 4>, 4> &eps)
+template <u64 order>
+void SuqabaFieldVectorH1<order>::getGradSymElementSup(const u64 iel, std::array<Eigen::Matrix<f64, 6, T4<order>::nEnt>, T4<order>::nTet> &eps)
 {
   Eigen::Matrix<f64, 30, 1> u_T10;
-  Eigen::Matrix<f64, 45, 1> u_T10sup = getFieldElementT4Sup(iel);
+  Eigen::Matrix<f64, 45, 1> u_T10sup = getFieldElementSup(iel);
 
   Eigen::Matrix<f64, 3, 10> el_T10;
-  Eigen::Matrix<f64, 3, 15> el_T10sup = mesh.getCoordT4Sup(iel);
+  Eigen::Matrix<f64, 3, 15> el_T10sup = mesh.getCoordSup(iel);
 
   Eigen::Matrix<f64, 10,  3> DN, GN;
   Eigen::Matrix<f64,  6, 30> Be = Eigen::Matrix<f64, 6, 30>::Zero();
@@ -79,18 +74,28 @@ void SuqabaFieldVectorH1::getGradSymElementT4sup(const u64 iel, std::array<Eigen
      {15, 16, 17,  0,  1,  2, 21, 22, 23, 24, 25, 26,  3,  4,  5,  6,  7,  8, 33, 34, 35, 36, 37, 38, 39, 40, 41, 12, 13, 14},
      { 0,  1,  2, 18, 19, 20, 21, 22, 23, 24, 25, 26,  9, 10, 11, 30, 31, 32,  6,  7,  8, 12, 13, 14, 39, 40, 41, 42, 43, 44}};
 
-    constexpr f64 ag[4][3] = {{0., 0., 0.}, {1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}}; 
-    f64 x, y, z, w;
+    constexpr f64 ag[10][3] = {
+      {0.0, 0.0, 0.0},
+      {1.0, 0.0, 0.0},
+      {0.0, 1.0, 0.0},
+      {0.0, 0.0, 1.0},
+      {0.5, 0.0, 0.0},
+      {0.5, 0.5, 0.0},
+      {0.0, 0.5, 0.0},
+      {0.0, 0.0, 0.5},
+      {0.5, 0.0, 0.5},
+      {0.0, 0.5, 0.5}};
     
+    f64 x, y, z, w;
     for (u64 a = 0; a < 4; ++a)
     {
       for (u64 j = 0; j < 10; ++j)
         el_T10.col(j) = el_T10sup.col(ide[a][j]);
-
+      
       for (u64 j = 0; j < 30; ++j)
         u_T10(j) = u_T10sup(iue[a][j]);
       
-      for (u64 g = 0; g < 4; g++)
+      for (u64 g = 0; g < T4<order>::nEnt; ++g)
         {
           x = ag[g][0]; y = ag[g][1]; z = ag[g][2]; w = 1. - x - y - z;
 
@@ -124,15 +129,17 @@ void SuqabaFieldVectorH1::getGradSymElementT4sup(const u64 iel, std::array<Eigen
 }
 
 //
-std::unique_ptr<SuqabaFieldTensorL2> SuqabaFieldVectorH1::getFieldGradSym(const std::string& name_field, const std::string& unit)
+template <u64 order>
+std::unique_ptr<SuqabaField> SuqabaFieldVectorH1<order>::getFieldGradSym(const std::string& name_field_, const std::string& unit_)
 {
-  auto field_tensor = std::make_unique<SuqabaFieldTensorL2>(name_field, unit, 6 * 4 * mesh.getElementT4SupCount(), getMesh());
-
-  std::array<Eigen::Matrix<f64, 6, 4>, 4> eps;
-  for (u64 i = 0; i < mesh.getElementT4Count(); ++i)
+  //
+  auto field_tensor = std::make_unique<SuqabaFieldTensorL2<order>>(name_field_, unit_, 6 * T4<order>::nEnt * this->mesh.getElementSupCount(), this->getMesh());
+  
+  std::array<Eigen::Matrix<f64, 6, T4<order>::nEnt>, T4<order>::nTet> eps;
+  for (u64 i = 0; i < this->mesh.getElementCount(); ++i)
     {
-      getGradSymElementT4sup(i, eps);
-      field_tensor->setValueFieldTensorT4sup(i, eps);
+      getGradSymElementSup(i, eps);
+      field_tensor->setValueFieldTensorSup(i, eps);
     }
   
   return field_tensor;

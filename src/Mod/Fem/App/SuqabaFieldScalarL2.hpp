@@ -2,13 +2,21 @@
 
 #include "SuqabaFieldScalar.hpp"
 
-template<u64 Order>
-class SuqabaFieldScalarL2 : public SuqabaFieldScalar {
+template<u64 order>
+class SuqabaFieldScalarL2 : public SuqabaFieldScalar<order> {
 public:
-  using SuqabaFieldScalar::SuqabaFieldScalar;
+  using SuqabaFieldScalar<order>::SuqabaFieldScalar;
   
   u64 getSizeField() const override;
-  void getVtkFieldElementT4Sup(const u64 i, f64* ptr_field) override;
-  u64 getVtkFieldElementT4SupSize() const override;
-  void addFieldToVtkUnstructuredGrid(vtkNew<vtkDoubleArray>& vtk_field, vtkNew<vtkUnstructuredGrid>& vtk_grid) override;  
+  void getVtkFieldElementSup(const u64 i, f64* ptr_field) override;
+  u64 getVtkFieldElementSupSize() const override;
+  void addFieldToVtkUnstructuredGrid(vtkNew<vtkDoubleArray>& vtk_field, vtkNew<vtkUnstructuredGrid>& vtk_grid) override;
+
+protected:
+  using SuqabaField::data;
+  using SuqabaField::mesh;
 };
+
+template class SuqabaFieldScalarL2<0>;
+template class SuqabaFieldScalarL2<1>;
+template class SuqabaFieldScalarL2<2>;

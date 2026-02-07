@@ -1,4 +1,4 @@
-#include "PreCompiled.h"
+//#include "PreCompiled.h"
 #include "SuqabaZstdRead.hpp"
 
 void SuqabaZstdRead(const std::string& filename, SuqabaMesh& mesh, std::vector<std::unique_ptr<SuqabaField>>& fields)
@@ -10,24 +10,33 @@ void SuqabaZstdRead(const std::string& filename, SuqabaMesh& mesh, std::vector<s
   std::istringstream iss(line);
 
   std::string mesh_name;
-  u64 n_node, n_edge, n_elem;
-  iss >> mesh_name >> n_node >> n_edge >> n_elem; 
-  mesh.setSize(n_node, n_edge, n_elem);
+  u64 n_node, n_edge, n_elem, order_mesh;
+  iss >> mesh_name >> order_mesh >> n_node >> n_edge >> n_elem; 
+  mesh.setSize(order_mesh, n_node, n_edge, n_elem);
   
-  //
   while (std::getline(file, line))
     {
       if (line == "---") break;
       std::istringstream iss(line);
 
       std::string name, unite, type, space;
-      u64 size;
-      iss >> name >> unite >> type >> space >> size;
+      u64 size, order_field;
+      iss >> name >> unite >> order_field >> type >> space >> size;
 
       if (unite == "(None)")
         unite = "";
-      
-      fields.push_back(createField(name, unite, type, space, size, mesh));
+
+      if (order_field == 0)
+        fields.push_back(createField<0>(name, unite, type, space, size, mesh));
+      else if (order_field == 1)
+        fields.push_back(createField<1>(name, unite, type, space, size, mesh));
+      else if (order_field == 2)
+        {
+          if (order_mesh == 1)
+            fields.push_back(createField<1>(name, unite, type, space, size, mesh));
+          else
+            fields.push_back(createField<2>(name, unite, type, space, size, mesh));
+        }
     }
 
   //

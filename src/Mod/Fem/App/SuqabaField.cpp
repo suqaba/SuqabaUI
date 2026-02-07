@@ -24,10 +24,10 @@ void SuqabaField::insertVtkField(vtkNew<vtkUnstructuredGrid>& vtk_grid)
   
   f64* ptr_field = vtk_field->GetPointer(0);
 
-  const u64 offset = getVtkFieldElementT4SupSize();
-  for (u64 i = 0; i < mesh.getElementT4Count(); ++i)
+  const u64 offset = getVtkFieldElementSupSize();
+  for (u64 i = 0; i < mesh.getElementCount(); ++i)
     {
-      getVtkFieldElementT4Sup(i, ptr_field);
+      getVtkFieldElementSup(i, ptr_field);
       ptr_field += offset;
     }
 

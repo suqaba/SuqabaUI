@@ -4,30 +4,39 @@
 #include "SuqabaField.hpp"
 #include "SuqabaFieldScalarL2.hpp"
 
+template <u64 order>
 class SuqabaFieldTensor : public SuqabaField {
 public:
   using SuqabaField::SuqabaField;
-
-  enum class YieldCriterion {VonMises, Tresca};
-
+  using YC = YieldCriterion;
+  
   std::string toStringYieldCriterion(YieldCriterion c) const ;
   
   u64 getDim() const override {return dim;};
+
+  void insertVtkField(vtkNew<vtkUnstructuredGrid>& vtk_unstructured_grid);
+
+  u64 getSizeField() const {return T4<order>::nEnt * mesh.getElementSupCount();};
+
+  u64 getVtkFieldElementSupSize() const {return T4<order>::nTet * T4<order>::nEnt;}
+
+  void getVtkFieldElementSup(const u64 i, std::array<f64*, 6>& ptr_field);
+  //void getVtkFieldElementSup(const u64 i, f64* ptr_field) {(void) i; (void) ptr_field;};
+  void getVtkFieldElementSup(const u64 , f64*) override {};
   
-  void insertVtkField(vtkNew<vtkUnstructuredGrid>& vtk_unstructured_grid) override;
-  u64 getSizeField() const {return 4 * mesh.getElementT4SupCount();};
-  u64 getVtkFieldElementT4SupSize() const {return 4 * 4;}
+  f64 getNorm(YC yc, const u64 i);
+  std::unique_ptr<SuqabaField> getFieldNorm(YieldCriterion yc) override ;
 
-  void getVtkFieldElementT4Sup(const u64 i, std::array<f64*, 6>& ptr_field);
-  void getVtkFieldElementT4Sup(const u64 i, f64* ptr_field) {};
-
-  template<SuqabaFieldTensor::YieldCriterion YC>
-  f64 getNorm(const u64 i);
-
-  template<SuqabaFieldTensor::YieldCriterion YC>
-  std::unique_ptr<SuqabaFieldScalarL2<1>> getFieldNorm();
-  void setValueFieldTensorT4sup(const u64 i, std::array<Eigen::Matrix<f64, 6, 4>, 4>& tensor);
+  void setValueFieldTensorSup(const u64 i, std::array<Eigen::Matrix<f64, 6, T4<order>::nEnt>, T4<order>::nTet>& tensor);
   
 protected:
+  using SuqabaField::name;
+  using SuqabaField::unit;
+  using SuqabaField::data;
+  using SuqabaField::mesh;
   static constexpr u64 dim = 6;
 };
+
+template class SuqabaFieldTensor<0>;
+template class SuqabaFieldTensor<1>;
+template class SuqabaFieldTensor<2>;
