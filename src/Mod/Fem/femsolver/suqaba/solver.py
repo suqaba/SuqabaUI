@@ -81,6 +81,13 @@ class Proxy(solverbase.Proxy):
                             "Fem",
                             "Error Tolerance (%)")
             obj.ErrorTolerance = 20.
+        
+        if not hasattr(obj, "HighOrderStress"):
+            obj.addProperty("App::PropertyBool",
+                            "HighOrderStress",
+                            "Fem",
+                            "Activate high order stress")
+            obj.HighOrderStress = False
     
     def createMachine(self, obj, directory, testmode=False):
         return run.Machine(

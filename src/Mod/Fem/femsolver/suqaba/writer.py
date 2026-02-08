@@ -106,7 +106,7 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
         separator  = ", "
 
         with open("{}/{}".format(self.dir_name, self.geoname), "w") as f:
-            geo_string += "Merge \"{}\";\n".format(self.partname)
+            geo_string += "Merge \"{}.mesh\";\n".format(self.partname[:-5])
 
             for key in self.solid_dict.keys():
                 geo_string += (
@@ -441,11 +441,12 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
         self.json_string += (
             "    \"OMP\"           : 4,\n"
             "    \"ERROR\"         : {ERR},\n"
+            "    \"HO_STRESS\"     : {HOS},\n"
             "    \"REFI_STEPS\"    : 7,\n"
             "    \"JOBNAME\"       : \"{JOBNAME}\",\n"
         ).format(ERR=self.solver_obj.ErrorTolerance / 100,
+                 HOS="true" if self.solver_obj.HighOrderStress else "false",
                  JOBNAME=self.basename)
-    
 
     @staticmethod
     def get_tag(label):
