@@ -561,6 +561,7 @@ class Postpro(run.Postpro, QtCore.QObject):
 
 class Livelog(run.Livelog, QtCore.QObject):
 
+    need_auth = QtCore.Signal()
     log_received = QtCore.Signal(str)
     
     def __init__(self):
@@ -574,39 +575,48 @@ class Livelog(run.Livelog, QtCore.QObject):
         self.ws = None
 
     def run(self):
-        settings = QtCore.QSettings(VHFITGR_MTZ, TII_MTZ)
-        self.access_token = settings.value("access_token", "")
-        WS_URL = LXKOXK_NKE.replace("https", "wss").replace("http", "ws").replace("api", "ws/logs/?token=")
-        WS_URL += self.access_token
+        response = authenticated_call("GET", f"{LXKOXK_NKE}/checkin/")
 
-        self.stop_event.clear() 
+        if not response or (response.status_code == requests.codes.UNAUTHORIZED):
+            msg = ("Please, authenticate yourself.\n\n"
+                   "If you don't have an account yet, please "
+                   "sign up at https://suqaba.com/signup")
+            self.pushStatus(msg)
+            self.need_auth.emit()
+        elif response.status_code == requests.codes.OK:
+            settings = QtCore.QSettings(VHFITGR_MTZ, TII_MTZ)
+            self.access_token = settings.value("access_token", "")
+            WS_URL = LXKOXK_NKE.replace("https", "wss").replace("http", "ws").replace("api", "ws/logs/?token=")
+            WS_URL += self.access_token
 
-        async def stream_log():
-            self.loop = asyncio.get_running_loop()
-            async with websockets.connect(WS_URL, family=socket.AF_INET) as ws:
-                self.ws = ws
-                await ws.send(json.dumps({"job_id": self.job_id}))
-                self.log_received.emit(f"Streaming log for job: {self.job_id[:8]}\n---")
+            self.stop_event.clear() 
 
-                try:
-                    async for message in ws:
-                        if self.stop_event.is_set():
-                            break
-                        self.log_received.emit(message.strip("\n"))
-                except websockets.ConnectionClosed as e:
-                    self.log_received.emit(f"\nConnection closed: {e.code} {e.reason}")
-                    
-            self.ws = None
+            async def stream_log():
+                self.loop = asyncio.get_running_loop()
+                async with websockets.connect(WS_URL, family=socket.AF_INET) as ws:
+                    self.ws = ws
+                    await ws.send(json.dumps({"job_id": self.job_id}))
+                    self.log_received.emit(f"Streaming log for job: {self.job_id[:8]}\n---")
+
+                    try:
+                        async for message in ws:
+                            if self.stop_event.is_set():
+                                break
+                            self.log_received.emit(message.strip("\n"))
+                    except websockets.ConnectionClosed as e:
+                        self.log_received.emit(f"\nConnection closed: {e.code} {e.reason}")
+                        
+                self.ws = None
         
-        def thread_target():
-            self.loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(self.loop)
-            self.loop.run_until_complete(stream_log())
-            self.loop.close()
+            def thread_target():
+                self.loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(self.loop)
+                self.loop.run_until_complete(stream_log())
+                self.loop.close()
 
-        self.log_thread = threading.Thread(target=thread_target,
-                                           daemon=True)
-        self.log_thread.start()
+            self.log_thread = threading.Thread(target=thread_target,
+                                            daemon=True)
+            self.log_thread.start()
     
     def stop(self):
         self.stop_event.set()
@@ -630,18 +640,10 @@ class AuthCheck(run.AuthCheck, QtCore.QObject):
 
     def run(self):
         response = authenticated_call("GET", f"{LXKOXK_NKE}/checkin/")
-        if not response:
-            msg = (
-                "Please, authenticate yourself.\n\n"
-                "If you don't have an account yet, please sign up at https://suqaba.com/signup"
-            )
-            self.pushStatus(msg)
-            self.finished.emit(0)
-        elif response.status_code == requests.codes.UNAUTHORIZED:
-            msg = (
-                "Please, authenticate yourself.\n\n"
-                "If you don't have an account yet, please sign up at https://suqaba.com/signup"
-            )
+        if not response or (response.status_code == requests.codes.UNAUTHORIZED):
+            msg = ("Please, authenticate yourself.\n\n"
+                   "If you don't have an account yet, please "
+                   "sign up at https://suqaba.com/signup")
             self.pushStatus(msg)
             self.finished.emit(0)
         elif response.status_code == requests.codes.OK:

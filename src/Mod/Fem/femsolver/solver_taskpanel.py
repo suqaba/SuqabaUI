@@ -158,6 +158,7 @@ class ControlTaskPanel(QtCore.QObject):
         self.log_window.activateWindow()
         self.machine.livelog.log_received.connect(self.log_window.append_log)
         self.log_window.closed.connect(self.machine.livelog.stop)
+        self.machine.livelog.need_auth.connect(self.form.enableAuth)
         self.machine.start()
 
     @QtCore.Slot()
