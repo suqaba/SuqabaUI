@@ -27,7 +27,9 @@ public:
   f64 getNorm(YC yc, const u64 i);
   std::unique_ptr<SuqabaField> getFieldNorm(YieldCriterion yc) override ;
 
-  void setValueFieldTensorSup(const u64 i, std::array<Eigen::Matrix<f64, 6, T4<order>::nEnt>, T4<order>::nTet>& tensor);
+  void setValueFieldTensorSup(const u64 i,
+                              std::array<Eigen::Matrix<f64, 6, T4<order>::nEnt>,
+                              T4<order>::nTet>& tensor);
   
 protected:
   using SuqabaField::name;

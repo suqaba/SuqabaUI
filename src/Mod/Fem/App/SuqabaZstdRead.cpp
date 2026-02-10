@@ -1,4 +1,4 @@
-//#include "PreCompiled.h"
+#include "PreCompiled.h"
 #include "SuqabaZstdRead.hpp"
 
 void SuqabaZstdRead(const std::string& filename, SuqabaMesh& mesh, std::vector<std::unique_ptr<SuqabaField>>& fields)

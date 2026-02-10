@@ -14,7 +14,7 @@ ${LangFileString} TEXT_WELCOME "This wizard will guide you through the installat
 #${LangFileString} TEXT_CONFIGURE_PYTHON "Compiling Python scripts..."
 
 ${LangFileString} TEXT_FINISH_DESKTOP "Create desktop shortcut"
-${LangFileString} TEXT_FINISH_WEBSITE "Visit suqaba.com for the latest news, support and tips"
+${LangFileString} TEXT_FINISH_WEBSITE "Visit suqaba.com for the latest news"
 
 #${LangFileString} FileTypeTitle "FreeCAD-Document"
 

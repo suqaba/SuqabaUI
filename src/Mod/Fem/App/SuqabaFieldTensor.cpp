@@ -95,23 +95,28 @@ f64 SuqabaFieldTensor<order>::getNorm(YieldCriterion yc, const u64 ii)
 //
 template <u64 order>
 std::unique_ptr<SuqabaField> SuqabaFieldTensor<order>::getFieldNorm(YieldCriterion yc)
- {   
-   auto field_yc = std::make_unique<SuqabaFieldScalarL2<order>>("Equivalent " + name + " " + toStringYieldCriterion(yc), unit, T4<order>::nEnt * mesh.getElementSupCount(), this->getMesh());
+{   
+  auto field_yc = std::make_unique<SuqabaFieldScalarL2<order>>("Equivalent " + name + " " + toStringYieldCriterion(yc),
+                                                               unit,
+                                                               T4<order>::nEnt * mesh.getElementSupCount(),
+                                                               this->getMesh());
 
-   u64 ii = 0;
-   for (u64 i = 0; i < mesh.getElementCount(); ++i)
-     for (u64 j = 0; j < T4<order>::nTet; ++j)
-       for (u64 k = 0; k < T4<order>::nEnt; ++k)
-         {
-           field_yc->setValueField(ii, getNorm(yc, ii));
-           ++ii;
-         }
+  u64 ii = 0;
+  for (u64 i = 0; i < mesh.getElementCount(); ++i)
+    for (u64 j = 0; j < T4<order>::nTet; ++j)
+      for (u64 k = 0; k < T4<order>::nEnt; ++k)
+        {
+          field_yc->setValueField(ii, getNorm(yc, ii));
+          ++ii;
+        }
    
-   return field_yc;
+  return field_yc;
  }
 
 template <u64 order>
-void SuqabaFieldTensor<order>::setValueFieldTensorSup(const u64 ii, std::array<Eigen::Matrix<f64, dim, T4<order>::nEnt>, T4<order>::nTet>& tensor)
+void SuqabaFieldTensor<order>::setValueFieldTensorSup(const u64 ii,
+                                                      std::array<Eigen::Matrix<f64, 6, T4<order>::nEnt>,
+                                                      T4<order>::nTet>& tensor)
 {
   u64 cpt = T4<order>::nTet * T4<order>::nEnt * dim * ii;
   
