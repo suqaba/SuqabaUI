@@ -74,7 +74,6 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
         self.write_suqaba_materials()
         self.write_suqaba_dirichlet()
         self.write_suqaba_neumann()
-        self.write_gmsh_geo_file()
         self.json_string += "}\n\n"
 
         with open("{}/{}".format(self.dir_name, self.jsonname), "w") as f:
@@ -99,35 +98,6 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
         self.phgrname = body.Label
         self.partname = "{}.brep".format(self.basename)
         body.Shape.exportBrep("{}/{}".format(self.dir_name, self.partname))
-
-
-    def write_gmsh_geo_file(self):
-        geo_string = ""
-        separator  = ", "
-
-        with open("{}/{}".format(self.dir_name, self.geoname), "w") as f:
-            geo_string += "Merge \"{}.mesh\";\n".format(self.partname[:-5])
-
-            for key in self.solid_dict.keys():
-                geo_string += (
-                    "Physical Volume(\"{PHGR_NAME}\") = {{{SOLID_TAG}}};\n"
-                ).format(PHGR_NAME=key, SOLID_TAG=self.get_tag(key))
-
-            if self.displ_dict:
-                for key, value in self.displ_dict.items():
-                    geo_string += "Physical Surface(\"{}\") = {{".format(key)
-                    geo_string += separator.join(value)
-                    geo_string += "};\n"
-
-            if self.neum_dict:
-                for key, value in self.neum_dict.items():
-                    geo_string += "Physical Surface(\"{}\") = {{".format(key)
-                    geo_string += separator.join(value)
-                    geo_string += "};\n"
-                
-                geo_string +="\n"
-
-            f.write(geo_string)
     
 
     def write_suqaba_materials(self):
@@ -147,6 +117,7 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
                         "           \"name\"   : \"{PHGR_NAME}\",\n"
                         "           \"young_modulus\": {YOUNG_MOD},\n"
                         "           \"poisson_ratio\": {POISSON_RAT},\n"
+                        "           \"density\": {RHO},\n"
                         "           \"load_fx\": {{\n"
                         "                \"x\": \"{RHO} * ({FX} + {CX})\",\n"
                         "                \"y\": \"{RHO} * ({FY} + {CY})\",\n"
@@ -171,6 +142,7 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
                         "           \"name\"   : \"{PHGR_NAME}\",\n"
                         "           \"young_modulus\": {YOUNG_MOD},\n"
                         "           \"poisson_ratio\": {POISSON_RAT},\n"
+                        "           \"density\": {RHO},\n"
                         "           \"load_fx\": {{\n"
                         "                \"x\": \"{RHO} * {FX}\",\n"
                         "                \"y\": \"{RHO} * {FY}\",\n"
