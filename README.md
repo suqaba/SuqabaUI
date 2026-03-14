@@ -34,11 +34,12 @@ Features accessible in the version beta 1.1
 
 <a href="https://suqaba.com"><img src="/src/Gui/Icons/freecadabout.png" height="175px"></a>
 
-In the framework of our beta 1.1, users have access to the following features:
+In the framework of Suqaba v0.3, users have access to the following features:
 - Static linear elastic simulation for structural analysis
 - Automated mesh generation and refinement, based on a certified error estimator
 - Quality Oracle: a local indicator of the confidence level in simulation results
 - Issuance of quality certificates
+- Automated analysis report generation
 - Access to computing resources (SaaS model, _Simulation_ as a Service)
 - Dedicated UI
   - 3D geometry design (either by drawing parts into the UI or importing them)
@@ -71,7 +72,7 @@ their respective platforms:
 - [MinGW](https://wiki.freecad.org/Compile_on_MinGW)
 
 **Note**: The "python-decouple" and "websockets" packages must also be installed in the Python environment
-that the UI runs with.
+the UI runs with.
 
 Reporting Issues
 ---------
@@ -98,6 +99,7 @@ to find help and solve specific problems when learning to use FreeCAD.
 Disclaimer
 --------------------
 
-This project is not affiliated with, endorsed by, or sponsored by the FreeCAD project
-or its contributors. Suqaba gratefully acknowledges the outstanding work of the FreeCAD
-community and has integrated its cloud-native solver into the FreeCAD platform.
+SuqabaUI builds upon components originally developed for the FreeCAD interface.
+Suqaba is not affiliated with, endorsed by, or sponsored by the FreeCAD project
+or its contributors. Suqaba gratefully acknowledges the outstanding work of the
+FreeCAD community.
