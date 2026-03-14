@@ -458,7 +458,6 @@ class Results(run.Results, QtCore.QObject):
             msg = (
                 f"Downloading job {self.job_id[:8]}... This may take a little while.\n\n"
                 "Thank you for your patience.\n\n"
-                "The result file is now being compressed...\n\n"
             )
 
             self.pushStatus(msg)
@@ -504,6 +503,7 @@ class Results(run.Results, QtCore.QObject):
             else:
                 if response == None:
                     self.pushStatus("Please, authenticate yourself.\n")
+                    self.need_auth.emit()
                 else:
                     json_res = response.json()
                     if json_res.get("not-ready") is not None:
@@ -511,8 +511,8 @@ class Results(run.Results, QtCore.QObject):
                         self.pushStatus(f"{not_ready_status}\n")
                     else:
                         self.pushStatus(f"Error downloading result: {response.status_code} {response.reason}\n")
+                        self.need_auth.emit()
                 
-                self.need_auth.emit()
         else:
             self.pushStatus("Please, fetch and select a job before pulling.\n")
 
