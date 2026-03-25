@@ -168,7 +168,7 @@ Gui::ToolBarItem* Workbench::setupToolBars() const
     if (!Fem::Tools::checkIfBinaryExists("Suqaba", "suqaba", "suqaba").empty()) {
         *solve << "FEM_SolverSuqaba";
     }
-    *solve << "Separator"
+    *solve //<< "Separator"
         //    << "FEM_CompMechEquations"
         //    << "FEM_CompEmEquations"
         //    << "FEM_EquationFlow"
@@ -179,10 +179,10 @@ Gui::ToolBarItem* Workbench::setupToolBars() const
            << "FEM_SolverControl";
         //    << "FEM_SolverRun";
 
-//     Gui::ToolBarItem* results = new Gui::ToolBarItem(root);
-//     results->setCommand("Results");
-//     *results << "FEM_ResultsPurge"
-//              << "FEM_ResultShow";
+    Gui::ToolBarItem* results = new Gui::ToolBarItem(root);
+    results->setCommand("Results");
+    *results //<< "FEM_ResultsPurge"
+             << "FEM_ResultShow";
 // #ifdef FC_USE_VTK
 //     *results << "Separator"
 //              << "FEM_PostApplyChanges"
@@ -332,11 +332,11 @@ Gui::MenuItem* Workbench::setupMenuBar() const
            << "FEM_SolverControl";
         //    << "FEM_SolverRun";
 
-//     Gui::MenuItem* results = new Gui::MenuItem;
-//     root->insertItem(item, results);
-//     results->setCommand("&Results");
-//     *results << "FEM_ResultsPurge"
-//              << "FEM_ResultShow";
+    Gui::MenuItem* results = new Gui::MenuItem;
+    root->insertItem(item, results);
+    results->setCommand("&Results");
+    *results //<< "FEM_ResultsPurge"
+             << "FEM_ResultShow";
 // #ifdef FC_USE_VTK
 //     *results << "Separator"
 //              << "FEM_PostApplyChanges"

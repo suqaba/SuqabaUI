@@ -62,7 +62,7 @@ class Proxy(solverbase.Proxy):
         if not hasattr(obj, "GeometryType"):
             obj.addProperty("App::PropertyEnumeration",
                             "GeometryType",
-                            "Fem",
+                            "Solver",
                             "Type of geometry")
             obj.GeometryType = GEOMETRY_TYPES
             obj.GeometryType = GEOMETRY_TYPES[0]
@@ -70,7 +70,7 @@ class Proxy(solverbase.Proxy):
         if not hasattr(obj, "AnalysisType"):
             obj.addProperty("App::PropertyEnumeration",
                             "AnalysisType",
-                            "Fem",
+                            "Solver",
                             "Type of the analysis")
             obj.AnalysisType = ANALYSIS_TYPES
             obj.AnalysisType = ANALYSIS_TYPES[0]
@@ -78,16 +78,23 @@ class Proxy(solverbase.Proxy):
         if not hasattr(obj, "ErrorTolerance"):
             obj.addProperty("App::PropertyFloatConstraint",
                             "ErrorTolerance",
-                            "Fem",
+                            "Solver",
                             "Error Tolerance (%)")
             obj.ErrorTolerance = 20.
         
         if not hasattr(obj, "HighOrderStress"):
             obj.addProperty("App::PropertyBool",
                             "HighOrderStress",
-                            "Fem",
+                            "Solver",
                             "Activate high order stress")
             obj.HighOrderStress = False
+        
+        if not hasattr(obj, "ExportToBdf"):
+            obj.addProperty("App::PropertyBool",
+                            "ExportToBdf",
+                            "Export",
+                            "Export to .bdf format")
+            obj.ExportToBdf = False
     
     def createMachine(self, obj, directory, testmode=False):
         return run.Machine(
@@ -97,7 +104,6 @@ class Proxy(solverbase.Proxy):
             solve=tasks.Solve(),
             fetch=tasks.Fetch(),
             results=tasks.Results(),
-            postpro=tasks.Postpro(),
             livelog=tasks.Livelog(),
             auth_check=tasks.AuthCheck(),
             auth=tasks.Auth(),

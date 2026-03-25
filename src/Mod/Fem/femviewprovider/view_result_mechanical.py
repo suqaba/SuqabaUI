@@ -60,7 +60,7 @@ class VPResultMechanical(view_base_femconstraint.VPBaseFemConstraint):
         return True
 
     def claimChildren(self):
-        return [self.Object.Mesh]  # claimChildren needs to return a list !
+        return [] #[self.Object.Mesh]  # claimChildren needs to return a list !
 
     def onDelete(self, feature, subelements):
         children = self.claimChildren()

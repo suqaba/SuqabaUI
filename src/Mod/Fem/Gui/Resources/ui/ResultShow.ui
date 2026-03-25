@@ -11,9 +11,37 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Show result</string>
+   <string>Result post-processing</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_4">
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <widget class="QGroupBox" name="job_controls">
+     <property name="title">
+      <string>Available result files</string>
+     </property>
+     <layout class="QVBoxLayout">
+      <item>
+       <widget class="QScrollArea" name="job_scroll">
+        <property name="fixedHeight">
+         <number>100</number>
+        </property>
+        <property name="widgetResizable">
+         <bool>true</bool>
+        </property>
+        <property name="verticalScrollBarPolicy">
+         <enum>Qt::ScrollBarAsNeeded</enum>
+        </property>
+        <property name="horizontalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+        <widget class="QWidget" name="job_container">
+         <layout class="QVBoxLayout" name="job_layout"/>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
    <item>
     <widget class="QGroupBox" name="gb_result_type">
      <property name="maximumSize">
@@ -29,7 +57,7 @@
       <item>
        <layout class="QGridLayout" name="gridLayout">
         <item row="0" column="0">
-         <widget class="QRadioButton" name="rb_none">
+         <widget class="QCheckBox" name="cb_local_cre">
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -37,15 +65,35 @@
            </size>
           </property>
           <property name="text">
-           <string>None</string>
+           <string>Local CRE</string>
           </property>
           <property name="checked">
-           <bool>true</bool>
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QCheckBox" name="cb_displacement">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Displacement</string>
           </property>
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="QRadioButton" name="rb_abs_displacement">
+         <widget class="QCheckBox" name="cb_strain">
+          <property name="text">
+           <string>Strain</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QCheckBox" name="cb_stress">
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -53,509 +101,65 @@
            </size>
           </property>
           <property name="text">
-           <string>Displacement Magnitude</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QRadioButton" name="rb_vm_stress">
-          <property name="text">
-           <string>von Mises Stress</string>
+           <string>Stress</string>
           </property>
          </widget>
         </item>
         <item row="2" column="0">
-         <widget class="QRadioButton" name="rb_x_displacement">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>20</height>
-           </size>
-          </property>
+         <widget class="QCheckBox" name="cb_vm_strain">
           <property name="text">
-           <string>Displacement X</string>
+           <string>Von-Mises Strain</string>
           </property>
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QRadioButton" name="rb_maxprin">
+         <widget class="QCheckBox" name="cb_vm_stress">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>20</height>
+           </size>
+          </property>
           <property name="text">
-           <string>Max Principal Stress</string>
+           <string>Von-Mises Stress</string>
           </property>
          </widget>
         </item>
         <item row="3" column="0">
-         <widget class="QRadioButton" name="rb_y_displacement">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>20</height>
-           </size>
-          </property>
+         <widget class="QCheckBox" name="cb_ts_strain">
           <property name="text">
-           <string>Displacement Y</string>
+           <string>Tresca Strain</string>
           </property>
          </widget>
         </item>
         <item row="3" column="1">
-         <widget class="QRadioButton" name="rb_minprin">
+         <widget class="QCheckBox" name="cb_ts_stress">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>20</height>
+           </size>
+          </property>
           <property name="text">
-           <string>Min Principal Stress</string>
+           <string>Tresca Stress</string>
           </property>
          </widget>
         </item>
         <item row="4" column="0">
-         <widget class="QRadioButton" name="rb_z_displacement">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>20</height>
-           </size>
-          </property>
+         <widget class="QPushButton" name="postprocess">
           <property name="text">
-           <string>Displacement Z</string>
+           <string>Postprocess</string>
           </property>
          </widget>
         </item>
         <item row="4" column="1">
-         <widget class="QRadioButton" name="rb_max_shear_stress">
+         <widget class="QPushButton" name="visualize">
           <property name="text">
-           <string>Max Shear Stress (Tresca)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="0">
-         <widget class="QRadioButton" name="rb_peeq">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Equivalent Plastic Strain</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1">
-         <widget class="QRadioButton" name="rb_massflowrate">
-          <property name="text">
-           <string>Mass Flow Rate</string>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="0">
-         <widget class="QRadioButton" name="rb_temperature">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Temperature</string>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="1">
-         <widget class="QRadioButton" name="rb_networkpressure">
-          <property name="text">
-           <string>Network Pressure</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QPushButton" name="show_histogram">
-          <property name="text">
-           <string>Histogram</string>
+           <string>View</string>
           </property>
          </widget>
         </item>
        </layout>
-      </item>
-      <item>
-       <layout class="QFormLayout" name="formLayout">
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_4">
-          <property name="text">
-           <string>Min:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="Gui::InputField" name="le_min">
-          <property name="text">
-           <string notr="true">0 mm</string>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-          <property name="unit" stdset="0">
-           <string notr="true">mm</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Max:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="Gui::InputField" name="le_max">
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-          <property name="unit" stdset="0">
-           <string notr="true">mm</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="gb_displacement">
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>180</height>
-      </size>
-     </property>
-     <property name="title">
-      <string>Displacement Scaling</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QCheckBox" name="cb_show_displacement">
-          <property name="text">
-           <string>Show</string>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QScrollBar" name="hsb_displacement_factor">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximum">
-           <number>1000</number>
-          </property>
-          <property name="value">
-           <number>5</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_5">
-        <item>
-         <widget class="QLabel" name="label_3">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>Factor</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QDoubleSpinBox" name="sb_displacement_factor">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="inputMethodHints">
-           <set>Qt::ImhFormattedNumbersOnly</set>
-          </property>
-          <property name="readOnly">
-           <bool>false</bool>
-          </property>
-          <property name="decimals">
-           <number>10</number>
-          </property>
-          <property name="maximum">
-           <double>1000000.000000000000000</double>
-          </property>
-          <property name="value">
-           <double>5.000000000000000</double>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_6">
-        <item>
-         <widget class="QLabel" name="label_7">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>Slider Max</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QDoubleSpinBox" name="sb_displacement_factor_max">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="inputMethodHints">
-           <set>Qt::ImhFormattedNumbersOnly</set>
-          </property>
-          <property name="readOnly">
-           <bool>false</bool>
-          </property>
-          <property name="decimals">
-           <number>10</number>
-          </property>
-          <property name="maximum">
-           <double>1000000.000000000000000</double>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="gb_animation">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>170</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="title">
-      <string>Animation Control</string>
-     </property>
-     <widget class="QWidget" name="layoutWidget">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>30</y>
-        <width>435</width>
-        <height>28</height>
-       </rect>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QLabel" name="label_1">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Number of Steps per Cycle</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QDoubleSpinBox" name="steps">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="inputMethodHints">
-          <set>Qt::ImhFormattedNumbersOnly</set>
-         </property>
-         <property name="readOnly">
-          <bool>false</bool>
-         </property>
-         <property name="decimals">
-          <number>0</number>
-         </property>
-         <property name="maximum">
-          <double>1000000.000000000000000</double>
-         </property>
-         <property name="value">
-          <double>24.000000000000000</double>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="layoutWidget">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>60</y>
-        <width>435</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_7">
-       <item>
-        <widget class="QLabel" name="label_8">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Number of Cycles</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QDoubleSpinBox" name="loops">
-         <property name="decimals">
-          <number>0</number>
-         </property>
-         <property name="value">
-          <double>4.000000000000000</double>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="layoutWidget">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>90</y>
-        <width>435</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_4">
-       <item>
-        <widget class="QLabel" name="label_2">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Frame Rate</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QDoubleSpinBox" name="framerate">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="inputMethodHints">
-          <set>Qt::ImhFormattedNumbersOnly</set>
-         </property>
-         <property name="readOnly">
-          <bool>false</bool>
-         </property>
-         <property name="decimals">
-          <number>0</number>
-         </property>
-         <property name="maximum">
-          <double>1000000.000000000000000</double>
-         </property>
-         <property name="value">
-          <double>24.000000000000000</double>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QPushButton" name="startButton">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>130</y>
-        <width>435</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="toolTip">
-       <string>Toggles between Start and Stop</string>
-      </property>
-      <property name="text">
-       <string>Start Animation</string>
-      </property>
-     </widget>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="gb_displacement_2">
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>120</height>
-      </size>
-     </property>
-     <property name="title">
-      <string>User defined equation</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <item>
-       <widget class="QPushButton" name="calculate">
-        <property name="toolTip">
-         <string>Runs the equation given in the field below,
-outputs the results to the Min and Max fields
-and colors the result mesh accordingly</string>
-        </property>
-        <property name="text">
-         <string>Calculate</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPlainTextEdit" name="user_def_eq">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>54</height>
-         </size>
-        </property>
-        <property name="toolTip">
-         <string>Enter here an equation to be calculated.
-For possible variables, see the description box below.</string>
-        </property>
-        <property name="plainText">
-         <string>P1 - P3 # Max - Min Principal Stress</string>
-        </property>
-       </widget>
       </item>
      </layout>
     </widget>

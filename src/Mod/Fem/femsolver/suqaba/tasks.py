@@ -384,13 +384,12 @@ class Remove(run.Remove, QtCore.QObject):
 
             if response and response.ok:
                 resp_json = response.json()
-                self.pushStatus("{}\n\n".format(resp_json.get("message")))
-
                 response = authenticated_call("GET", f"{LXKOXK_NKE}/checkin/")
                 msg = "Cluster status:\n"
                 msg += auth_success(response)
                 msg += solver_status(response)
                 self.pushStatus(msg)
+                self.pushStatus("\n{}\n\n".format(resp_json.get("message")))
                 
                 response = authenticated_call("GET", f"{LXKOXK_NKE}/fetch/")
                 if response and response.ok:
@@ -442,121 +441,73 @@ class Fetch(run.Fetch, QtCore.QObject):
 
 
 class Results(run.Results, QtCore.QObject):
-
     need_auth = QtCore.Signal()
     dl_status = QtCore.Signal(str)
-
+    dl_progress = QtCore.Signal(int, int)
+    dl_finished = QtCore.Signal()
 
     def __init__(self):
         run.Results.__init__(self)
         QtCore.QObject.__init__(self)
         self.job_id = None
 
-    
     def run(self):
-        if self.job_id:
-            msg = (
-                f"Downloading job {self.job_id[:8]}... This may take a little while.\n\n"
-                "Thank you for your patience.\n\n"
-            )
+        endpoint = f"{LXKOXK_NKE}/download/{self.job_id}/"
+        response = authenticated_call("GET", endpoint, stream=True)
 
-            self.pushStatus(msg)
-            endpoint = f"{LXKOXK_NKE}/download/{self.job_id}/"
-            response = authenticated_call("GET",
-                                          endpoint,
-                                          stream=True)
+        if response and response.ok:
+            self.dl_status.emit(f"Downloading job {self.job_id[:8]}... "
+                                "This may take a little while.\n\n"
+                                "Thank you for your patience.\n\n")
+
+            res_filename = "job_result.zip"
+            content_disposition = response.headers.get("Content-Disposition")
+            total_size = int(response.headers.get("Content-Length", 1))
+
+            if content_disposition:
+                res_filename = content_disposition.split("filename=\"")[-1][:-1]
             
-            if response and response.ok:
-                res_filename = "job_result.zip"
-                content_disposition = response.headers.get("Content-Disposition")
-                total_size = int(response.headers.get("Content-Length", 1))
-                
-                if content_disposition:
-                    res_filename = content_disposition.split("filename=\"")[-1][:-1]
-
-                if res_filename in os.listdir(self.directory):
-                    psx_path = pathlib.Path(res_filename)
-                    n_occ = 0
-                    for e in os.listdir(self.directory):
-                        if psx_path.stem in pathlib.Path(e).stem:
-                            n_occ += 1
-                    
-                    res_filename = "{}_{}{}".format(psx_path.stem, n_occ, psx_path.suffix)
-
-                result_path = os.path.join(self.directory, res_filename)
-
-                dl_size = 0
-                with open(result_path, "wb") as f:
-                    for chunk in response.iter_content(chunk_size=8192):
-                        if chunk:
-                            f.write(chunk)
-                            dl_size += len(chunk)
-                            percent = 100. * dl_size / total_size
-                            msg = msg.split("Downloaded")[0] + f"Downloaded {percent:.1f}%..."
-                            self.dl_status.emit(msg)
-                
-                with zipfile.ZipFile(result_path, 'r') as zip_ref:
-                    zip_ref.extractall(self.directory)
-                
-                os.remove(result_path)
-                self.pushStatus(f"\n\nResult files downloaded successfully in {self.directory}/{res_filename[:-4]}\n")
-            else:
-                if response == None:
-                    self.pushStatus("Please, authenticate yourself.\n")
-                    self.need_auth.emit()
-                else:
-                    json_res = response.json()
-                    if json_res.get("not-ready") is not None:
-                        not_ready_status = json_res.get("not-ready")
-                        self.pushStatus(f"{not_ready_status}\n")
-                    else:
-                        self.pushStatus(f"Error downloading result: {response.status_code} {response.reason}\n")
-                        self.need_auth.emit()
-                
+            if res_filename in os.listdir(self.directory):
+                psx_path = pathlib.Path(res_filename)
+                n_occ = 0
+                for e in os.listdir(self.directory):
+                    if psx_path.stem in pathlib.Path(e).stem:
+                        n_occ += 1
+                res_filename = "{}_{}{}".format(psx_path.stem, n_occ, psx_path.suffix)
+            
+            result_path = os.path.join(self.directory, res_filename)
+            dl_size = 0
+            with open(result_path, "wb") as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        f.write(chunk)
+                        dl_size += len(chunk)
+                        self.dl_progress.emit(dl_size, total_size)
+            
+            with zipfile.ZipFile(result_path, 'r') as zip_ref:
+                zip_ref.extractall(self.directory)
+            
+            os.remove(result_path)
+            self.dl_status.emit(f"\n\nResult files downloaded successfully in {self.directory}/{res_filename[:-4]}\n")
+            self.dl_finished.emit()
         else:
-            self.pushStatus("Please, fetch and select a job before pulling.\n")
-
-
-class Postpro(run.Postpro, QtCore.QObject):
-
-    ppro_status = QtCore.Signal(str)
-
-    def __init__(self):
-        run.Postpro.__init__(self)
-        QtCore.QObject.__init__(self)
-        self.job_id = None
-        self.working_dir = None
-        self.case_name = None
-        self.postpro_request = None
-
-    def _stream_worker_output(self):
-        for line in iter(self.process.stdout.readline, ''):
-            if "Suqaba" not in line:
-                self.ppro_status.emit(line)
-
-    def run(self):
-        moddir = FreeCAD.getHomePath()
-        bindir = os.path.join(moddir, "bin")
-        cmd = os.path.join(bindir, "SuqabaUICmd")
-        script_path = f"{moddir}Mod/Fem/femsolver/suqaba/postpro_worker.py"
-
-        self.pushStatus(f"Postprocessing of job {self.job_id[:8]} has been initialized...\n")
-
-        args = [cmd,
-                script_path,
-                self.working_dir,
-                self.case_name,
-                json.dumps(self.postpro_request)]
-
-        kwargs = { "stdout": subprocess.PIPE,
-                   "stderr": subprocess.STDOUT,
-                   "text": True }
-
-        if sys.platform == "win32":
-            kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
-        
-        self.process = subprocess.Popen(args, **kwargs)
-        threading.Thread(target=self._stream_worker_output, daemon=True).start()
+            if response is None:
+                msg = "Please, authenticate yourself.\n"
+                self.pushStatus(msg)
+                self.dl_status.emit(msg)
+                self.dl_finished.emit()
+                self.need_auth.emit()
+            else:
+                json_res = response.json()
+                if json_res.get("not-ready") is not None:
+                    self.dl_status.emit(f"{json_res.get('not-ready')}\n")
+                    self.dl_finished.emit()
+                else:
+                    msg = f"Error downloading result: {response.status_code} {response.reason}\n"
+                    self.pushStatus(msg)
+                    self.dl_status.emit(msg)
+                    self.need_auth.emit()
+                    self.dl_finished.emit()
 
 
 class Livelog(run.Livelog, QtCore.QObject):

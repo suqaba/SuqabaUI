@@ -57,7 +57,7 @@ int SuqabaPostpro::run()
   std::string input_fullpath = working_dir + "/" + case_name + ".zst";
   std::string    output_file = working_dir + "/" + case_name + ".vtu";
   
-  std::cout << "Extracting results..." << std::endl;
+  std::cout << "Extracting results...\n" << std::endl;
   SuqabaMesh mesh;
   std::vector<std::unique_ptr<SuqabaField>> fields;
   SuqabaZstdRead(input_fullpath, mesh, fields);
@@ -75,7 +75,7 @@ int SuqabaPostpro::run()
       if (field->getName() == "Oracle")
         {
           field->insertVtkField(vtk_unstructured_grid);
-          std::cout << "Posprocessing Quality Oracle done..." << std::endl;
+          std::cout << "Posprocessing Local Constitutive Relation Error (CRE) done." << std::endl;
           break;
         }
   
@@ -84,7 +84,7 @@ int SuqabaPostpro::run()
       if (field->getName() == "Displacement")
         {
           field->insertVtkField(vtk_unstructured_grid);
-          std::cout << "Posprocessing Displacement done..." << std::endl;
+          std::cout << "Posprocessing Displacement done." << std::endl;
           break;
         }
   
@@ -98,7 +98,7 @@ int SuqabaPostpro::run()
           if (postpro_request[PostproQuantity::STRAIN])
             {
               field_eps->insertVtkField(vtk_unstructured_grid);
-              std::cout << "Posprocessing Strain done..." << std::endl;
+              std::cout << "Posprocessing Strain done." << std::endl;
             }
           fields.push_back(std::move(field_eps));
           break;
@@ -109,7 +109,7 @@ int SuqabaPostpro::run()
       if (field->getName() == "Stress")
         {
           field->insertVtkField(vtk_unstructured_grid);
-          std::cout << "Posprocessing Stress done..." << std::endl;
+          std::cout << "Posprocessing Stress done." << std::endl;
           break;
         }
   
@@ -119,7 +119,7 @@ int SuqabaPostpro::run()
         {
           auto field_vm = field->getFieldNorm(YieldCriterion::VonMises);
           field_vm->insertVtkField(vtk_unstructured_grid);
-          std::cout << "Posprocessing Von-Mises Strain done..." << std::endl;
+          std::cout << "Posprocessing Von-Mises Strain done." << std::endl;
         }
   
   if (postpro_request[PostproQuantity::VM_STRESS])
@@ -128,7 +128,7 @@ int SuqabaPostpro::run()
         {
           auto field_vm = field->getFieldNorm(YieldCriterion::VonMises);
           field_vm->insertVtkField(vtk_unstructured_grid);
-          std::cout << "Posprocessing Von-Mises Stress done..." << std::endl;
+          std::cout << "Posprocessing Von-Mises Stress done." << std::endl;
         }
   
   if (postpro_request[PostproQuantity::TRESCA_STRAIN])
@@ -137,7 +137,7 @@ int SuqabaPostpro::run()
         {
           auto field_vm = field->getFieldNorm(YieldCriterion::Tresca);
           field_vm->insertVtkField(vtk_unstructured_grid);
-          std::cout << "Posprocessing Tresca Strain done..." << std::endl;
+          std::cout << "Posprocessing Tresca Strain done." << std::endl;
         }
 
   if (postpro_request[PostproQuantity::TRESCA_STRESS])
@@ -146,7 +146,7 @@ int SuqabaPostpro::run()
         {
           auto field_vm = field->getFieldNorm(YieldCriterion::Tresca);
           field_vm->insertVtkField(vtk_unstructured_grid);
-          std::cout << "Posprocessing Tresca Stress done..." << std::endl;
+          std::cout << "Posprocessing Tresca Stress done." << std::endl;
         }
   
   //
@@ -158,7 +158,7 @@ int SuqabaPostpro::run()
   vtk_xml->SetCompressionLevel(5);
 
   vtk_xml->Write();
-  std::cout << "Posprocessing done." << std::endl;
+  std::cout << "\nPosprocessing done." << std::endl;
   return 0;
 }
 

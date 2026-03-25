@@ -62,22 +62,11 @@ PREPARE = 1
 SOLVE   = 2
 FETCH   = 3
 RESULTS = 4
-POSTPRO = 5
-LIVELOG = 6
-AUTHCHK = 7
-AUTH    = 8
-CANCEL  = 9
-REMOVE  = 10
-
-POSTPRO_QUANTITY = { "Quality Oracle"  : 0,
-                     "Displacement"    : 1,
-                     "Strain"          : 2,
-                     "Stress"          : 3,
-                     "Von-Mises Strain": 4,
-                     "Von-Mises Stress": 5,
-                     "Tresca Strain"   : 6,
-                     "Tresca Stress"   : 7 }
-
+LIVELOG = 5
+AUTHCHK = 6
+AUTH    = 7
+CANCEL  = 8
+REMOVE  = 9
 
 _machines = {}
 _dirTypes = {}
@@ -333,7 +322,7 @@ class BaseTask(task.Thread):
 class Machine(BaseTask):
 
     def __init__(self, solver, directory, prepare, solve, fetch,
-                 results, postpro, livelog, auth_check, auth, cancel, remove, testmode):
+                 results, livelog, auth_check, auth, cancel, remove, testmode):
         super().__init__()
         self.solver = solver
         self.directory = directory
@@ -342,7 +331,6 @@ class Machine(BaseTask):
         self.solve = solve
         self.fetch = fetch
         self.results = results
-        self.postpro = postpro
         self.livelog = livelog
         self.auth_check = auth_check
         self.auth = auth
@@ -427,8 +415,6 @@ class Machine(BaseTask):
             return self.fetch
         elif state == RESULTS:
             return self.results
-        elif state == POSTPRO:
-            return self.postpro
         elif state == LIVELOG:
             return self.livelog
         elif state == AUTHCHK:
@@ -550,34 +536,23 @@ class Solve(BaseTask):
 class Fetch(BaseTask):
     pass
 
-
 class Results(BaseTask):
     pass
-
-
-class Postpro(BaseTask):
-    pass
-
 
 class Livelog(BaseTask):
     pass
 
-
 class AuthCheck(BaseTask):
     pass
-
 
 class Auth(BaseTask):
     pass
 
-
 class Cancel(BaseTask):
     pass
 
-
 class Remove(BaseTask):
     pass
-
 
 class _DocObserver:
 

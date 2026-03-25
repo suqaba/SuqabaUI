@@ -31,6 +31,7 @@ __url__ = "https://www.freecad.org"
 import os
 import subprocess
 import pathlib
+import warnings
 
 from PySide import QtCore, QtGui, QtWidgets
 
@@ -68,7 +69,6 @@ class ControlTaskPanel(QtCore.QObject):
         self.form.pullClicked.connect(self.pull)
         self.form.cancelClicked.connect(self.cancel)
         self.form.removeClicked.connect(self.remove)
-        self.form.postproClicked.connect(self.postpro)
         self.form.authClicked.connect(self.auth)
         self.form.abortClicked.connect(self.abort)
         self.form.directoryChanged.connect(self.updateMachine)
@@ -172,14 +172,36 @@ class ControlTaskPanel(QtCore.QObject):
     @QtCore.Slot()
     def pull(self):
         selected_job = self.get_selected_job()
+        if not selected_job:
+            QtWidgets.QMessageBox.warning(None, "Warning", "Please select a job first.")
+            return
 
         self.machine._state = femsolver.run.RESULTS
         self.machine.target = femsolver.run.RESULTS
         self.machine.results.job_id = selected_job
-        self.machine.results.dl_status.connect(self.form.pullStatus)
-        self.machine.results.dl_status.disconnect()
-        self.machine.results.dl_status.connect(self.form.pullStatus)
+
+        for signal in [self.machine.results.dl_status,\
+                       self.machine.results.dl_progress,\
+                       self.machine.results.need_auth,\
+                       self.machine.results.dl_finished]:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", RuntimeWarning)
+                try:
+                    signal.disconnect()
+                except (TypeError, RuntimeError):
+                    pass
+
+        self.download_dialog = DownloadDialog(None)
+        self.download_dialog.show()
+        self.download_dialog.raise_()
+        self.download_dialog.activateWindow()
+
+        # Connect signals
+        self.machine.results.dl_status.connect(self.download_dialog.update_status)
+        self.machine.results.dl_progress.connect(self.download_dialog.update_progress)
         self.machine.results.need_auth.connect(self.form.enableAuth)
+        self.machine.results.need_auth.connect(self.download_dialog.on_finished)
+        self.machine.results.dl_finished.connect(self.download_dialog.on_finished)
         self.machine.start()
     
     @QtCore.Slot()
@@ -221,71 +243,6 @@ class ControlTaskPanel(QtCore.QObject):
             self.machine.remove.finished.connect(self.form.createJobBoxes)
             self.machine.remove.need_auth.connect(self.form.enableAuth)
             self.machine.start()
-    
-    @QtCore.Slot()
-    def postpro(self, mode):
-        if mode == "view":
-            paraview_path = FreeCAD.ParamGet("User parameter:BaseApp/Suqaba/ParaView").GetString("Path")
-            if not paraview_path or not os.path.isfile(paraview_path):
-                QtWidgets.QMessageBox.information(None,
-                                                  "Info",
-                                                  "Please browse to the ParaView installation folder and "
-                                                  "select the ParaView executable file (e.g., 'paraview' "
-                                                  "or 'paraview.exe').")
-                paraview_path, _ = QtWidgets.QFileDialog.getOpenFileName(None,
-                                                                        "Select ParaView Executable", 
-                                                                        "",
-                                                                        "Executable Files (*)")
-                if not paraview_path:
-                    QtWidgets.QMessageBox.information(None, "Info", "ParaView path not set. Operation cancelled.")
-                    return
-                FreeCAD.ParamGet("User parameter:BaseApp/Suqaba/ParaView").SetString("Path", paraview_path)
-            
-            result_path, _ = QtWidgets.QFileDialog.getOpenFileName(None,
-                                                                   "Select VTU File",
-                                                                   self.machine.directory,
-                                                                   "VTU Files (*.vtu);;All Files (*)")
-            if not result_path:
-                QtWidgets.QMessageBox.information(None, "Info", "Result file to view not set. Operation cancelled.")
-                return
-            
-            try:
-                abs_path = os.path.abspath(result_path)
-                subprocess.Popen([paraview_path, abs_path])
-            except Exception as e:
-                QtWidgets.QMessageBox.critical(None, "Error", f"Failed to launch ParaView:\n{str(e)}")
-            
-            return
-            
-        selected_job = self.get_selected_job()
-        if not selected_job:
-            QtWidgets.QMessageBox.warning(None, "Warning", "Please select a job first.")
-            return
-
-        working_dir = os.path.join(self.machine.directory, f"result_{selected_job[:8]}")
-        case_name = pathlib.Path(self.machine.solver.Document.FileName).stem
-        fullpath = os.path.join(working_dir, f"{case_name}.zst")
-        if not os.path.exists(working_dir):
-            QtWidgets.QMessageBox.warning(None, "Warning",
-                                          f"The result folder of job '{selected_job[:8]}' was not found in {self.machine.directory}.")
-            return
-        if not os.path.exists(fullpath):
-            QtWidgets.QMessageBox.warning(None, "Warning",
-                                          f"The result file (.zst extension) was not found in {working_dir}.")
-            return
-
-        self.machine._state = femsolver.run.POSTPRO
-        self.machine.target = femsolver.run.POSTPRO
-        self.machine.postpro.mode = mode
-        self.machine.postpro.job_id = selected_job
-        self.machine.postpro.working_dir = working_dir
-        self.machine.postpro.case_name = case_name
-        self.machine.postpro.postpro_request = self.get_selected_quantities()
-        self.machine.postpro.ppro_status.connect(self.form.postproStatus)
-        self.machine.postpro.ppro_status.disconnect()
-        self.machine.postpro.ppro_status.connect(self.form.postproStatus)
-        self.machine.start()
-        
     
     @QtCore.Slot()
     def auth_check(self):
@@ -369,12 +326,6 @@ class ControlTaskPanel(QtCore.QObject):
             if box.isChecked():
                 return box.property("job_id")
         return None
-    
-    def get_selected_quantities(self):
-        selection = []
-        for box in self.form.postpro_group.buttons():
-            selection.append(box.isChecked())
-        return selection
 
 
 class ControlWidget(QtGui.QWidget):
@@ -386,7 +337,6 @@ class ControlWidget(QtGui.QWidget):
     pullClicked = QtCore.Signal()
     cancelClicked = QtCore.Signal()
     removeClicked = QtCore.Signal()
-    postproClicked = QtCore.Signal(str)
     authClicked = QtCore.Signal()
     abortClicked = QtCore.Signal()
     directoryChanged = QtCore.Signal()
@@ -459,7 +409,7 @@ class ControlWidget(QtGui.QWidget):
         self.job_scroll.setWidget(self.job_container)
         self.job_scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
         self.job_scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.job_scroll.setFixedHeight(100)
+        self.job_scroll.setFixedHeight(200)
 
         # Job action buttons
         self._fetchBtt = QtGui.QPushButton("Refresh")
@@ -483,43 +433,6 @@ class ControlWidget(QtGui.QWidget):
         jobCtrl_layout.addWidget(self.job_scroll)
         jobCtrl_layout.addLayout(btn_layout)
         self.job_controls.setLayout(jobCtrl_layout)
-
-        # Postprocessing group box
-        self.postpro_groupbox = QtGui.QGroupBox("Postprocessing")
-        self.postpro_layout = QtGui.QVBoxLayout(self.postpro_groupbox)
-        grid = QtGui.QGridLayout()
-        self.postpro_group = QtGui.QButtonGroup()
-        self.postpro_group.setExclusive(False)
-
-        self.postpro_checkboxes = {}
-        row = 0
-        col = 0
-        for label in femsolver.run.POSTPRO_QUANTITY.keys():
-            checkbox = QtGui.QCheckBox(label)
-            self.postpro_group.addButton(checkbox)
-            self.postpro_checkboxes[label] = checkbox
-
-            grid.addWidget(checkbox, row, col)
-
-            col += 1
-            if col == 2:
-                col = 0
-                row += 1
-
-        self.postpro_layout.addLayout(grid)
-
-        # Postprocess buttons
-        self._postproBtt = QtGui.QPushButton("Postprocess")
-        self._viewBtt = QtGui.QPushButton("View")
-
-        self._postproBtt.clicked.connect(lambda: self.postproClicked.emit("postpro"))
-        self._viewBtt.clicked.connect(lambda: self.postproClicked.emit("view"))
-
-        button_layout = QtGui.QHBoxLayout()
-        button_layout.addWidget(self._postproBtt)
-        button_layout.addWidget(self._viewBtt)
-
-        self.postpro_layout.addLayout(button_layout)
         
         # General logs
         self._statusEdt = QtGui.QPlainTextEdit()
@@ -537,7 +450,6 @@ class ControlWidget(QtGui.QWidget):
         layout.addWidget(self.prepro_group)
         layout.addWidget(self.log_group)
         layout.addWidget(self.job_controls)
-        layout.addWidget(self.postpro_groupbox)
         self.setLayout(layout)
 
     @QtCore.Slot(str)
@@ -629,8 +541,6 @@ class ControlWidget(QtGui.QWidget):
             self._pullBtt.setDisabled(True)
             self._cancelBtt.setDisabled(True)
             self._removeBtt.setDisabled(True)
-            self._postproBtt.setDisabled(True)
-            self._viewBtt.setDisabled(True)
             self.auth_btt.setDisabled(True)
         else:
             self._runBtt.clicked.connect(self.abortClicked)
@@ -644,8 +554,6 @@ class ControlWidget(QtGui.QWidget):
             self._pullBtt.setDisabled(False)
             self._cancelBtt.setDisabled(False)
             self._removeBtt.setDisabled(False)
-            self._postproBtt.setDisabled(False)
-            self._viewBtt.setDisabled(False)
             self.auth_btt.setDisabled(False)
     
     def enableAuth(self):
@@ -656,15 +564,6 @@ class ControlWidget(QtGui.QWidget):
         self.password_text.setDisabled(False)
         self.password_text.show()
         self.auth_group.show()
-    
-    @QtCore.Slot(str)
-    def pullStatus(self, status):
-        self._statusEdt.setPlainText("")
-        self._statusEdt.insertPlainText(status)
-    
-    @QtCore.Slot(str)
-    def postproStatus(self, status):
-        self._statusEdt.insertPlainText(status)
 
 
 class LogWindow(QtWidgets.QDialog):
@@ -675,7 +574,7 @@ class LogWindow(QtWidgets.QDialog):
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
 
         self.setWindowTitle("Live Job Logs")
-        self.resize(900, 600)
+        self.resize(800, 600)
 
         layout = QtWidgets.QVBoxLayout()
 
@@ -698,5 +597,62 @@ class LogWindow(QtWidgets.QDialog):
         self.closed.emit()
         self.close()
         super().reject()
+
+class DownloadDialog(QtWidgets.QDialog):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
+        self.setWindowTitle("Job Download")
+        self.setMinimumWidth(500)
+
+        layout = QtWidgets.QVBoxLayout(self)
+
+        self.label_text = ""
+        self.status_label = QtWidgets.QTextEdit()
+        self.status_label.setReadOnly(True)
+        layout.addWidget(self.status_label)
+
+        self.progress_bar = QtWidgets.QProgressBar()
+        self.progress_bar.setRange(0, 100)
+        self.progress_bar.setValue(0)
+        layout.addWidget(self.progress_bar)
+
+        self.close_btn = QtWidgets.QPushButton("Close")
+        self.close_btn.setEnabled(False)
+        self.close_btn.setFixedWidth(100)
+        self.close_btn.clicked.connect(self.accept)
+
+        btn_layout = QtWidgets.QHBoxLayout()
+        btn_layout.addStretch()
+        btn_layout.addWidget(self.close_btn)
+        btn_layout.addStretch()
+        layout.addLayout(btn_layout)
+    
+    @staticmethod
+    def format_size(size_bytes):
+        if size_bytes < 1024**2:
+            return f"{size_bytes / 1024:.1f} KB"
+        elif size_bytes < 1024**3:
+            return f"{size_bytes / 1024**2:.1f} MB"
+        else:
+            return f"{size_bytes / 1024**3:.1f} GB"
+
+    @QtCore.Slot(int, int)
+    def update_progress(self, dl_size, total_size):
+        percent = int(100 * dl_size / total_size)
+        self.progress_bar.setValue(percent)
+        self.label_text = self.label_text.split("Downloaded")[0]
+        self.label_text += f"Downloaded {self.format_size(dl_size)} / {self.format_size(total_size)}"
+        self.status_label.setText(self.label_text)
+
+    @QtCore.Slot(str)
+    def update_status(self, msg):
+        self.label_text += msg
+        self.status_label.setText(self.label_text)
+
+    @QtCore.Slot()
+    def on_finished(self):
+        self.close_btn.setEnabled(True)
 
 ##  @}

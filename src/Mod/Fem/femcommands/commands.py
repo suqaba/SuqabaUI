@@ -708,13 +708,13 @@ class _ResultShow(CommandManager):
         super().__init__()
         self.menutext = Qt.QT_TRANSLATE_NOOP("FEM_ResultShow", "Show result")
         self.accel = "R, S"
-        self.tooltip = Qt.QT_TRANSLATE_NOOP(
-            "FEM_ResultShow", "Shows and visualizes selected result data"
-        )
-        self.is_active = "with_selresult"
+        self.tooltip = Qt.QT_TRANSLATE_NOOP("FEM_ResultShow",
+                                            "Shows and visualizes selected result data")
+        self.is_active = "with_analysis"
+        self.do_activated = "add_obj_on_gui_expand_noset_edit"
 
-    def Activated(self):
-        self.selobj.ViewObject.Document.setEdit(self.selobj.ViewObject, 0)
+    # def Activated(self):
+    #     self.selobj.ViewObject.Document.setEdit(self.selobj.ViewObject, 0)
 
 
 class _ResultsPurge(CommandManager):
