@@ -29,7 +29,7 @@ Parametric modeling allows you to easily modify your design by going back into
 your model history to change its parameters. The Suqaba team is grateful to
 everyone involved in the FreeCAD project.
 
-Features accessible in the version beta 1.1
+Features in Suqaba v0.3
 --------
 
 <a href="https://suqaba.com"><img src="/src/Gui/Icons/freecadabout.png" height="175px"></a>
