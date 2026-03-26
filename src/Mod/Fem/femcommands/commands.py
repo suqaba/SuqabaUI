@@ -196,6 +196,17 @@ class _ConstraintBodyHeatSource(CommandManager):
         self.do_activated = "add_obj_on_gui_set_edit"
 
 
+# class _ConstraintRoller(CommandManager):
+#     "The FEM_ConstraintRoller command definition"
+
+#     def __init__(self):
+#         super().__init__()
+#         self.menutext = Qt.QT_TRANSLATE_NOOP("FEM_ConstraintRoller", "Roller boundary condition")
+#         self.tooltip = Qt.QT_TRANSLATE_NOOP("FEM_ConstraintRoller", "Creates a roller boundary condition")
+#         self.is_active = "with_analysis"
+#         self.do_activated = "add_obj_on_gui_set_edit"
+
+
 class _ConstraintCentrif(CommandManager):
     "The FEM_ConstraintCentrif command definition"
 
@@ -814,6 +825,7 @@ FreeCADGui.addCommand("FEM_ClippingPlaneAdd", _ClippingPlaneAdd())
 FreeCADGui.addCommand("FEM_ClippingPlaneRemoveAll", _ClippingPlaneRemoveAll())
 FreeCADGui.addCommand("FEM_ConstantVacuumPermittivity", _ConstantVacuumPermittivity())
 FreeCADGui.addCommand("FEM_ConstraintBodyHeatSource", _ConstraintBodyHeatSource())
+# FreeCADGui.addCommand("FEM_ConstraintRoller", _ConstraintRoller())
 FreeCADGui.addCommand("FEM_ConstraintCentrif", _ConstraintCentrif())
 FreeCADGui.addCommand("FEM_ConstraintCurrentDensity", _ConstraintCurrentDensity())
 FreeCADGui.addCommand("FEM_ConstraintElectricChargeDensity", _ConstraintElectricChargeDensity())

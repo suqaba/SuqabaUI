@@ -48,6 +48,7 @@
  #include "ViewProviderFemConstraintContact.h"
  #include "ViewProviderFemConstraintDisplacement.h"
  #include "ViewProviderFemConstraintFixed.h"
+ #include "ViewProviderFemConstraintRoller.h"
  #include "ViewProviderFemConstraintRigidBody.h"
  #include "ViewProviderFemConstraintForce.h"
  #include "ViewProviderFemConstraintFluidBoundary.h"
@@ -118,6 +119,7 @@
      FemGui::ViewProviderFemConstraintContact                    ::init();
      FemGui::ViewProviderFemConstraintDisplacement               ::init();
      FemGui::ViewProviderFemConstraintFixed                      ::init();
+     FemGui::ViewProviderFemConstraintRoller                     ::init();
      FemGui::ViewProviderFemConstraintRigidBody                  ::init();
     //  FemGui::ViewProviderFemConstraintFluidBoundary              ::init();
      FemGui::ViewProviderFemConstraintForce                      ::init();

@@ -167,6 +167,13 @@ def makeConstraintFixed(doc, name="ConstraintFixed"):
     return obj
 
 
+def makeConstraintRoller(doc, name="ConstraintRoller"):
+    """makeConstraintRoller(document, [name]):
+    makes a Fem ConstraintRoller object"""
+    obj = doc.addObject("Fem::ConstraintRoller", name)
+    return obj
+
+
 def makeConstraintRigidBody(doc, name="ConstraintRigidBody"):
     """makeConstraintRigidBody(document, [name]):
     makes a Fem ConstraintRigidBody object"""

@@ -186,6 +186,8 @@ SET(FemConstraints_SRCS
     FemConstraintBearing.cpp
     FemConstraintFixed.cpp
     FemConstraintFixed.h
+    FemConstraintRoller.cpp
+    FemConstraintRoller.h
     FemConstraintRigidBody.cpp
     FemConstraintRigidBody.h
     FemConstraintForce.cpp

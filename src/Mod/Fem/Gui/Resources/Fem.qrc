@@ -13,6 +13,7 @@
         <file>icons/FEM_ConstraintElectricChargeDensity.svg</file>
         <file>icons/FEM_ConstraintElectrostaticPotential.svg</file>
         <file>icons/FEM_ConstraintFixed.svg</file>
+        <file>icons/FEM_ConstraintRoller.svg</file>
         <file>icons/FEM_ConstraintFlowVelocity.svg</file>
         <file>icons/FEM_ConstraintFluidBoundary.svg</file>
         <file>icons/FEM_ConstraintForce.svg</file>

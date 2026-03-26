@@ -203,8 +203,10 @@ class Prepare(run.Prepare):
     def check_dirichlet(self):
         blocks = self.get_several_member("Fem::ConstraintFixed")
         displs = self.get_several_member("Fem::ConstraintDisplacement")
-        if len(blocks) + len(displs) < 1:
-            self.report.error("Missing a Dirichlet boundary condition. At least one Dirichlet boundary condition is required.")
+        roller = self.get_several_member("Fem::ConstraintRoller")
+        if len(blocks) + len(displs) + len(roller) < 1:
+            self.report.error("Missing a Dirichlet boundary condition. "
+                              "At least one Dirichlet boundary condition is required.")
             self.fail()
     
     def check_target_error(self):

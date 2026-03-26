@@ -108,6 +108,7 @@ class TestObjectExistance(unittest.TestCase):
             "Fem::ConstraintContact",
             "Fem::ConstraintDisplacement",
             "Fem::ConstraintFixed",
+            "Fem::ConstraintRoller",
             "Fem::ConstraintFluidBoundary",
             "Fem::ConstraintForce",
             "Fem::ConstraintGear",

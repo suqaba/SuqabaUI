@@ -270,6 +270,7 @@ class AnalysisMember:
         self.cons_contact = self.get_several_member("Fem::ConstraintContact")
         self.cons_displacement = self.get_several_member("Fem::ConstraintDisplacement")
         self.cons_fixed = self.get_several_member("Fem::ConstraintFixed")
+        self.cons_roller = self.get_several_member("Fem::ConstraintRoller")
         self.cons_rigidbody = self.get_several_member("Fem::ConstraintRigidBody")
         self.cons_rigidbody_step = self.get_several_member("Fem::ConstraintRigidBody")
         self.cons_force = self.get_several_member("Fem::ConstraintForce")

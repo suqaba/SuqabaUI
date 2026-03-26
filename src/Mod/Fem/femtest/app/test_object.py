@@ -164,6 +164,7 @@ class TestObjectType(unittest.TestCase):
             type_of_obj(ObjectsFem.makeConstraintElectricChargeDensity(doc)),
         )
         self.assertEqual("Fem::ConstraintFixed", type_of_obj(ObjectsFem.makeConstraintFixed(doc)))
+        self.assertEqual("Fem::ConstraintRoller", type_of_obj(ObjectsFem.makeConstraintRoller(doc)))
         self.assertEqual(
             "Fem::ConstraintRigidBody", type_of_obj(ObjectsFem.makeConstraintRigidBody(doc))
         )
@@ -345,6 +346,7 @@ class TestObjectType(unittest.TestCase):
             )
         )
         self.assertTrue(is_of_type(ObjectsFem.makeConstraintFixed(doc), "Fem::ConstraintFixed"))
+        self.assertTrue(is_of_type(ObjectsFem.makeConstraintRoller(doc), "Fem::ConstraintRoller"))
         self.assertTrue(
             is_of_type(ObjectsFem.makeConstraintRigidBody(doc), "Fem::ConstraintRigidBody")
         )
@@ -579,6 +581,12 @@ class TestObjectType(unittest.TestCase):
         self.assertTrue(is_derived_from(constraint_fixed, "App::DocumentObject"))
         self.assertTrue(is_derived_from(constraint_fixed, "Fem::Constraint"))
         self.assertTrue(is_derived_from(constraint_fixed, "Fem::ConstraintFixed"))
+
+        # ConstraintRoller
+        constraint_roller = ObjectsFem.makeConstraintRoller(doc)
+        self.assertTrue(is_derived_from(constraint_roller, "App::DocumentObject"))
+        self.assertTrue(is_derived_from(constraint_roller, "Fem::Constraint"))
+        self.assertTrue(is_derived_from(constraint_roller, "Fem::ConstraintRoller"))
 
         # ConstraintRigidBody
         constraint_rigidbody = ObjectsFem.makeConstraintRigidBody(doc)
@@ -941,6 +949,7 @@ class TestObjectType(unittest.TestCase):
             )
         )
         self.assertTrue(ObjectsFem.makeConstraintFixed(doc).isDerivedFrom("Fem::ConstraintFixed"))
+        self.assertTrue(ObjectsFem.makeConstraintRoller(doc).isDerivedFrom("Fem::ConstraintRoller"))
         self.assertTrue(
             ObjectsFem.makeConstraintRigidBody(doc).isDerivedFrom("Fem::ConstraintRigidBody")
         )
@@ -1106,6 +1115,7 @@ def create_all_fem_objects_doc(doc):
     analysis.addObject(ObjectsFem.makeConstraintElectrostaticPotential(doc))
     analysis.addObject(ObjectsFem.makeConstraintElectricChargeDensity(doc))
     analysis.addObject(ObjectsFem.makeConstraintFixed(doc))
+    analysis.addObject(ObjectsFem.makeConstraintRoller(doc))
     analysis.addObject(ObjectsFem.makeConstraintRigidBody(doc))
     analysis.addObject(ObjectsFem.makeConstraintFlowVelocity(doc))
     analysis.addObject(ObjectsFem.makeConstraintFluidBoundary(doc))

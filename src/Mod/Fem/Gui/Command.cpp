@@ -447,6 +447,56 @@ bool CmdFemConstraintFixed::isActive()
 
 
 //================================================================================================
+DEF_STD_CMD_A(CmdFemConstraintRoller)
+
+CmdFemConstraintRoller::CmdFemConstraintRoller()
+    : Command("FEM_ConstraintRoller")
+{
+    sAppModule = "Fem";
+    sGroup = QT_TR_NOOP("Fem");
+    sMenuText = QT_TR_NOOP("Roller boundary condition");
+    sToolTipText = QT_TR_NOOP("Creates a roller boundary condition for a geometric entity");
+    sWhatsThis = "FEM_ConstraintRoller";
+    sStatusTip = sToolTipText;
+    sPixmap = "FEM_ConstraintRoller";
+}
+
+void CmdFemConstraintRoller::activated(int)
+{
+    Fem::FemAnalysis* Analysis;
+
+    if (getConstraintPrerequisits(&Analysis)) {
+        return;
+    }
+
+    std::string FeatName = getUniqueObjectName("ConstraintRoller");
+
+    openCommand(QT_TRANSLATE_NOOP("Command", "Make roller boundary condition for geometry"));
+    doCommand(Doc,
+              "App.activeDocument().addObject(\"Fem::ConstraintRoller\",\"%s\")",
+              FeatName.c_str());
+    // OvG: set initial scale to 1
+    doCommand(Doc, "App.activeDocument().%s.Scale = 0.25", FeatName.c_str());
+    doCommand(Doc,
+              "App.activeDocument().%s.addObject(App.activeDocument().%s)",
+              Analysis->getNameInDocument(),
+              FeatName.c_str());
+
+    // OvG: Hide meshes and show parts
+    doCommand(Doc, "%s", gethideMeshShowPartStr(FeatName).c_str());
+
+    updateActive();
+
+    doCommand(Gui, "Gui.activeDocument().setEdit('%s')", FeatName.c_str());
+}
+
+bool CmdFemConstraintRoller::isActive()
+{
+    return FemGui::ActiveAnalysisObserver::instance()->hasActiveObject();
+}
+
+
+//================================================================================================
 DEF_STD_CMD_A(CmdFemConstraintRigidBody)
 
 CmdFemConstraintRigidBody::CmdFemConstraintRigidBody()
@@ -2805,6 +2855,7 @@ void CreateFemCommands()
     rcCmdMgr.addCommand(new CmdFemConstraintContact());
     rcCmdMgr.addCommand(new CmdFemConstraintDisplacement());
     rcCmdMgr.addCommand(new CmdFemConstraintFixed());
+    rcCmdMgr.addCommand(new CmdFemConstraintRoller());
     rcCmdMgr.addCommand(new CmdFemConstraintRigidBody());
     rcCmdMgr.addCommand(new CmdFemConstraintFluidBoundary());
     rcCmdMgr.addCommand(new CmdFemConstraintForce());

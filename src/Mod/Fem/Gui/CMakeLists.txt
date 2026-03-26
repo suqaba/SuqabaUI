@@ -58,6 +58,7 @@ set(FemGui_UIC_SRCS
     TaskFemConstraint.ui
     TaskFemConstraintBearing.ui
     TaskFemConstraintFixed.ui
+    TaskFemConstraintRoller.ui
     TaskFemConstraintRigidBody.ui
     TaskFemConstraintForce.ui
     TaskFemConstraintFluidBoundary.ui
@@ -118,6 +119,9 @@ SET(FemGui_DLG_SRCS
     TaskFemConstraintFixed.ui
     TaskFemConstraintFixed.cpp
     TaskFemConstraintFixed.h
+    TaskFemConstraintRoller.ui
+    TaskFemConstraintRoller.cpp
+    TaskFemConstraintRoller.h
     TaskFemConstraintRigidBody.ui
     TaskFemConstraintRigidBody.cpp
     TaskFemConstraintRigidBody.h
@@ -199,6 +203,8 @@ SET(FemGui_SRCS_ViewProvider
     ViewProviderFemConstraintBearing.h
     ViewProviderFemConstraintFixed.cpp
     ViewProviderFemConstraintFixed.h
+    ViewProviderFemConstraintRoller.cpp
+    ViewProviderFemConstraintRoller.h
     ViewProviderFemConstraintRigidBody.cpp
     ViewProviderFemConstraintRigidBody.h
     ViewProviderFemConstraintForce.cpp
@@ -355,6 +361,7 @@ SET(FemGuiSymbol_IV
     Resources/symbols/ConstraintElectrostaticPotential.iv
     Resources/symbols/ConstraintCurrentDensity.iv
     Resources/symbols/ConstraintFixed.iv
+    Resources/symbols/ConstraintRoller.iv
     Resources/symbols/ConstraintForce.iv
     Resources/symbols/ConstraintHeatFlux.iv
     Resources/symbols/ConstraintPlaneRotation.iv
