@@ -111,8 +111,8 @@ void ThemeSelectorWidget::setupButtons(QBoxLayout* layout)
         return;
     }
     std::map<Theme, QString> themeMap {{Theme::Classic, tr("FreeCAD Classic")},
-                                       {Theme::Dark, tr("FreeCAD Dark")},
-                                       {Theme::Light, tr("FreeCAD Light")}};
+                                       {Theme::Dark, tr("OpenDark")},
+                                       {Theme::Light, tr("OpenLight")}};
     std::map<Theme, QIcon> iconMap {
         {Theme::Classic, QIcon(QLatin1String(":/thumbnails/Theme_thumbnail_classic.png"))},
         {Theme::Light, QIcon(QLatin1String(":/thumbnails/Theme_thumbnail_light.png"))},
@@ -137,12 +137,12 @@ void ThemeSelectorWidget::setupButtons(QBoxLayout* layout)
             button->setChecked(true);
         }
         else if (theme.first == Theme::Light
-                 && styleSheetName.contains(QLatin1String("FreeCAD Light"),
+                 && styleSheetName.contains(QLatin1String("OpenLight"),
                                             Qt::CaseSensitivity::CaseInsensitive)) {
             button->setChecked(true);
         }
         else if (theme.first == Theme::Dark
-                 && styleSheetName.contains(QLatin1String("FreeCAD Dark"),
+                 && styleSheetName.contains(QLatin1String("OpenDark"),
                                             Qt::CaseSensitivity::CaseInsensitive)) {
             button->setChecked(true);
         }
@@ -207,10 +207,10 @@ void ThemeSelectorWidget::themeChanged(Theme newTheme)
             prefPackManager->apply("FreeCAD Classic");
             break;
         case Theme::Dark:
-            prefPackManager->apply("FreeCAD Dark");
+            prefPackManager->apply("OpenDark");
             break;
         case Theme::Light:
-            prefPackManager->apply("FreeCAD Light");
+            prefPackManager->apply("OpenLight");
             break;
     }
     ParameterGrp::handle hGrp =
@@ -236,9 +236,10 @@ bool ThemeSelectorWidget::eventFilter(QObject* object, QEvent* event)
 void ThemeSelectorWidget::retranslateUi()
 {
     _titleLabel->setText(QLatin1String("<h2>") + tr("Theme") + QLatin1String("</h2>"));
-    _descriptionLabel->setText(tr("Looking for more themes? You can obtain them using "
-                                  "<a href=\"freecad:Std_AddonMgr\">Addon Manager</a>."));
-    _buttons[static_cast<int>(Theme::Dark)]->setText(tr("FreeCAD Dark", "Visual theme name"));
-    _buttons[static_cast<int>(Theme::Light)]->setText(tr("FreeCAD Light", "Visual theme name"));
+    // _descriptionLabel->setText(tr("Looking for more themes? You can obtain them using "
+    //                               "<a href=\"freecad:Std_AddonMgr\">Addon Manager</a>."));
+    _descriptionLabel->setText(tr(""));
+    _buttons[static_cast<int>(Theme::Dark)]->setText(tr("OpenDark", "Visual theme name"));
+    _buttons[static_cast<int>(Theme::Light)]->setText(tr("OpenLight", "Visual theme name"));
     _buttons[static_cast<int>(Theme::Classic)]->setText(tr("FreeCAD Classic", "Visual theme name"));
 }

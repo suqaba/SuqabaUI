@@ -10,3 +10,6 @@
 [submodule "src/Mod/AddonManager"]
 	path = src/Mod/AddonManager
 	url = https://github.com/FreeCAD/AddonManager.git
+[submodule "src/Gui/PreferencePacks/OpenTheme"]
+	path = src/Gui/PreferencePacks/OpenTheme
+	url = git@github.com:clementvella/OpenTheme.git
