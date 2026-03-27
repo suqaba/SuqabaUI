@@ -1114,7 +1114,7 @@ installed addons will be checked for available updates</source>
     </message>
     <message>
         <location filename="../../AddonManager.py" line="421"/>
-        <source>You must restart FreeCAD for changes to take effect.</source>
+        <source>You must restart SuqabaUI for changes to take effect.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

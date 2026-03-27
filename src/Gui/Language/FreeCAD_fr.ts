@@ -2358,8 +2358,8 @@ Specify another directory, please.</source>
     </message>
     <message>
       <location filename="../DlgPreferencesImp.cpp" line="766"/>
-      <source>You must restart FreeCAD for changes to take effect.</source>
-      <translation>Vous devez redémarrer FreeCAD pour que les changements prennent effet.</translation>
+      <source>You must restart SuqabaUI for changes to take effect.</source>
+      <translation>Vous devez redémarrer SuqabaUI pour que les changements prennent effet.</translation>
     </message>
     <message>
       <location filename="../DlgPreferencesImp.cpp" line="771"/>

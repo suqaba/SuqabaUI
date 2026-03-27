@@ -763,7 +763,7 @@ void DlgPreferencesImp::restartIfRequired()
 
         restartBox.setIcon(QMessageBox::Warning);
         restartBox.setWindowTitle(tr("Restart required"));
-        restartBox.setText(tr("You must restart FreeCAD for changes to take effect."));
+        restartBox.setText(tr("You must restart SuqabaUI for changes to take effect."));
         restartBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
         restartBox.setDefaultButton(QMessageBox::Cancel);
         auto okBtn = restartBox.button(QMessageBox::Ok);
