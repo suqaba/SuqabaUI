@@ -445,14 +445,18 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
 
     def write_suqaba_parameters(self):
         self.json_string += (
-            "    \"OMP\"           : 4,\n"
-            "    \"ERROR\"         : {ERR},\n"
-            "    \"HO_STRESS\"     : {HOS},\n"
-            "    \"REFI_STEPS\"    : 7,\n"
-            "    \"JOBNAME\"       : \"{JOBNAME}\",\n"
+            "    \"OMP\"       : 4,\n"
+            "    \"ERROR\"     : {ERR},\n"
+            # "    \"HO_STRESS\" : {HOS},\n"
+            "    \"REFI_STEPS\": 7,\n"
+            "    \"JOBNAME\"   : \"{JOBNAME}\",\n"
+            "    \"EXPORT_BDF\": {EXPORT_BDF},\n"
+            "    \"EXPORT_INP\": {EXPORT_INP},\n"
         ).format(ERR=self.solver_obj.ErrorTolerance / 100,
-                 HOS="true" if self.solver_obj.HighOrderStress else "false",
-                 JOBNAME=self.basename)
+                #  HOS="true" if self.solver_obj.HighOrderStress else "false",
+                 JOBNAME=self.basename,
+                 EXPORT_BDF="true" if self.solver_obj.ExportToBdf else "false",
+                 EXPORT_INP="true" if self.solver_obj.ExportToInp else "false")
 
     @staticmethod
     def get_tag(label):

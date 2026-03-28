@@ -82,12 +82,12 @@ class Proxy(solverbase.Proxy):
                             "Error Tolerance (%)")
             obj.ErrorTolerance = 20.
         
-        if not hasattr(obj, "HighOrderStress"):
-            obj.addProperty("App::PropertyBool",
-                            "HighOrderStress",
-                            "Solver",
-                            "Activate high order stress")
-            obj.HighOrderStress = False
+        # if not hasattr(obj, "HighOrderStress"):
+        #     obj.addProperty("App::PropertyBool",
+        #                     "HighOrderStress",
+        #                     "Solver",
+        #                     "Activate high order stress")
+        #     obj.HighOrderStress = False
         
         if not hasattr(obj, "ExportToBdf"):
             obj.addProperty("App::PropertyBool",
@@ -95,6 +95,13 @@ class Proxy(solverbase.Proxy):
                             "Export",
                             "Export to .bdf format")
             obj.ExportToBdf = False
+        
+        if not hasattr(obj, "ExportToInp"):
+            obj.addProperty("App::PropertyBool",
+                            "ExportToInp",
+                            "Export",
+                            "Export to .inp format")
+            obj.ExportToInp = False
     
     def createMachine(self, obj, directory, testmode=False):
         return run.Machine(
