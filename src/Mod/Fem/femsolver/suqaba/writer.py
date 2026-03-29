@@ -264,27 +264,28 @@ class FemInputWriterSuqaba(writerbase.FemInputWriter):
                 roll_obj = roll["Object"]
                 label = roll_obj.Label
 
+                self.displ_dict[label] = []
+
                 for obj in roll_obj.References:
-                    tag_cnt = 0
                     for entity in obj[1]:
                         face_tag = self.get_tag(entity)
-                        tag_cnt += 1
-                        label_alias = f"{label}_{tag_cnt}"
-                        displ_inputs.append((
-                                "        {{\n"
-                                "            \"name\"   : \"{LABEL}\",\n"
-                                "            \"load_fx\": {{\n"
-                                "                \"x\": \"{UX}\",\n"
-                                "                \"y\": \"{UY}\",\n"
-                                "                \"z\": \"{UZ}\"\n"
-                                "            }},\n"
-                                "            \"tags\": [{TAG}]\n"
-                                "        }}"
-                            ).format(LABEL=label_alias,
-                                     UX="0.0",
-                                     UY="0.0",
-                                     UZ="0.0",
-                                     TAG=face_tag))
+                        self.displ_dict[label].append(face_tag)
+                
+                displ_inputs.append((
+                        "        {{\n"
+                        "            \"name\"   : \"{LABEL}\",\n"
+                        "            \"load_fx\": {{\n"
+                        "                \"x\": \"{UX}\",\n"
+                        "                \"y\": \"{UY}\",\n"
+                        "                \"z\": \"{UZ}\"\n"
+                        "            }},\n"
+                        "            \"tags\": [{TAGS}]\n"
+                        "        }}"
+                    ).format(LABEL=label,
+                             UX="0.0",
+                             UY="0.0",
+                             UZ="0.0",
+                             TAGS=", ".join(map(lambda t: str(t), self.displ_dict[label]))))
 
             self.json_string += separator.join(displ_inputs)
             self.json_string += "\n    ],\n"
