@@ -63,6 +63,13 @@ namespace Base {
 
 class SoGroup;
 
+// @see: https://github.com/FreeCAD/FreeCAD/issues/28752
+class SoBase;
+
+// Required by boost::intrusive_ptr (destructor became constexpr in Boost >=1.84).
+// All Coin3D types derive from SoBase, so these overloads cover every CoinPtr<T>.
+void GuiExport intrusive_ptr_add_ref(SoBase* p);
+void GuiExport intrusive_ptr_release(SoBase* p);
 
 namespace Gui {
     namespace TaskView {

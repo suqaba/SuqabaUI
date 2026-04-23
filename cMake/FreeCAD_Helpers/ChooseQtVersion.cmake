@@ -41,7 +41,7 @@
 
 # If it is set to Auto(default), FreeCAD finds and uses the
 # version installed on the system. If both versions are
-# found, Qt5 is preferred.
+# found, Qt6 is preferred.
 
 # The output variable is FREECAD_QT_MAJOR_VERSION, which will be either 5 or 6
 
@@ -84,15 +84,15 @@ macro(ChooseQtVersion)
     endif ()
     set(_FREECAD_QT_VERSION "${FREECAD_QT_VERSION}")
   else ()
-    find_package(Qt5 QUIET COMPONENTS Core)
-    set(_FREECAD_QT_VERSION 5)
-    if (NOT Qt5_FOUND)
-      find_package(Qt6 QUIET COMPONENTS Core)
-      if (NOT Qt6_FOUND)
+    find_package(Qt6 QUIET COMPONENTS Core)
+    set(_FREECAD_QT_VERSION 6)
+    if (NOT Qt6_FOUND)
+      find_package(Qt5 QUIET COMPONENTS Core)
+      if (NOT Qt5_FOUND)
         message(FATAL_ERROR
           "Could not find a valid Qt installation. Consider setting Qt5_DIR or Qt6_DIR (as needed).")
       endif ()
-      set(_FREECAD_QT_VERSION 6)
+      set(_FREECAD_QT_VERSION 5)
     endif ()
   endif ()
   set(FREECAD_QT_MAJOR_VERSION "${_FREECAD_QT_VERSION}" CACHE INTERNAL

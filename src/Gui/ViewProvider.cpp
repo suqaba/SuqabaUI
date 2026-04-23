@@ -65,6 +65,10 @@ FC_LOG_LEVEL_INIT("ViewProvider", true, true)
 using namespace std;
 using namespace Gui;
 
+// @see: https://github.com/FreeCAD/FreeCAD/issues/28752
+void intrusive_ptr_add_ref(SoBase* p) { p->ref(); }
+void intrusive_ptr_release(SoBase* p) { p->unref(); }
+
 
 namespace Gui {
 
